@@ -118,7 +118,7 @@ void TrendlinesClass::TrendlinesClass()
       tf_lowest=1;
 
      }
-   Print("Constructor is called each time");
+ //  Print("Constructor is called each time");
   }
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -202,7 +202,7 @@ int TrendlinesClass::FindInPeriod(int direction,int periodTimeStart,int periodTi
 
       if(waveShiftStart!=waveShiftEnd) waveAngle=(wavePriceStart-wavePriceEnd)/(waveTimeStart-waveTimeEnd);
 
-      Print("Angle = "+waveAngle+"   waveTimeStart="+Get_date_string(waveTimeStart)+"   waveTimeEnd="+Get_date_string(waveTimeEnd)+"    wavePriceStart="+wavePriceStart+"   wavePriceEnd="+wavePriceEnd);
+      //Print("Angle = "+waveAngle+"   waveTimeStart="+Get_date_string(waveTimeStart)+"   waveTimeEnd="+Get_date_string(waveTimeEnd)+"    wavePriceStart="+wavePriceStart+"   wavePriceEnd="+wavePriceEnd);
 
       ObjectDelete("wave_SELL");
       ObjectCreate("wave_SELL",OBJ_TREND,0,waveTimeStart,wavePriceStart,waveTimeEnd,wavePriceEnd);
@@ -235,7 +235,7 @@ int TrendlinesClass::FindInPeriod(int direction,int periodTimeStart,int periodTi
               }
             if(iHigh(Symbol(),tf_lowest,shift)==1.10574)
               {
-               Print("angle for 1.10574 = "+angle+"   shift = "+shift);
+               //Print("angle for 1.10574 = "+angle+"   shift = "+shift);
               }
            }
 
@@ -246,7 +246,7 @@ int TrendlinesClass::FindInPeriod(int direction,int periodTimeStart,int periodTi
          count++;
 
          // If no trendlines found with less angle than the wave angle
-         Print("count = "+count+"   angleMin="+angleMin+"   waveAngle="+waveAngle+"   shiftVertex="+vertex_Shift);
+       //  Print("count = "+count+"   angleMin="+angleMin+"   waveAngle="+waveAngle+"   shiftVertex="+vertex_Shift);
 
          trendline[count].wave[1].shift_start  = shiftStart;
          trendline[count].wave[1].price_start  = iHigh (Symbol(), tf_lowest, shiftStart);
@@ -262,7 +262,7 @@ int TrendlinesClass::FindInPeriod(int direction,int periodTimeStart,int periodTi
          priceStart  = trendline[count].wave[3].price_start;
          timeStart   = trendline[count].wave[3].time_start;
 
-         Print("shiftStart="+shiftStart+"    priceStart="+priceStart+"   timeStart="+Get_date_string(timeStart));
+      //   Print("shiftStart="+shiftStart+"    priceStart="+priceStart+"   timeStart="+Get_date_string(timeStart));
 
          string name=StringConcatenate("trendlineSell_",count);
 
@@ -336,43 +336,43 @@ string TrendlinesClass::Get_date_string(int time_input)
 //|                                                                  |
 //+------------------------------------------------------------------+
 
-int TrendlinesClass::FindLevels (int direction, int timeframe, int time_start, int time_end){
-	if (direction == OP_BUY){
-		int shift_start = iBarShift (Symbol (), timeframe, time_start, false);
-		int shift_end = iBarShift (Symbol (), timeframe, time_end, false);
-		
-		if (shift_end > shift_start){
-			int swap = shift_end;
-			shift_end = shift_start;
-			shift_start = swap;
-		}
-
-		int shift_lowest = iLowest (Symbol(), timeframe, shift_start - shift_end, shift_end);
-
-		// First seek right side
-		for (int shift = shift_lowest, shift >= shift_end; shift--){
-			if (iHigh (Symbol(),timeframe,shift) < iHigh(Symbol(),timeframe,shift-1)
-			&& iHigh (Symbol(),timeframe,shift) < iHigh(Symbol(),timeframe,shift+1)){
-				double corrector_price_right = iHigh (Symbol(),timeframe,shift);
-				break; 
-			}
-		}
-
-		// Second search left side
-		for (shift = shift_lowest, shift <= shift_start; shift++){
-			if (iHigh (Symbol(),timeframe,shift) < iHigh(Symbol(),timeframe,shift-1)
-			&& iHigh (Symbol(),timeframe,shift) < iHigh(Symbol(),timeframe,shift+1)){
-				double corrector_price_left = iHigh (Symbol(),timeframe,shift);
-				break;
-			}
-		}
-
-		// Choose the lowest corrector price
-		double corrector_price = corrector_price_right;
-		if (corrector_price_right > corrector_price_left) corrector_price = corrector_price_left;
-
-	}
-}
+//int TrendlinesClass::FindLevels (int direction, int timeframe, int time_start, int time_end){
+//	if (direction == OP_BUY){
+//		int shift_start = iBarShift (Symbol (), timeframe, time_start, false);
+//		int shift_end = iBarShift (Symbol (), timeframe, time_end, false);
+//		
+//		if (shift_end > shift_start){
+//			int swap = shift_end;
+//			shift_end = shift_start;
+//			shift_start = swap;
+//		}
+//
+//		int shift_lowest = iLowest (Symbol(), timeframe, shift_start - shift_end, shift_end);
+//
+//		// First seek right side
+//		for (int shift = shift_lowest, shift >= shift_end; shift--){
+//			if (iHigh (Symbol(),timeframe,shift) < iHigh(Symbol(),timeframe,shift-1)
+//			&& iHigh (Symbol(),timeframe,shift) < iHigh(Symbol(),timeframe,shift+1)){
+//				double corrector_price_right = iHigh (Symbol(),timeframe,shift);
+//				break; 
+//			}
+//		}
+//
+//		// Second search left side
+//		for (shift = shift_lowest, shift <= shift_start; shift++){
+//			if (iHigh (Symbol(),timeframe,shift) < iHigh(Symbol(),timeframe,shift-1)
+//			&& iHigh (Symbol(),timeframe,shift) < iHigh(Symbol(),timeframe,shift+1)){
+//				double corrector_price_left = iHigh (Symbol(),timeframe,shift);
+//				break;
+//			}
+//		}
+//
+//		// Choose the lowest corrector price
+//		double corrector_price = corrector_price_right;
+//		if (corrector_price_right > corrector_price_left) corrector_price = corrector_price_left;
+//
+//	}
+//}
 
 					
 

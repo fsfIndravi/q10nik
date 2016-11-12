@@ -4,78 +4,74 @@
 //+------------------------------------------------------------------+
 
 class WavesClass
-  {
-private:
-   double            PeriodMin();
-   double            LengthMin();
-   double            Costs();
+    {
+    private:
+    double  PeriodMin();
+    double  LengthMin();
+    double  Costs();
+    double  dealCostsMax;
+    double  dealRiskCostsKoef;
+    int     seekShiftMax;
+    int     timeframeWorking;
+    int     dealDurationMax;
+    bool    visualizeWaves;
+    int     tf[10];
+    int     compressedShift;
+    int     compressedTime;
+    int     compressedTimeframe;
+    
+    void    Visualize_Draw(string v_name,int v_timeStart,int v_timeEmd,double v_priceStart,double v_priceEnd,color v_color,int v_type);
+    void    Visualize_Clear(string c_name);
+    string  Get_date_string(int time_input);
+    int     TF_Number(int n_timeframe);
+    int     TF_Lower(int l_timeframe);
+    int     TF_Higher(int h_timeframe);
+    int     TF_Max(int x_timeEarlier,int x_timeLater);
+    void    TF_Init();
 
-   double            dealCostsMax;
-   double            dealRiskCostsKoef;
-   int               seekShiftMax;
-   int               timeframeWorking;
-   int               dealDurationMax;
-   bool              visualizeWaves;
-   int               tf[10];
+    // DEFAULT PARAMETERS
+    #define _decompressionTimeframeRatioMax 40
+    #define _timeframeWorking 1
+    #define _seekShiftMax 200
+    #define _visualizeWaves 0
+    #define _deal_costs_max 0.05
+    #define _deal_risk_costs_koef 5.0
+    #define _deal_risk_percent 3.0
+    #define _spread_default 20
+    #define _commission_default 10
+    #define _spread_max_avg_koef 2.0
+    #define _average_period 15
+    #define _dealDurationMax 1440
+    #define _cascadeImpulsesMax 9
+    #define LOWERLOW 1
+    #define HIGHERHIGH 2
 
-   int               compressedShift;
-   int               compressedTime;
-   int               compressedTimeframe;
+    public:
 
-   void              Visualize_Draw(string v_name,int v_timeStart,int v_timeEmd,double v_priceStart,double v_priceEnd,color v_color,int v_type);
-   void              Visualize_Clear(string c_name);
-   string            Get_date_string(int time_input);
-   int               TF_Number(int n_timeframe);
-   int               TF_Lower(int l_timeframe);
-   int               TF_Higher(int h_timeframe);
-   int               TF_Max(int x_timeEarlier,int x_timeLater);
-   void              TF_Init();
-
-   // DEFAULT PARAMETERS
-
-#define _decompressionTimeframeRatioMax 40
-#define _timeframeWorking 5
-#define _seekShiftMax 200
-#define _visualizeWaves 0
-#define _deal_costs_max 0.05
-#define _deal_risk_costs_koef 5.0
-#define _deal_risk_percent 3.0
-#define _spread_default 20
-#define _commission_default 10
-#define _spread_max_avg_koef 2.0
-#define _average_period 15
-#define _dealDurationMax 1440
-#define _cascadeImpulsesMax 9
-#define LOWERLOW 1
-#define HIGHERHIGH 2
-
-public:
-
-   struct waveStruct
-     {
-      int               timeStart;
-      int               timeEnd;
-      double            price_Start;
-      double            price_End;
-      double            price_033;
-      double            price_050;
-      double            price_066;
-      double            price_130;              // BO of the Wave for 130%
-      double            price_150;              // BO of the Wave for 150%
-      double            price_200;              // BO of the Wave for 200%
-      double            price_goal_3w;          // 3-Wave Price Goal
-      double            price_goal_13;          // 130% from the Wave brakeout
-      double            price_goal_15;          // 150% from the Wave brakeout
-      double            price_goal_20;          // 200% from the Wave brakeout
-      double            length;
-      int               duration;
-      int               direction;
-      int               tf_End;
-      int               tfMax;
-      int		tf_Start;
-      int               shift_Start;
-      int		shift_End;
-};
+    struct waveStruct{
+        int               timeStart;
+        int               timeEnd;
+        double            price_Start;
+        double            price_End;
+        double            price_033;
+        double            price_050;
+        double            price_066;
+        double            price_130;              // BO of the Wave for 130%
+        double            price_150;              // BO of the Wave for 150%
+        double            price_200;              // BO of the Wave for 200%
+        double            price_goal_3w;          // 3-Wave Price Goal
+        double            price_goal_13;          // 130% from the Wave brakeout
+        double            price_goal_15;          // 150% from the Wave brakeout
+        double            price_goal_20;          // 200% from the Wave brakeout
+        double            length;
+        int               duration;
+        int               direction;
+        int               tf_End;
+        int               tfMax;
+        int				tf_Start;
+        int               shift_Start;
+        int				shift_End;
+    };
 
    struct cascadeStruct
      {
@@ -102,9 +98,10 @@ public:
       waveStruct        impulse[_cascadeImpulsesMax+1];
      };
 
-   // Methods
+	 // Methods
+
    int               FindCascade(int c_direction,int c_minorWaveLengthMin,int c_majorWaveDurationMax,int c_drawWaves);
-   int               FindAll(int s_direction,double r_lengthMin);
+	int 				FindAll(int s_direction,double r_lengthMin);
    bool              FindByLength(int f_direction,double r_lengthMin,int r_timeEndMax);
    bool              FindByPeriod(double periodMin);
    bool              FindByTime(int timeEnd);
@@ -135,6 +132,7 @@ public:
                      WavesClass();
 
   };
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -162,6 +160,7 @@ WavesClass::WavesClass(void)
    if(dealDurationMax==0) dealDurationMax=_dealDurationMax;
 
   }
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -175,14 +174,19 @@ WavesClass::Init(int init_timeframeWorking,int init_seekShiftMax,double init_Dea
    visualizeWaves=init_visualizeWaves;
 
   }
+
 //+------------------------------------------------------------------+
-//| Retrace Ratio Max                                                |
-//| -- Calculates the maximum retrace during the wave (e.g. 0.32)    |
-//| -- The lower the maximum retrace - the stronger the wave         |
+//|                                                                  |
 //+------------------------------------------------------------------+
 
 double WavesClass::RetraceRatioMax(int r_direction,int r_timeEarlier,int r_timeLater,double r_priceEarlier,double r_priceLater)
   {
+
+	//+------------------------------------------------------------------+
+	//| Retrace Ratio Max                                                |
+	//| -- Calculates the maximum retrace during the wave (e.g. 0.32)    |
+	//| -- The lower the maximum retrace - the stronger the wave         |
+	//+------------------------------------------------------------------+
 
    double   priceHighest;
    double   priceLowest;
@@ -245,9 +249,9 @@ double WavesClass::RetraceRatioMax(int r_direction,int r_timeEarlier,int r_timeL
 
    return (0);
   }
+
 //+------------------------------------------------------------------+
-//| Find wave by length                       
-//| -- seeking for a wave till its goal length
+//|                                                                  |
 //+------------------------------------------------------------------+
 
 bool WavesClass::FindByLength(int f_direction,double r_lengthMin,int r_timeEndMax)
@@ -388,6 +392,7 @@ bool WavesClass::FindByLength(int f_direction,double r_lengthMin,int r_timeEndMa
    return (false);
 
   }
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -426,6 +431,7 @@ WavesClass::FindOpposite(int o_direction,int o_impulseTimeStart,int o_impulseTim
 
 
   }
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -667,14 +673,19 @@ int WavesClass::FindAll(int s_direction,double r_lengthMin)
    return (0);
 
   }
+
 //+------------------------------------------------------------------+
-//| Visualizing found waves                                          |
-//| -- v_type=1 - draw line
-//| -- v_type=2 - draw rectangle
+//|                                                                  |
 //+------------------------------------------------------------------+
 
 WavesClass::Visualize_Draw(string v_name,int v_timeStart,int v_timeEnd,double v_priceStart,double v_priceEnd,color v_color,int v_type)
   {
+
+	//+------------------------------------------------------------------+
+	//| Visualizing found waves                                          |
+	//| -- v_type=1 - draw line
+	//| -- v_type=2 - draw rectangle
+	//+------------------------------------------------------------------+
 
    if(v_type==1) // Draw lines
      {
@@ -695,6 +706,7 @@ WavesClass::Visualize_Draw(string v_name,int v_timeStart,int v_timeEnd,double v_
      }
 
   }
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -709,10 +721,10 @@ WavesClass::Visualize_Clear(string c_name)
      }
 
   }
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-
 
 string WavesClass::Get_date_string(int time_input)
   {
@@ -724,44 +736,44 @@ string WavesClass::Get_date_string(int time_input)
    return (string_result);
 
   }
+
 //+------------------------------------------------------------------+
-//| TF Functions
+//|                                                                  |
 //+------------------------------------------------------------------+
 
+int WavesClass::TF_Lower(int l_timeframe){
+    for(int t=2; t<=9; t++){
+        if(tf[t] == l_timeframe) return (tf[t-1]);
+    }
+    return (0);
+}
 
-int WavesClass::TF_Lower(int l_timeframe)
-  {
-   for(int t=2; t<=9; t++)
-     {
-      if(tf[t] == l_timeframe) return (tf[t-1]);
-     }
-   return (0);
-  }
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-int WavesClass::TF_Higher(int h_timeframe)
-  {
-   for(int t=8; t>=1; t--)
-     {
-      if(tf[t] == h_timeframe) return (tf[t+1]);
-     }
-   return (0);
-  }
+
+int WavesClass::TF_Higher(int h_timeframe){
+    for(int t=8; t>=1; t--){
+        if(tf[t] == h_timeframe) return (tf[t+1]);
+    }
+    return (0);
+}
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-int WavesClass::TF_Number(int n_timeframe)
-  {
-   for(int t=9; t>=1; t--)
-     {
-      if(tf[t] == n_timeframe) return (t);
-     }
-   return (0);
-  }
+
+int WavesClass::TF_Number(int n_timeframe){
+    for(int t=9; t>=1; t--){
+        if(tf[t] == n_timeframe) return (t);
+    }
+    return (0);
+}
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
+
 int WavesClass::TF_Max(int x_timeEarlier,int x_timeLater)
   {
    for(int t=9; t>=1; t--)
@@ -770,6 +782,7 @@ int WavesClass::TF_Max(int x_timeEarlier,int x_timeLater)
      }
    return (0);
   }
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -781,7 +794,9 @@ int WavesClass::FindCascade(int c_direction,int c_minorWaveLengthMin,int c_major
      {
 
       int      tfLocal        = timeframeWorking;
-      double   priceMax       = iHigh (Symbol(), tfLocal, 1);
+	  int		tfMin		= tfLocal;
+	  int		tfMax		= tfLocal;
+	  double   priceMax       = iHigh (Symbol(), tfLocal, 1);
       double   priceMin       = iLow (Symbol(), tfLocal, 1);
       int      timeMax        = iTime (Symbol(), tfLocal, 1);
       int      timeMin        = iTime (Symbol(), tfLocal, 1);
@@ -790,9 +805,39 @@ int WavesClass::FindCascade(int c_direction,int c_minorWaveLengthMin,int c_major
       int      shift          = 1;
       int      impulseCount   = 0;
       int      seekDirection  = OP_BUY;
-      double   checkPrice     = priceMax - c_minorWaveLengthMin;
+      double   checkPrice     = priceMax - c_minorWaveLengthMin * Point;
       double	checkLength = c_minorWaveLengthMin;
+	  int		tfh;
 
+	  int		hh_shift=shift;
+	  int		hh_tf=tfLocal;
+	  int		hh_time = iTime (Symbol(), tfLocal, 1);
+	  double	hh_price = iHigh (Symbol(), tfLocal, 1);
+
+	  int		ll_shift=shift;
+	  int		ll_tf=tfLocal;
+	  int		ll_time=iTime (Symbol(), tfLocal, 1);
+	  double	ll_price = iLow (Symbol(), tfLocal, 1);
+	  
+	  bool wave_buy_start_found 	= false;
+	  bool wave_sell_start_found 	= false;
+	  bool wave_buy_end_found 	= false;
+	  bool wave_sell_end_found 	= false;
+
+		double wave_buy_start_price;
+		int wave_buy_start_time;
+		int wave_buy_start_shift;
+		int wave_buy_start_tf;
+
+		double wave_sell_start_price;
+		int wave_sell_start_time;
+		int wave_sell_start_shift;
+		int wave_sell_start_tf;
+		bool impulse_start_found;
+		bool impulse_end_found;
+
+	  double priceLowest = priceMin;	// Lowest price after the Wave End - for finding nulllified waves
+	  double priceHighest = priceMax;	// Highest  price after the Wave End
 
       int      waveEnd_TF;
       int      waveStart_TF;
@@ -802,47 +847,106 @@ int WavesClass::FindCascade(int c_direction,int c_minorWaveLengthMin,int c_major
       int      waveStart_Shift;
       double   waveEnd_Price;
       double   waveStart_Price;
+	  double	wave_Length;
+
 
       while(shift<=seekShiftMax)
         {
-         // Compressing timeframes
-         int tfh=TF_Higher(tfLocal);
-         if(tfLocal!=0 && tfh!=0)
-           {
-            if(shift*tfLocal/tfh>=4)
-              {
-               shift=MathFloor(shift*tfLocal/tfh);
-               //Print ("Compressing to "+tfh);
-               tfLocal=tfh;
-              }
-           }
-         // Seeking BUY direction
+
+         // Seeking BUY direction: lower low lengthens wave, higher high refreshes waveEnd
          if(seekDirection==OP_BUY)
            {
-            if(iHigh(Symbol(),tfLocal,shift)>priceMax)
+            if(iHigh(Symbol(),tfLocal,shift)>hh_price){
+				hh_time = iTime (Symbol(), tfLocal, shift);
+				hh_price = iHigh(Symbol(),tfLocal,shift);
+				hh_shift = shift;
+				hh_tf = tfLocal;
+
+				impulse_start_found = false;
+
+				// Check if it's time to compress hh
+				tfh=TF_Higher (tfLocal);
+			  	if (hh_time - ll_time  >= 60 * 3 * tfh
+				  && tfh != 0){
+				// Compressing timeframe
+               	hh_shift = MathFloor(shift * tfLocal / tfh);
+				hh_time = iTime (Symbol(), tfLocal, hh_shift);
+				hh_tf = tfh;
+				tfLocal = tfh;
+				}
+				}
+
+            if(iLow(Symbol(),tfLocal,shift)<ll_price){
+				ll_time = iTime (Symbol(), tfLocal, shift);
+				ll_price = iLow(Symbol(),tfLocal,shift);
+				ll_shift = shift;
+				ll_tf = tfLocal;
+
+				// Check if it's time to compress ll
+				tfh=TF_Higher (tfLocal);
+			  	if (hh_time - ll_time  >= 60 * 3 * tfh
+				  && tfh != 0){
+				  // Compressing timeframe
+               	ll_shift = MathFloor(shift * tfLocal / tfh);
+				ll_time = iTime (Symbol(), tfLocal, hh_shift);
+				ll_tf = tfh;
+				tfLocal = tfh;
+				}
+			  wave_Length = hh_price - ll_price;
+			  if (ll_price < checkPrice){
+				  // Found start of a buy wave
+				  impulseCount++;
+				  impulse_start_found = true;
+				  waveBuy_StartFound = true;
+			  impulse[impulseCount].price_Start = hh_price;
+			  impulse[impulseCount].timeStart = hh_time;
+			  impulse[impulseCount].shift_Start = hh_shift;
+			  impulse[impulseCount].tf_Start = hh_tf;
+
+
+				  }
+
+			  if (checkLength < c_minorWaveLengthMin) checkLength = c_minorWaveLengthMin; 
+			  if (wave_Length > checkLength){
+
+				}
+				  
+			   // Find waveBuy_Start
+              if(iHigh(Symbol(),tfLocal,shift)>priceMax)
               { // Found wave BUY End
-               priceMax = iHigh (Symbol(), tfLocal, shift);
+			  priceMax = iHigh (Symbol(), tfLocal, shift);
+              timeMax  = iTime (Symbol(), tfLocal, shift);
+
+			  // Check if Compression needed for Higher High
+				tfh = TF_Higher (tfLocal);
+			  if (timeMax - timeMin >= 60 * 3 * tfh
+				  && tfh != 0){
+				  // Compressing timeframe
+               	shiftMax = MathFloor(shift * tfLocal / tfh);
+				tfLocal=tfh;
+				tfMax = tfh;
+              	timeMax  = iTime (Symbol(), tfLocal, shiftMax);
+				}
                priceMin = iHigh (Symbol(), tfLocal, shift);
-               timeMax  = iTime (Symbol(), tfLocal, shift);
                timeMin  = iTime (Symbol(), tfLocal, shift);
                shiftMin = shift;
-               shiftMax = shift;
-               // Find the minor wave first
-               if(impulseCount==0) {
-		   checkPrice=priceMax-c_minorWaveLengthMin;
-		   Print ("checkPrice="+checkPrice);
-	       }
+			   tfMin	= tfLocal;
+			  checkLength = priceMax - priceLowest;
+			  if (checkLength < c_minorWaveLengthMin) checkLength = c_minorWaveLengthMin; 
+	       		}
               }
             if(iLow(Symbol(),tfLocal,shift)<priceMin)
               { // Found wave BUY Start
                priceMin = iLow (Symbol(), tfLocal, shift);
                timeMin  = iTime (Symbol(), tfLocal, shift);
                shiftMin = shift;
+			   tfMin = tfLocal;
                // Exit loop if wave duration exceeds 'dealDurationMax'
                if((timeMax-timeMin)/60>dealDurationMax) break;
               }
            }
-         // Seeking SELL direction
+
+         // Seeking SELL direction: higher high lenthens opposite wave, lower low refreshes waveStart
          if(seekDirection==OP_SELL)
            {
             if(iLow(Symbol(),tfLocal,shift)<priceMin)
@@ -863,17 +967,21 @@ int WavesClass::FindCascade(int c_direction,int c_minorWaveLengthMin,int c_major
                shiftMax= shift;
               }
            }
-	 
-	 // If found wave with enough length - impulse++
+
+	// Initializing highest and lowest prices	 
+	if(priceMin < priceLowest) priceLowest = priceMin;
+	if(priceMax > priceHighest) priceHighest = priceMax; 
+	
+	 // If found wave with enough length
 	 if (seekDirection == OP_BUY 
 	 && timeMax > timeMin
 	 && priceMin < checkPrice){
-	    impulseCount++;
-	    cascade.impulse[impulseCount].price_End = priceMax;
-	    cascade.impulse[impulseCount].timeEnd = timeMax;
-	    cascade.impulse[impulseCount].tf_End = tfLocal;
-	    cascade.impulse[impulseCount].shift_End = shift;
-	    seekDirection = OP_SELL;
+		waveEnd_Price = priceMax;
+		waveEnd_Time = timeMax;
+		waveEnd_Shift = shift;
+		waveEnd_TF = tfLocal;
+		checkPrice = waveEnd_Price; // Set check price for the maximum of the founded wave
+		seekDirection = OP_SELL;
 	 }
 	 
          // Check find impulse BUY Start (full wave found)
@@ -881,39 +989,67 @@ int WavesClass::FindCascade(int c_direction,int c_minorWaveLengthMin,int c_major
             && priceMax>checkPrice
 	    && timeMax < timeMin)
            {  // Found impulse Start
-	       cascade.impulse[impulseCount].timeStart = timeMin;
-	       cascade.impulse[impulseCount].price_Start = priceMin;
-	       cascade.impulse[impulseCount].tf_Start = tfLocal;
-	       cascade.impulse[impulseCount].shift_Start = shiftMin;
-		
-            Print("Found wave #"+impulseCount+": tfStart="+priceMin+"   tfEnd="+tfLocal+"   timeStart="+Get_date_string(timeMin)+"   timeEnd="+Get_date_string(cascade.impulse[impulseCount].timeEnd)+"   price_Start="+priceMin+"   price_End="+waveEnd_Price+"   length="+(waveEnd_Price-waveStart_Price));
+			impulseCount++;
+			waveStart_Price = priceMin;
+			waveStart_Time = timeMin;
+			waveStart_Shift = shift;
+			waveStart_TF = tfLocal;
+			checkPrice = waveStart_Price; // Set check price for the minimum of the founded wave
+			seekDirection = OP_BUY;
+
+            Print("Found wave #"+impulseCount+": tfStart="+waveStart_TF+"   tfEnd="+waveEnd_TF+"   timeStart="+Get_date_string(waveStart_Time)+"   timeEnd="+Get_date_string(waveEnd_Time)+"   price_Start="+waveStart_Price+"   price_End="+waveEnd_Price+"   length="+(waveEnd_Price-waveStart_Price));
             // Setting found wave variables
             // Decompressing impulse wave Start
-            if(cascade.impulse[impulseCount].tf_Start > timeframeWorking)
+            if(waveStart_TF > timeframeWorking)
               {
-               //int shiftStart=waveStart_Shift*waveStart_TF/timeframeWorking+iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveStart_TF,1),false);
-               //int shiftEnd=(waveStart_Shift-1)*waveStart_TF/timeframeWorking+iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveStart_TF,1),false);
-	       int shiftStart = Decompress(LOWERLOW, cascade.impulse[impulseCount].tf_Start, cascade.impulse[impulseCount].shift_Start, timeframeWorking);
-	       int shiftEnd = Decompress (HIGHERHIGH, cascade.impulse[impulseCount].tf_End, cascade.impulse[impulseCount].shift_End, timeframeWorking);
-               cascade.impulse[impulseCount].tf_Start = iLowest(Symbol(),timeframeWorking,MODE_LOW,shiftStart-shiftEnd,shiftEnd);
-//               Print("Decompressed waveStart from TF"+waveStart_TF+": shiftStart="+shiftStart+"   shiftEnd="+shiftEnd+"   waveStart_Shift="+waveStart_Shift);
+				  int minorStart_Shift = iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveStart_TF,waveStart_Shift),true);
+				  int minorEnd_Shift = iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveStart_TF,waveStart_Shift-1),true);
+				 Print ("Before decomp: waveStart_TF:"+waveStart_TF+"    waveStart_Shift"+waveStart_Shift+"   minorStart_Shift="+minorStart_Shift+"   minorEnd_Shift="+minorEnd_Shift);
+				  waveStart_Shift = iLowest (Symbol (),timeframeWorking, minorStart_Shift - minorEnd_Shift, minorEnd_Shift); 
+				  waveStart_TF = timeframeWorking;
+				  waveStart_Time = iTime (Symbol(),timeframeWorking,waveStart_Shift);
+
+               Print("Decompressed: waveStart_TF"+waveStart_TF+"   shiftStart="+waveStart_Shift+"   shiftEnd="+waveEnd_Shift);
               }
             // Decompressing impulse wave End
-            if(cascade.impulse[impulseCount].tf_End > timeframeWorking)
+            if(waveEnd_TF > timeframeWorking)
 
               {
-               shiftStart=waveEnd_Shift*waveEnd_TF/timeframeWorking+iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveEnd_TF,1),false);
-               shiftEnd=(waveEnd_Shift-1)*waveEnd_TF/timeframeWorking+iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveEnd_TF,1),false);
-               cascade.impulse[impulseCount].tf_End = iHighest(Symbol(),timeframeWorking,MODE_HIGH,shiftStart-shiftEnd,shiftEnd);
+
+				  minorStart_Shift = iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveEnd_TF,waveEnd_Shift),true);
+				  minorEnd_Shift = iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveEnd_TF,waveEnd_Shift-1),true);
+				  
+				  waveEnd_Shift = iHighest (Symbol (),timeframeWorking, minorStart_Shift - minorEnd_Shift, minorEnd_Shift); 
+				  waveEnd_TF = timeframeWorking;
+				  waveEnd_Time = iTime (Symbol(),timeframeWorking,waveEnd_Shift);
+
                //Print ("DecompressedTF+ waveEnd from TF"+waveEnd_": shiftStart="+shiftStart+"   shiftEnd="+shiftEnd+"   waveEnd_Shift="+waveEnd_Shift);
               }
+			  // Setting cascade class variables
+			  cascade.impulse[impulseCount].price_End = waveEnd_Price;
+			  cascade.impulse[impulseCount].price_Start = waveStart_Price;
+			  cascade.impulse[impulseCount].shift_End = waveEnd_Shift;
+			  cascade.impulse[impulseCount].timeEnd = waveEnd_Time;
+			  cascade.impulse[impulseCount].timeStart = waveStart_Time;
+
             cascade.impulse[impulseCount].duration    = cascade.impulse[impulseCount].timeEnd - cascade.impulse[impulseCount].timeStart;
             cascade.impulse[impulseCount].length      = cascade.impulse[impulseCount].price_End - cascade.impulse[impulseCount].price_Start;
-            checkPrice        = cascade.impulse[impulseCount].price_Start;
-            seekDirection     = OP_BUY;
+           }
+
+         // Compressing timeframes
+         int tfh=TF_Higher(tfLocal);
+         if(tfLocal!=0 && tfh!=0)
+           {
+            if(shift*tfLocal/tfh>=4)
+              {
+               shift=MathFloor(shift*tfLocal/tfh);
+               //Print ("Compressing to "+tfh);
+               tfLocal=tfh;
+              }
            }
          shift++;
         }
+
       // Draw waves
       for(int i=1; i<=impulseCount; i++)
         {
@@ -924,6 +1060,7 @@ int WavesClass::FindCascade(int c_direction,int c_minorWaveLengthMin,int c_major
      }
    return (impulseCount);
   }
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -946,4 +1083,6 @@ int WavesClass::Decompress(int extremumType,int timeframeSource,int shiftSource,
 //   Print("Decompression result: shift target="+shiftTarget);
    return (shiftTarget);
   }
-//+------------------------------------------------------------------+
+  
+
+

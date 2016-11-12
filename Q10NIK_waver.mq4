@@ -4,7 +4,7 @@
 //|                                                                  |
 //+------------------------------------------------------------------+
 
-#include "Waves.mqh"
+//#include "Waves.mqh"
 #include "Orders.mqh"
 #include "Candles.mqh"
 #include "Timeframes.mqh"

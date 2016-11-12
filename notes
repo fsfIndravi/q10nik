@@ -1,4 +1,28 @@
 NOTES
+==== 12/11/2016
+1. Entrance:
+   - 50% movement from the last opposite wave in 123 pattern (in a 3rd wave)
+2. Exit:
+   - if movement is faster then the BO-wave, then wait for one more wave
+   - if movement is slower than the BO-wave, then Exit at the End-price of the BO-wave (if trendline goal is achieved)
+   - reached goal of the oppposite trendline which occurred after the order
+3. Stop-loss:
+   - for the length of the oppsite wave from the current high/low of the carrier wave
+   - when the carrier wave hits high of the breakout wave, SL is set to the order vertex
+   - 
+4. Waves:
+   - trendline give levels
+   - trendline give waves with different length and fixed vertexes!!! Trendline rule!!!
+   - 
+
+==== 06/11/2016
+Base 2 Major Timeframes:
+M1->M15 (x15)
+M5->M60 (x12)
+M15->M240 (x16)
+!!!!!!! Waves in a trendline must differ no more than 2x times
+
+
 
 ==== 25/10/2016 ====
 RETRACE WAVE consists of Trendlines CASCADE
