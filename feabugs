@@ -1,11 +1,14 @@
 FEATURES AND BUGS LIST
 
----|---------------------------------------------------------
-No.|FEATURE/BUG DESCRIPTION                        | STATUS |
-   |TODO/TASK                                      |        |
----|---------------------------------------------------------
-1   Wave find function to find wave from a certain | Working  |  
+------------------------------------------------------------------------
+No.|FEATURE/BUG DESCRIPTION                                   | STATUS |HRs  |HRs  |
+   |TODO/TASK                                                 |        |req. |spent|
+------------------------------------------------------------------------
+1   Wave find function to find wave from a certain             TODO     2.0 
     time.
-------------------------------------------------------------
-2
-------------------------------------------------------------
+------------------------------------------------------------------------
+2   Function to make waves from trendlines  
+    - algo: find wave start and end first
+    - inside the wave we find waves with trendlines
+------------------------------------------------------------------------
+3    

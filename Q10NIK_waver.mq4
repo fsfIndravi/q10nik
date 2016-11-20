@@ -269,6 +269,17 @@ void _positions_open ()
     double   sl, tp;
     int      ticket;
     double   sl_price;
+
+    // Init array zigzag
+    if (iBarShift(Symbol(),5,last_zigzag_time) >= 1 || last_zigzag_time == 0){
+        last_zigzag_time = TimeCurrent ();
+        arrays (1,5);
+        arrays (1,4);
+    }
+
+    arrays(1,1);
+    arrays(1,2);
+    arrays(1,3);
    
     // 1. BUY ORDERS
     // 1.1. FIND WAVE BUY
