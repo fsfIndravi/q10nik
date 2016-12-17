@@ -18,6 +18,7 @@ CandlesClass      candle;
 TimeframesClass   timeframe;
 StatsClass        stats;
 
+
 TrendlinesClass   trendlines_OP_SELL;
 TrendlinesClass   trendlines_OP_BUY;
 
@@ -43,6 +44,7 @@ extern double  touch_distance_koef = 0.15;                        // Driver leng
 
 extern string  comment4 = "==== Tech options =====";
 extern int     timeframe_Lowest = 1;
+extern int     timeframe_koef = 4;
 extern int     seekShiftMax = 200;
 extern int     spread_default = 20;
 extern double  commission_default_per_lot = 10;                   // Amount in deposit currency Per 100,000 of base currency
@@ -140,6 +142,8 @@ int init()
    tf [7] = 1440;
    tf [8] = 10080;
    tf [9] = 43200;
+   
+   if (deal_costs_max_koef == 0) deal_costs_max_koef = 0.05;
    
    // initializing waves
    wave.Init (timeframe_Lowest, seekShiftMax, deal_costs_max_koef, deal_duration_max_minutes, 0);
@@ -270,103 +274,186 @@ void _positions_open ()
     int      ticket;
     double   sl_price;
    
-    // 1. BUY ORDERS
-    // 1.1. FIND WAVE BUY
-    if (iBarShift (Symbol(), 5, lastTime, false) > 0 || lastTime == 0){
-        lastTime = TimeCurrent ();
-        found_wave_BUY = wave.FindAll (OP_BUY,100);
-        // if (deal_costs_max_koef>0) found_wave_BUY = wave.FindCascade(OP_BUY,100, 1440, 1);  
-        //found_wave_BUY = wave.FindCascade (OP_BUY, 0.00300, 1440,1);
-        log_add_line ("OP_BUY="+OP_BUY+"   OP_SELL="+OP_SELL,Red);
-        //if (deal_costs_max_koef<=0){Alert("Cannot open orders: deal_costs_max_koef <=0");}
-        log_add_line ("found_wave_BUY="+found_wave_BUY+"   Minimum length="+Point * costs_pips / deal_costs_max_koef,Red);
-        log_add_line ("impulse.time_Start="+get_date_string(wave.cascade.impulse[1].timeStart),Red);
-        //trendline.DrawLine ("nameLine",Red,1,wave.impulse.timeStart,wave.impulse.price_Start,wave.impulse.timeEnd,wave.impulse.price_End);
-        showLog = true;
-    }
-    // 1.2. CHECK SIGNAL BUY
-    if (found_wave_BUY > 0
-    && !signal_BUY_MAIN
-    && order.dealBuy.countOrders_Buy == 0){
-        //     Print ("wave.impulse.timeEnd="+get_date_string(wave.impulse.timeEnd));
-        int trendlines_count = trendlines_OP_SELL.FindInPeriod (OP_SELL, wave.impulse.timeEnd, TimeCurrent());
-        //      Print ("Trendlines count = "+trendlines_count);
-        ObjectCreate ("trendline_SELL", OBJ_TREND, 0, 0,trendlines_OP_SELL.trendline[1].wave[1].time_start, trendlines_OP_SELL.trendline[1].wave[1].price_start, trendlines_OP_SELL.trendline[1].wave[3].time_start, trendlines_OP_SELL.trendline[1].wave[3].price_start);
-        ObjectSet("trendline_SELL", OBJPROP_STYLE, STYLE_DASH);
-        ObjectSet("trendline_SELL", OBJPROP_WIDTH, 1);
-        ObjectSet("trendline_SELL", OBJPROP_RAY, true);
-        ObjectSet("trendline_SELL", OBJPROP_COLOR, Red);
-    } 
-   
-   
-   //if (found_wave_BUY > 0
-   //   && !signal_BUY_MAIN
-   //   && order.dealBuy.countOrders_Buy == 0
-   //   && Bid <= wave.impulse.price_End - 0.33 * MathAbs (wave.impulse.length)
-   //   && MathAbs (wave.impulse.length) >= 0.66 * MathAbs (wave.opposite.length)
-   //   && check_spread ()){
-   //      signal_BUY_MAIN = true;
-   //      }
-   // 1.3. CHECK ENTER BUY
-   if (signal_BUY_MAIN){
-      log_add_line ("wave.impulse.priceEnd="+wave.impulse.price_End+"   wave.impulse.length="+wave.impulse.length+"   wave.impulse.timeEnd="+get_date_string(wave.impulse.timeEnd)+"    impulse.duration="+wave.impulse.duration/60,Blue);
-      lotToOpen = NormalizeDouble (AccountBalance () / (1000 / 0.5),lotDigits);
-      if (lotToOpen < lotMin && lotToOpen > 0) lotToOpen = lotMin;
-      if (lotToOpen > lotMax && lotToOpen > 0) lotToOpen = lotMax;
-      sl = wave.impulse.price_Start - 10 * Point;
-      tp = iLow (Symbol(), 5, iLowest (Symbol (), 5, MODE_LOW, iBarShift (Symbol(), 5, wave.impulse.timeEnd,false)));
-      ticket = OrderSend (Symbol(),OP_BUY,lotToOpen,Ask,5,0,0,1,1,0,Blue);
-      if (ticket > 0){
-         signal_BUY_MAIN = false;
-         if (OrderSelect (ticket,SELECT_BY_TICKET,MODE_TRADES)){
-            log_add_line ("STARTING SERIE BUY ORDER #"+ticket+" at price "+DoubleToStr (Ask,Digits)+ ". Lot "+lotToOpen,DarkGreen); 
-            order.Add (ticket, OP_BUY, wave.impulse.timeStart, wave.impulse.timeEnd, TimeCurrent ());
-            order.RefreshFULL ();
-            }
-         showLog = true;
-         }
-      else log_add_line ("ERROR SENDING ORDER BUY at price "+DoubleToStr (Ask,Digits)+". Lot "+lotToOpen+".   Reason: "+ErrorDescription (GetLastError()),Red);
-      log_add_line ("wave.RetraceRatioMax="+wave.RetraceRatioMax (OP_BUY, wave.impulse.timeStart, wave.impulse.timeEnd, wave.impulse.price_Start, wave.impulse.price_End)+"   order.dealBuy.time_LastHigh="+get_date_string(order.dealBuy.time_LastHigh),Blue);
-      showLog = true;
+    arrays (1,1);
+    
+    // 1. Enter BUY ORDERS
+    
+    // 1.1. First find patern
+    
+    if (f_length [1][0] < 0
+      && MathAbs (f_length [1][2]) > MathAbs (f_length [1][4])
+      && f_price [1][0] <= f_price [1][2]){
+         // Find outsideswing
+         //log_add_line ("Pattern f1 found",Red);
+         //showLog = true;
+         arrays (1,2);
+         arrays (1,3);
+         arrays (1,4);
+         arrays (1,5);
+         for (int f = 5; f >= 2; f--){
+            for (int index = 1; index < swings_max [f]; index ++){
+               if (f_outsideswing [f][index] && index >= 5){
+                  int pb_Shift = iLowest (Symbol (), timeframe_Main, MODE_LOW, f_shift [f][index-1],0);
+                  double pb_Price = iLow (Symbol(), timeframe_Main, pb_Shift);
+                  double pb_Length = (f_price [f][index-1] - pb_Price) / Point;
+                  log_add_line ("Checking Started: costs length ="+costs_pips / deal_costs_max_koef,Red);
+                  if (f_length [f][index] > 0
+                     && f_length [f][0] < 0
+                     //&& pb_Length >= 0.5 * f_length [f][index]
+                     && f_price [f][0] <= f_price [f][2]
+                     && MathAbs (f_length [f][1]) >= 0.5 * MathAbs (f_length [f][2])
+                     && f_length [f][index] >= costs_pips / deal_costs_max_koef){
+                        
+                        order.RefreshFast ();
+                           
+                         if (check_spread ()
+                           && order.totals.countBuy == 0
+                           && iHigh (Symbol(),timeframe_Main,0) > iHigh (Symbol(),timeframe_Main,1)
+                           && Bid > iHigh (Symbol(),timeframe_Main,1)){
+                        
+                           lotToOpen = NormalizeDouble (AccountBalance () / (1000 / 0.5),lotDigits);
+                           if (lotToOpen < lotMin && lotToOpen > 0) lotToOpen = lotMin;
+                           if (lotToOpen > lotMax && lotToOpen > 0) lotToOpen = lotMax;
+                           //sl = NormalizeDouble (f_price [f][0] - costs_pips / deal_costs_max_koef * deal_RR_min - 10 * Point,Digits);
+                           tp = NormalizeDouble (f_price [f][0] + 0.95 * MathAbs (f_length [f][index]) * Point - 10 * Point,Digits);
+                           sl = f_price [f][0] - (tp - f_price [f][0]) / 2;
+                           log_add_line ("sl="+sl+"   tp="+tp,Red);
+                           ticket = OrderSend (Symbol(),OP_BUY,lotToOpen,Ask,5,sl,tp,f,f,0,Blue);
+                           if (ticket > 0){
+                              //lastOpenTime_Buy = TimeCurrent ();
+                              if (OrderSelect (ticket,SELECT_BY_TICKET,MODE_TRADES)){
+                                 log_add_line ("ADDING BUY ORDER #"+ticket+" at price "+DoubleToStr (Ask,Digits)+ ". Lot "+lotToOpen,DarkGreen);
+                                 order.Add (ticket, OP_BUY, wave.impulse.timeStart, wave.impulse.timeEnd, TimeCurrent ());
+                                 order.RefreshFULL ();
+                                 }
+                              showLog = true;
+                              }
+                           else log_add_line ("ERROR SENDING ORDER BUY at price "+DoubleToStr (Ask,Digits)+". Lot "+lotToOpen+".   Reason: "+ErrorDescription (GetLastError()),Red);
+                           showLog = true;
+                           }  
+                        }
+                  }               
+              }
+          }
       }
-         
+                     
+      
+    
+    log_add_line ("f_length [1][0]="+f_length[1][0]+"   f_length [1][1]="+f_length[1][1]+"   f_length [1][2]="+f_length[1][2]+"   f_length [1][3]="+f_length[1][3]+"   f_length [1][4]="+f_length[1][4]+"   f_length [1][5]="+f_length[1][5]+"   f_length [1][6]="+f_length[1][6]+"   f_length [1][7]="+f_length[1][7]+"   f_length [1][8]="+f_length[1][8],Blue);
+    log_add_line ("f_length [1][35]="+f_length[1][35]+"   f_length [1][34]="+f_length[1][34]+"   f_length [1][33]="+f_length[1][33]+"   f_length [1][32]="+f_length[1][32],Blue);
+    log_add_line ("f_outs [1][0]="+f_outsideswing [1][0]+"   f_outs [1][1]="+f_outsideswing [1][1]+"   f_outs [1][2]="+f_outsideswing [1][2]+"   f_outs [1][3]="+f_outsideswing [1][3]+"   f_outs [1][4]="+f_outsideswing [1][4]+"   f_outs [1][5]="+f_outsideswing [1][5]+"   f_outs [1][6]="+f_outsideswing [1][6],Blue);
+    
+    log_add_line ("f_length [2][0]="+f_length[2][0]+"   f_length [2][1]="+f_length[2][1]+"   f_length [2][2]="+f_length[2][2]+"   f_length [2][3]="+f_length[2][3]+"   f_length [2][4]="+f_length[2][4]+"   f_length [2][5]="+f_length[2][5]+"   f_length [2][6]="+f_length[2][6]+"   f_length [2][7]="+f_length[2][7]+"   f_length [2][8]="+f_length[2][8],Blue);
+    log_add_line ("f_length [2][35]="+f_length[2][35]+"   f_length [2][34]="+f_length[2][34]+"   f_length [2][33]="+f_length[2][33]+"   f_length [2][32]="+f_length[2][32],Blue);
+    log_add_line ("f_outs [2][0]="+f_outsideswing [2][0]+"   f_outs [2][1]="+f_outsideswing [2][1]+"   f_outs [2][2]="+f_outsideswing [2][2]+"   f_outs [2][3]="+f_outsideswing [2][3]+"   f_outs [2][4]="+f_outsideswing [2][4]+"   f_outs [2][5]="+f_outsideswing [2][5]+"   f_outs [2][6]="+f_outsideswing [2][6],Blue);
+    
+    log_add_line ("f_length [3][0]="+f_length[3][0]+"   f_length [3][1]="+f_length[3][1]+"   f_length [3][2]="+f_length[3][2]+"   f_length [3][3]="+f_length[3][3]+"   f_length [3][4]="+f_length[3][4]+"   f_length [3][5]="+f_length[3][5]+"   f_length [3][6]="+f_length[3][6]+"   f_length [3][7]="+f_length[3][7]+"   f_length [3][8]="+f_length[3][8],Blue);
+    log_add_line ("f_length [3][35]="+f_length[3][35]+"   f_length [3][34]="+f_length[3][34]+"   f_length [3][33]="+f_length[3][33]+"   f_length [3][32]="+f_length[3][32],Blue);
+    log_add_line ("f_outs [3][0]="+f_outsideswing [3][0]+"   f_outs [3][1]="+f_outsideswing [3][1]+"   f_outs [3][2]="+f_outsideswing [3][2]+"   f_outs [3][3]="+f_outsideswing [3][3]+"   f_outs [3][4]="+f_outsideswing [3][4]+"   f_outs [3][5]="+f_outsideswing [3][5]+"   f_outs [3][6]="+f_outsideswing [3][6],Blue);
+    
+    log_add_line ("f_length [4][0]="+f_length[4][0]+"   f_length [4][1]="+f_length[4][1]+"   f_length [4][2]="+f_length[4][2]+"   f_length [4][3]="+f_length[4][3]+"   f_length [4][4]="+f_length[4][4]+"   f_length [4][5]="+f_length[4][5]+"   f_length [4][6]="+f_length[4][6]+"   f_length [4][7]="+f_length[4][7]+"   f_length [4][8]="+f_length[4][8],Blue);
+    log_add_line ("f_length [4][35]="+f_length[4][35]+"   f_length [4][34]="+f_length[4][34]+"   f_length [4][33]="+f_length[4][33]+"   f_length [4][32]="+f_length[4][32],Blue);
+    log_add_line ("f_outs [4][0]="+f_outsideswing [4][0]+"   f_outs [4][1]="+f_outsideswing [4][1]+"   f_outs [4][2]="+f_outsideswing [4][2]+"   f_outs [4][3]="+f_outsideswing [4][3]+"   f_outs [4][4]="+f_outsideswing [4][4]+"   f_outs [4][5]="+f_outsideswing [4][5]+"   f_outs [4][6]="+f_outsideswing [4][6],Blue);
 
-   // 1.3. ENTER ADD ORDER BUY
-   
-   //log_add_line ("order.dealBuy.lot_Buy="+order.dealBuy.lot_Buy+"    wave.FindAll (OP_BUY, 0.0030)="+wave.FindAll (OP_BUY, 0.0030)+"   order.totals.countBuy="+order.totals.countBuy,Red);
-   //log_add_line ("found_wave_BUY="+found_wave_BUY+"   order.dealBuy.countOrders_Buy="+order.dealBuy.countOrders_Buy+"   wave.impulse.priceEnd="+wave.impulse.price_End,Red); 
-   
-   if (!signal_BUY_ADD
-      && found_wave_BUY > 0
-      && order.dealBuy.countOrders_Buy > 0
-      && Bid <= wave.impulse.price_End - 0.33 * MathAbs (wave.impulse.length)
-      && wave.impulse.timeEnd > order.dealBuy.time_LastHigh
-      && MathAbs (wave.impulse.length) >= 0.66 * MathAbs (wave.opposite.length)
-      && !check_spread ()){
-         signal_BUY_ADD = true;
-         }
-   if (signal_BUY_ADD)
-         {
-         lotToOpen = NormalizeDouble (AccountBalance () / (1000 / 0.5),lotDigits);
-         if (lotToOpen < lotMin && lotToOpen > 0) lotToOpen = lotMin;
-         if (lotToOpen > lotMax && lotToOpen > 0) lotToOpen = lotMax;
-         sl = wave.impulse.price_Start - 10 * Point;
-         tp = iLow (Symbol(), 5, iLowest (Symbol (), 5, MODE_LOW, iBarShift (Symbol(), 5, wave.impulse.timeEnd,false)));
-         ticket = OrderSend (Symbol(),OP_BUY,lotToOpen,Ask,5,0,0,1,1,0,Blue);
-         if (ticket > 0)
-            {
-            signal_BUY_ADD = false;
-            if (OrderSelect (ticket,SELECT_BY_TICKET,MODE_TRADES))
-               {               
-               log_add_line ("ADDING BUY ORDER #"+ticket+" at price "+DoubleToStr (Ask,Digits)+ ". Lot "+lotToOpen,DarkGreen);
-               order.Add (ticket, OP_BUY, wave.impulse.timeStart, wave.impulse.timeEnd, TimeCurrent ());
-               order.RefreshFULL ();
-               }
-            showLog = true;
-            }
-         else log_add_line ("ERROR SENDING ORDER BUY at price "+DoubleToStr (Ask,Digits)+". Lot "+lotToOpen+".   Reason: "+ErrorDescription (GetLastError()),Red);
-         showLog = true;
-         }  
+    log_add_line ("f_length [5][0]="+f_length[5][0]+"   f_length [5][1]="+f_length[5][1]+"   f_length [5][2]="+f_length[5][2]+"   f_length [5][3]="+f_length[5][3]+"   f_length [5][4]="+f_length[5][4]+"   f_length [5][5]="+f_length[5][5]+"   f_length [5][6]="+f_length[5][6]+"   f_length [5][7]="+f_length[5][7]+"   f_length [5][8]="+f_length[5][8],Blue);
+    log_add_line ("f_length [5][35]="+f_length[5][35]+"   f_length [5][34]="+f_length[5][34]+"   f_length [5][33]="+f_length[5][33]+"   f_length [5][32]="+f_length[5][32],Blue);
+    log_add_line ("f_outs [5][0]="+f_outsideswing [5][0]+"   f_outs [5][1]="+f_outsideswing [5][1]+"   f_outs [5][2]="+f_outsideswing [5][2]+"   f_outs [5][3]="+f_outsideswing [5][3]+"   f_outs [5][4]="+f_outsideswing [5][4]+"   f_outs [5][5]="+f_outsideswing [5][5]+"   f_outs [5][6]="+f_outsideswing [5][6],Blue);
+    
+//   
+//    // 1. BUY ORDERS
+//    // 1.1. FIND WAVE BUY
+//    if (iBarShift (Symbol(), 5, lastTime, false) > 0 || lastTime == 0){
+//        lastTime = TimeCurrent ();
+//        // Find drivers
+//
+//
+//
+//
+//
+//        //found_wave_BUY = wave.FindAll (OP_BUY,100);
+//        //// if (deal_costs_max_koef>0) found_wave_BUY = wave.FindCascade(OP_BUY,100, 1440, 1);  
+//        ////found_wave_BUY = wave.FindCascade (OP_BUY, 0.00300, 1440,1);
+//        //log_add_line ("OP_BUY="+OP_BUY+"   OP_SELL="+OP_SELL,Red);
+//        ////if (deal_costs_max_koef<=0){Alert("Cannot open orders: deal_costs_max_koef <=0");}
+//        //log_add_line ("found_wave_BUY="+found_wave_BUY+"   Minimum length="+Point * costs_pips / deal_costs_max_koef,Red);
+//        //log_add_line ("impulse.time_Start="+get_date_string(wave.cascade.impulse[1].timeStart),Red);
+//        showLog = true;
+//    }
+//    // 1.2. CHECK SIGNAL BUY
+//    if (found_wave_BUY > 0
+//    && !signal_BUY_MAIN
+//    && order.dealBuy.countOrders_Buy == 0){
+//        //     Print ("wave.impulse.timeEnd="+get_date_string(wave.impulse.timeEnd));
+//        int trendlines_count = trendlines_OP_SELL.FindInPeriod (OP_SELL, wave.impulse.timeEnd, TimeCurrent());
+//        //      Print ("Trendlines count = "+trendlines_count);
+//        ObjectCreate ("trendline_SELL", OBJ_TREND, 0, 0,trendlines_OP_SELL.trendline[1].wave[1].time_start, trendlines_OP_SELL.trendline[1].wave[1].price_start, trendlines_OP_SELL.trendline[1].wave[3].time_start, trendlines_OP_SELL.trendline[1].wave[3].price_start);
+//        ObjectSet("trendline_SELL", OBJPROP_STYLE, STYLE_DASH);
+//        ObjectSet("trendline_SELL", OBJPROP_WIDTH, 1);
+//        ObjectSet("trendline_SELL", OBJPROP_RAY, true);
+//        ObjectSet("trendline_SELL", OBJPROP_COLOR, Red);
+//    } 
+//   
+//   
+//   // 1.3. CHECK ENTER BUY
+//   if (signal_BUY_MAIN){
+//      log_add_line ("wave.impulse.priceEnd="+wave.impulse.price_End+"   wave.impulse.length="+wave.impulse.length+"   wave.impulse.timeEnd="+get_date_string(wave.impulse.timeEnd)+"    impulse.duration="+wave.impulse.duration/60,Blue);
+//      lotToOpen = NormalizeDouble (AccountBalance () / (1000 / 0.5),lotDigits);
+//      if (lotToOpen < lotMin && lotToOpen > 0) lotToOpen = lotMin;
+//      if (lotToOpen > lotMax && lotToOpen > 0) lotToOpen = lotMax;
+//      sl = wave.impulse.price_Start - 10 * Point;
+//      tp = iLow (Symbol(), 5, iLowest (Symbol (), 5, MODE_LOW, iBarShift (Symbol(), 5, wave.impulse.timeEnd,false)));
+//      ticket = OrderSend (Symbol(),OP_BUY,lotToOpen,Ask,5,0,0,1,1,0,Blue);
+//      if (ticket > 0){
+//         signal_BUY_MAIN = false;
+//         if (OrderSelect (ticket,SELECT_BY_TICKET,MODE_TRADES)){
+//            log_add_line ("STARTING SERIE BUY ORDER #"+ticket+" at price "+DoubleToStr (Ask,Digits)+ ". Lot "+lotToOpen,DarkGreen); 
+//            order.Add (ticket, OP_BUY, wave.impulse.timeStart, wave.impulse.timeEnd, TimeCurrent ());
+//            order.RefreshFULL ();
+//            }
+//         showLog = true;
+//         }
+//      else log_add_line ("ERROR SENDING ORDER BUY at price "+DoubleToStr (Ask,Digits)+". Lot "+lotToOpen+".   Reason: "+ErrorDescription (GetLastError()),Red);
+//      log_add_line ("wave.RetraceRatioMax="+wave.RetraceRatioMax (OP_BUY, wave.impulse.timeStart, wave.impulse.timeEnd, wave.impulse.price_Start, wave.impulse.price_End)+"   order.dealBuy.time_LastHigh="+get_date_string(order.dealBuy.time_LastHigh),Blue);
+//      showLog = true;
+//      }
+//         
+//
+//   // 1.3. ENTER ADD ORDER BUY
+//   
+//   //log_add_line ("order.dealBuy.lot_Buy="+order.dealBuy.lot_Buy+"    wave.FindAll (OP_BUY, 0.0030)="+wave.FindAll (OP_BUY, 0.0030)+"   order.totals.countBuy="+order.totals.countBuy,Red);
+//   //log_add_line ("found_wave_BUY="+found_wave_BUY+"   order.dealBuy.countOrders_Buy="+order.dealBuy.countOrders_Buy+"   wave.impulse.priceEnd="+wave.impulse.price_End,Red); 
+//   
+//   if (!signal_BUY_ADD
+//      && found_wave_BUY > 0
+//      && order.dealBuy.countOrders_Buy > 0
+//      && Bid <= wave.impulse.price_End - 0.33 * MathAbs (wave.impulse.length)
+//      && wave.impulse.timeEnd > order.dealBuy.time_LastHigh
+//      && MathAbs (wave.impulse.length) >= 0.66 * MathAbs (wave.opposite.length)
+//      && !check_spread ()){
+//         signal_BUY_ADD = true;
+//         }
+//   if (signal_BUY_ADD)
+//         {
+//         lotToOpen = NormalizeDouble (AccountBalance () / (1000 / 0.5),lotDigits);
+//         if (lotToOpen < lotMin && lotToOpen > 0) lotToOpen = lotMin;
+//         if (lotToOpen > lotMax && lotToOpen > 0) lotToOpen = lotMax;
+//         sl = wave.impulse.price_Start - 10 * Point;
+//         tp = iLow (Symbol(), 5, iLowest (Symbol (), 5, MODE_LOW, iBarShift (Symbol(), 5, wave.impulse.timeEnd,false)));
+//         ticket = OrderSend (Symbol(),OP_BUY,lotToOpen,Ask,5,0,0,1,1,0,Blue);
+//         if (ticket > 0)
+//            {
+//            signal_BUY_ADD = false;
+//            if (OrderSelect (ticket,SELECT_BY_TICKET,MODE_TRADES))
+//               {               
+//               log_add_line ("ADDING BUY ORDER #"+ticket+" at price "+DoubleToStr (Ask,Digits)+ ". Lot "+lotToOpen,DarkGreen);
+//               order.Add (ticket, OP_BUY, wave.impulse.timeStart, wave.impulse.timeEnd, TimeCurrent ());
+//               order.RefreshFULL ();
+//               }
+//            showLog = true;
+//            }
+//         else log_add_line ("ERROR SENDING ORDER BUY at price "+DoubleToStr (Ask,Digits)+". Lot "+lotToOpen+".   Reason: "+ErrorDescription (GetLastError()),Red);
+//         showLog = true;
+//         }  
    }
 
 
@@ -606,6 +693,5 @@ void costs_set ()
    costs = commission + spread_avg * tickValue;   
    if (tickValue > 0) 
       costs_pips = NormalizeDouble (costs / tickValue,0);
-   
    }
    

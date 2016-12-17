@@ -101,7 +101,7 @@ class WavesClass
 	 // Methods
 
    int               FindCascade(int c_direction,int c_minorWaveLengthMin,int c_majorWaveDurationMax,int c_drawWaves);
-	int 				FindAll(int s_direction,double r_lengthMin);
+	int 				   FindAll(int s_direction,double r_lengthMin);
    bool              FindByLength(int f_direction,double r_lengthMin,int r_timeEndMax);
    bool              FindByPeriod(double periodMin);
    bool              FindByTime(int timeEnd);
@@ -783,282 +783,285 @@ int WavesClass::TF_Max(int x_timeEarlier,int x_timeLater)
    return (0);
   }
 
+
+
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 
 int WavesClass::FindCascade(int c_direction,int c_minorWaveLengthMin,int c_majorWaveDurationMax,int c_drawWaves)
   {
-// Find BUY cascade
-   if(c_direction==OP_BUY)
-     {
-
-      int      tfLocal        = timeframeWorking;
-	  int		tfMin		= tfLocal;
-	  int		tfMax		= tfLocal;
-	  double   priceMax       = iHigh (Symbol(), tfLocal, 1);
-      double   priceMin       = iLow (Symbol(), tfLocal, 1);
-      int      timeMax        = iTime (Symbol(), tfLocal, 1);
-      int      timeMin        = iTime (Symbol(), tfLocal, 1);
-      int      shiftMin;
-      int      shiftMax;
-      int      shift          = 1;
-      int      impulseCount   = 0;
-      int      seekDirection  = OP_BUY;
-      double   checkPrice     = priceMax - c_minorWaveLengthMin * Point;
-      double	checkLength = c_minorWaveLengthMin;
-	  int		tfh;
-
-	  int		hh_shift=shift;
-	  int		hh_tf=tfLocal;
-	  int		hh_time = iTime (Symbol(), tfLocal, 1);
-	  double	hh_price = iHigh (Symbol(), tfLocal, 1);
-
-	  int		ll_shift=shift;
-	  int		ll_tf=tfLocal;
-	  int		ll_time=iTime (Symbol(), tfLocal, 1);
-	  double	ll_price = iLow (Symbol(), tfLocal, 1);
-	  
-	  bool wave_buy_start_found 	= false;
-	  bool wave_sell_start_found 	= false;
-	  bool wave_buy_end_found 	= false;
-	  bool wave_sell_end_found 	= false;
-
-		double wave_buy_start_price;
-		int wave_buy_start_time;
-		int wave_buy_start_shift;
-		int wave_buy_start_tf;
-
-		double wave_sell_start_price;
-		int wave_sell_start_time;
-		int wave_sell_start_shift;
-		int wave_sell_start_tf;
-		bool impulse_start_found;
-		bool impulse_end_found;
-
-	  double priceLowest = priceMin;	// Lowest price after the Wave End - for finding nulllified waves
-	  double priceHighest = priceMax;	// Highest  price after the Wave End
-
-      int      waveEnd_TF;
-      int      waveStart_TF;
-      int      waveEnd_Time   = 0;
-      int      waveStart_Time = 0;
-      int      waveEnd_Shift;
-      int      waveStart_Shift;
-      double   waveEnd_Price;
-      double   waveStart_Price;
-	  double	wave_Length;
-
-
-      while(shift<=seekShiftMax)
-        {
-
-         // Seeking BUY direction: lower low lengthens wave, higher high refreshes waveEnd
-         if(seekDirection==OP_BUY)
-           {
-            if(iHigh(Symbol(),tfLocal,shift)>hh_price){
-				hh_time = iTime (Symbol(), tfLocal, shift);
-				hh_price = iHigh(Symbol(),tfLocal,shift);
-				hh_shift = shift;
-				hh_tf = tfLocal;
-
-				impulse_start_found = false;
-
-				// Check if it's time to compress hh
-				tfh=TF_Higher (tfLocal);
-			  	if (hh_time - ll_time  >= 60 * 3 * tfh
-				  && tfh != 0){
-				// Compressing timeframe
-               	hh_shift = MathFloor(shift * tfLocal / tfh);
-				hh_time = iTime (Symbol(), tfLocal, hh_shift);
-				hh_tf = tfh;
-				tfLocal = tfh;
-				}
-				}
-
-            if(iLow(Symbol(),tfLocal,shift)<ll_price){
-				ll_time = iTime (Symbol(), tfLocal, shift);
-				ll_price = iLow(Symbol(),tfLocal,shift);
-				ll_shift = shift;
-				ll_tf = tfLocal;
-
-				// Check if it's time to compress ll
-				tfh=TF_Higher (tfLocal);
-			  	if (hh_time - ll_time  >= 60 * 3 * tfh
-				  && tfh != 0){
-				  // Compressing timeframe
-               	ll_shift = MathFloor(shift * tfLocal / tfh);
-				ll_time = iTime (Symbol(), tfLocal, hh_shift);
-				ll_tf = tfh;
-				tfLocal = tfh;
-				}
-			  wave_Length = hh_price - ll_price;
-			  if (ll_price < checkPrice){
-				  // Found start of a buy wave
-				  impulseCount++;
-				  impulse_start_found = true;
-				  waveBuy_StartFound = true;
-			  impulse[impulseCount].price_Start = hh_price;
-			  impulse[impulseCount].timeStart = hh_time;
-			  impulse[impulseCount].shift_Start = hh_shift;
-			  impulse[impulseCount].tf_Start = hh_tf;
-
-
-				  }
-
-			  if (checkLength < c_minorWaveLengthMin) checkLength = c_minorWaveLengthMin; 
-			  if (wave_Length > checkLength){
-
-				}
-				  
-			   // Find waveBuy_Start
-              if(iHigh(Symbol(),tfLocal,shift)>priceMax)
-              { // Found wave BUY End
-			  priceMax = iHigh (Symbol(), tfLocal, shift);
-              timeMax  = iTime (Symbol(), tfLocal, shift);
-
-			  // Check if Compression needed for Higher High
-				tfh = TF_Higher (tfLocal);
-			  if (timeMax - timeMin >= 60 * 3 * tfh
-				  && tfh != 0){
-				  // Compressing timeframe
-               	shiftMax = MathFloor(shift * tfLocal / tfh);
-				tfLocal=tfh;
-				tfMax = tfh;
-              	timeMax  = iTime (Symbol(), tfLocal, shiftMax);
-				}
-               priceMin = iHigh (Symbol(), tfLocal, shift);
-               timeMin  = iTime (Symbol(), tfLocal, shift);
-               shiftMin = shift;
-			   tfMin	= tfLocal;
-			  checkLength = priceMax - priceLowest;
-			  if (checkLength < c_minorWaveLengthMin) checkLength = c_minorWaveLengthMin; 
-	       		}
-              }
-            if(iLow(Symbol(),tfLocal,shift)<priceMin)
-              { // Found wave BUY Start
-               priceMin = iLow (Symbol(), tfLocal, shift);
-               timeMin  = iTime (Symbol(), tfLocal, shift);
-               shiftMin = shift;
-			   tfMin = tfLocal;
-               // Exit loop if wave duration exceeds 'dealDurationMax'
-               if((timeMax-timeMin)/60>dealDurationMax) break;
-              }
-           }
-
-         // Seeking SELL direction: higher high lenthens opposite wave, lower low refreshes waveStart
-         if(seekDirection==OP_SELL)
-           {
-            if(iLow(Symbol(),tfLocal,shift)<priceMin)
-              {
-               priceMax = iLow (Symbol(), tfLocal, shift);
-               priceMin = iLow (Symbol(), tfLocal, shift);
-               timeMax  = iTime (Symbol(), tfLocal, shift);
-               timeMin  = iTime (Symbol(), tfLocal, shift);
-               shiftMin = shift;
-               shiftMax = shift;
-               // Exit loop if wave duration exceeds 'dealDurationMax'
-               if((waveEnd_Time-timeMin)/60>dealDurationMax) break;
-              }
-            if(iHigh(Symbol(),tfLocal,shift)>priceMax)
-              {
-               priceMax= iHigh(Symbol(),tfLocal,shift);
-               timeMax = iTime(Symbol(),tfLocal,shift);
-               shiftMax= shift;
-              }
-           }
-
-	// Initializing highest and lowest prices	 
-	if(priceMin < priceLowest) priceLowest = priceMin;
-	if(priceMax > priceHighest) priceHighest = priceMax; 
-	
-	 // If found wave with enough length
-	 if (seekDirection == OP_BUY 
-	 && timeMax > timeMin
-	 && priceMin < checkPrice){
-		waveEnd_Price = priceMax;
-		waveEnd_Time = timeMax;
-		waveEnd_Shift = shift;
-		waveEnd_TF = tfLocal;
-		checkPrice = waveEnd_Price; // Set check price for the maximum of the founded wave
-		seekDirection = OP_SELL;
-	 }
-	 
-         // Check find impulse BUY Start (full wave found)
-         if(seekDirection==OP_SELL
-            && priceMax>checkPrice
-	    && timeMax < timeMin)
-           {  // Found impulse Start
-			impulseCount++;
-			waveStart_Price = priceMin;
-			waveStart_Time = timeMin;
-			waveStart_Shift = shift;
-			waveStart_TF = tfLocal;
-			checkPrice = waveStart_Price; // Set check price for the minimum of the founded wave
-			seekDirection = OP_BUY;
-
-            Print("Found wave #"+impulseCount+": tfStart="+waveStart_TF+"   tfEnd="+waveEnd_TF+"   timeStart="+Get_date_string(waveStart_Time)+"   timeEnd="+Get_date_string(waveEnd_Time)+"   price_Start="+waveStart_Price+"   price_End="+waveEnd_Price+"   length="+(waveEnd_Price-waveStart_Price));
-            // Setting found wave variables
-            // Decompressing impulse wave Start
-            if(waveStart_TF > timeframeWorking)
-              {
-				  int minorStart_Shift = iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveStart_TF,waveStart_Shift),true);
-				  int minorEnd_Shift = iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveStart_TF,waveStart_Shift-1),true);
-				 Print ("Before decomp: waveStart_TF:"+waveStart_TF+"    waveStart_Shift"+waveStart_Shift+"   minorStart_Shift="+minorStart_Shift+"   minorEnd_Shift="+minorEnd_Shift);
-				  waveStart_Shift = iLowest (Symbol (),timeframeWorking, minorStart_Shift - minorEnd_Shift, minorEnd_Shift); 
-				  waveStart_TF = timeframeWorking;
-				  waveStart_Time = iTime (Symbol(),timeframeWorking,waveStart_Shift);
-
-               Print("Decompressed: waveStart_TF"+waveStart_TF+"   shiftStart="+waveStart_Shift+"   shiftEnd="+waveEnd_Shift);
-              }
-            // Decompressing impulse wave End
-            if(waveEnd_TF > timeframeWorking)
-
-              {
-
-				  minorStart_Shift = iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveEnd_TF,waveEnd_Shift),true);
-				  minorEnd_Shift = iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveEnd_TF,waveEnd_Shift-1),true);
-				  
-				  waveEnd_Shift = iHighest (Symbol (),timeframeWorking, minorStart_Shift - minorEnd_Shift, minorEnd_Shift); 
-				  waveEnd_TF = timeframeWorking;
-				  waveEnd_Time = iTime (Symbol(),timeframeWorking,waveEnd_Shift);
-
-               //Print ("DecompressedTF+ waveEnd from TF"+waveEnd_": shiftStart="+shiftStart+"   shiftEnd="+shiftEnd+"   waveEnd_Shift="+waveEnd_Shift);
-              }
-			  // Setting cascade class variables
-			  cascade.impulse[impulseCount].price_End = waveEnd_Price;
-			  cascade.impulse[impulseCount].price_Start = waveStart_Price;
-			  cascade.impulse[impulseCount].shift_End = waveEnd_Shift;
-			  cascade.impulse[impulseCount].timeEnd = waveEnd_Time;
-			  cascade.impulse[impulseCount].timeStart = waveStart_Time;
-
-            cascade.impulse[impulseCount].duration    = cascade.impulse[impulseCount].timeEnd - cascade.impulse[impulseCount].timeStart;
-            cascade.impulse[impulseCount].length      = cascade.impulse[impulseCount].price_End - cascade.impulse[impulseCount].price_Start;
-           }
-
-         // Compressing timeframes
-         int tfh=TF_Higher(tfLocal);
-         if(tfLocal!=0 && tfh!=0)
-           {
-            if(shift*tfLocal/tfh>=4)
-              {
-               shift=MathFloor(shift*tfLocal/tfh);
-               //Print ("Compressing to "+tfh);
-               tfLocal=tfh;
-              }
-           }
-         shift++;
-        }
-
-      // Draw waves
-      for(int i=1; i<=impulseCount; i++)
-        {
-         Visualize_Draw("ImpulseWave+"+i,cascade.impulse[i].timeStart,cascade.impulse[i].timeEnd,cascade.impulse[i].price_Start,cascade.impulse[i].price_End,Green,1);
-         //Print ("Drawing waves: timeStart="+Get_date_string(cascade.impulse[i].timeStart)+"   timeEnd="+Get_date_string(cascade.impulse[i].timeEnd)+"   price_Start="+cascade.impulse[i].price_Start+"   price_End="+cascade.impulse[i].price_End,Red);
-        }
-
-     }
-   return (impulseCount);
+//// Find BUY cascade
+//   if(c_direction==OP_BUY)
+//     {
+//
+//      int      tfLocal        = timeframeWorking;
+//	  int		tfMin		= tfLocal;
+//	  int		tfMax		= tfLocal;
+//	  double   priceMax       = iHigh (Symbol(), tfLocal, 1);
+//      double   priceMin       = iLow (Symbol(), tfLocal, 1);
+//      int      timeMax        = iTime (Symbol(), tfLocal, 1);
+//      int      timeMin        = iTime (Symbol(), tfLocal, 1);
+//      int      shiftMin;
+//      int      shiftMax;
+//      int      shift          = 1;
+//      int      impulseCount   = 0;
+//      int      seekDirection  = OP_BUY;
+//      double   checkPrice     = priceMax - c_minorWaveLengthMin * Point;
+//      double	checkLength = c_minorWaveLengthMin;
+//	  int		tfh;
+//
+//	  int		hh_shift=shift;
+//	  int		hh_tf=tfLocal;
+//	  int		hh_time = iTime (Symbol(), tfLocal, 1);
+//	  double	hh_price = iHigh (Symbol(), tfLocal, 1);
+//
+//	  int		ll_shift=shift;
+//	  int		ll_tf=tfLocal;
+//	  int		ll_time=iTime (Symbol(), tfLocal, 1);
+//	  double	ll_price = iLow (Symbol(), tfLocal, 1);
+//	  
+//	  bool wave_buy_start_found 	= false;
+//	  bool wave_sell_start_found 	= false;
+//	  bool wave_buy_end_found 	= false;
+//	  bool wave_sell_end_found 	= false;
+//
+//		double wave_buy_start_price;
+//		int wave_buy_start_time;
+//		int wave_buy_start_shift;
+//		int wave_buy_start_tf;
+//
+//		double wave_sell_start_price;
+//		int wave_sell_start_time;
+//		int wave_sell_start_shift;
+//		int wave_sell_start_tf;
+//		bool impulse_start_found;
+//		bool impulse_end_found;
+//
+//	  double priceLowest = priceMin;	// Lowest price after the Wave End - for finding nulllified waves
+//	  double priceHighest = priceMax;	// Highest  price after the Wave End
+//
+//      int      waveEnd_TF;
+//      int      waveStart_TF;
+//      int      waveEnd_Time   = 0;
+//      int      waveStart_Time = 0;
+//      int      waveEnd_Shift;
+//      int      waveStart_Shift;
+//      double   waveEnd_Price;
+//      double   waveStart_Price;
+//	  double	wave_Length;
+//
+//
+//      while(shift<=seekShiftMax)
+//        {
+//
+//         // Seeking BUY direction: lower low lengthens wave, higher high refreshes waveEnd
+//         if(seekDirection==OP_BUY)
+//           {
+//            if(iHigh(Symbol(),tfLocal,shift)>hh_price){
+//				hh_time = iTime (Symbol(), tfLocal, shift);
+//				hh_price = iHigh(Symbol(),tfLocal,shift);
+//				hh_shift = shift;
+//				hh_tf = tfLocal;
+//
+//				impulse_start_found = false;
+//
+//				// Check if it's time to compress hh
+//				tfh=TF_Higher (tfLocal);
+//			  	if (hh_time - ll_time  >= 60 * 3 * tfh
+//				  && tfh != 0){
+//				// Compressing timeframe
+//               	hh_shift = MathFloor(shift * tfLocal / tfh);
+//				hh_time = iTime (Symbol(), tfLocal, hh_shift);
+//				hh_tf = tfh;
+//				tfLocal = tfh;
+//				}
+//				}
+//
+//            if(iLow(Symbol(),tfLocal,shift)<ll_price){
+//				ll_time = iTime (Symbol(), tfLocal, shift);
+//				ll_price = iLow(Symbol(),tfLocal,shift);
+//				ll_shift = shift;
+//				ll_tf = tfLocal;
+//
+//				// Check if it's time to compress ll
+//				tfh=TF_Higher (tfLocal);
+//			  	if (hh_time - ll_time  >= 60 * 3 * tfh
+//				  && tfh != 0){
+//				  // Compressing timeframe
+//               	ll_shift = MathFloor(shift * tfLocal / tfh);
+//				ll_time = iTime (Symbol(), tfLocal, hh_shift);
+//				ll_tf = tfh;
+//				tfLocal = tfh;
+//				}
+//			  wave_Length = hh_price - ll_price;
+//			  if (ll_price < checkPrice){
+//				  // Found start of a buy wave
+//				  impulseCount++;
+//				  impulse_start_found = true;
+//				  waveBuy_StartFound = true;
+//			  impulse[impulseCount].price_Start = hh_price;
+//			  impulse[impulseCount].timeStart = hh_time;
+//			  impulse[impulseCount].shift_Start = hh_shift;
+//			  impulse[impulseCount].tf_Start = hh_tf;
+//
+//
+//				  }
+//
+//			  if (checkLength < c_minorWaveLengthMin) checkLength = c_minorWaveLengthMin; 
+//			  if (wave_Length > checkLength){
+//
+//				}
+//				  
+//			   // Find waveBuy_Start
+//              if(iHigh(Symbol(),tfLocal,shift)>priceMax)
+//              { // Found wave BUY End
+//			  priceMax = iHigh (Symbol(), tfLocal, shift);
+//              timeMax  = iTime (Symbol(), tfLocal, shift);
+//
+//			  // Check if Compression needed for Higher High
+//				tfh = TF_Higher (tfLocal);
+//			  if (timeMax - timeMin >= 60 * 3 * tfh
+//				  && tfh != 0){
+//				  // Compressing timeframe
+//               	shiftMax = MathFloor(shift * tfLocal / tfh);
+//				tfLocal=tfh;
+//				tfMax = tfh;
+//              	timeMax  = iTime (Symbol(), tfLocal, shiftMax);
+//				}
+//               priceMin = iHigh (Symbol(), tfLocal, shift);
+//               timeMin  = iTime (Symbol(), tfLocal, shift);
+//               shiftMin = shift;
+//			   tfMin	= tfLocal;
+//			  checkLength = priceMax - priceLowest;
+//			  if (checkLength < c_minorWaveLengthMin) checkLength = c_minorWaveLengthMin; 
+//	       		}
+//              }
+//            if(iLow(Symbol(),tfLocal,shift)<priceMin)
+//              { // Found wave BUY Start
+//               priceMin = iLow (Symbol(), tfLocal, shift);
+//               timeMin  = iTime (Symbol(), tfLocal, shift);
+//               shiftMin = shift;
+//			   tfMin = tfLocal;
+//               // Exit loop if wave duration exceeds 'dealDurationMax'
+//               if((timeMax-timeMin)/60>dealDurationMax) break;
+//              }
+//           }
+//
+//         // Seeking SELL direction: higher high lenthens opposite wave, lower low refreshes waveStart
+//         if(seekDirection==OP_SELL)
+//           {
+//            if(iLow(Symbol(),tfLocal,shift)<priceMin)
+//              {
+//               priceMax = iLow (Symbol(), tfLocal, shift);
+//               priceMin = iLow (Symbol(), tfLocal, shift);
+//               timeMax  = iTime (Symbol(), tfLocal, shift);
+//               timeMin  = iTime (Symbol(), tfLocal, shift);
+//               shiftMin = shift;
+//               shiftMax = shift;
+//               // Exit loop if wave duration exceeds 'dealDurationMax'
+//               if((waveEnd_Time-timeMin)/60>dealDurationMax) break;
+//              }
+//            if(iHigh(Symbol(),tfLocal,shift)>priceMax)
+//              {
+//               priceMax= iHigh(Symbol(),tfLocal,shift);
+//               timeMax = iTime(Symbol(),tfLocal,shift);
+//               shiftMax= shift;
+//              }
+//           }
+//
+//	// Initializing highest and lowest prices	 
+//	if(priceMin < priceLowest) priceLowest = priceMin;
+//	if(priceMax > priceHighest) priceHighest = priceMax; 
+//	
+//	 // If found wave with enough length
+//	 if (seekDirection == OP_BUY 
+//	 && timeMax > timeMin
+//	 && priceMin < checkPrice){
+//		waveEnd_Price = priceMax;
+//		waveEnd_Time = timeMax;
+//		waveEnd_Shift = shift;
+//		waveEnd_TF = tfLocal;
+//		checkPrice = waveEnd_Price; // Set check price for the maximum of the founded wave
+//		seekDirection = OP_SELL;
+//	 }
+//	 
+//         // Check find impulse BUY Start (full wave found)
+//         if(seekDirection==OP_SELL
+//            && priceMax>checkPrice
+//	    && timeMax < timeMin)
+//           {  // Found impulse Start
+//			impulseCount++;
+//			waveStart_Price = priceMin;
+//			waveStart_Time = timeMin;
+//			waveStart_Shift = shift;
+//			waveStart_TF = tfLocal;
+//			checkPrice = waveStart_Price; // Set check price for the minimum of the founded wave
+//			seekDirection = OP_BUY;
+//
+//            Print("Found wave #"+impulseCount+": tfStart="+waveStart_TF+"   tfEnd="+waveEnd_TF+"   timeStart="+Get_date_string(waveStart_Time)+"   timeEnd="+Get_date_string(waveEnd_Time)+"   price_Start="+waveStart_Price+"   price_End="+waveEnd_Price+"   length="+(waveEnd_Price-waveStart_Price));
+//            // Setting found wave variables
+//            // Decompressing impulse wave Start
+//            if(waveStart_TF > timeframeWorking)
+//              {
+//				  int minorStart_Shift = iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveStart_TF,waveStart_Shift),true);
+//				  int minorEnd_Shift = iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveStart_TF,waveStart_Shift-1),true);
+//				 Print ("Before decomp: waveStart_TF:"+waveStart_TF+"    waveStart_Shift"+waveStart_Shift+"   minorStart_Shift="+minorStart_Shift+"   minorEnd_Shift="+minorEnd_Shift);
+//				  waveStart_Shift = iLowest (Symbol (),timeframeWorking, minorStart_Shift - minorEnd_Shift, minorEnd_Shift); 
+//				  waveStart_TF = timeframeWorking;
+//				  waveStart_Time = iTime (Symbol(),timeframeWorking,waveStart_Shift);
+//
+//               Print("Decompressed: waveStart_TF"+waveStart_TF+"   shiftStart="+waveStart_Shift+"   shiftEnd="+waveEnd_Shift);
+//              }
+//            // Decompressing impulse wave End
+//            if(waveEnd_TF > timeframeWorking)
+//
+//              {
+//
+//				  minorStart_Shift = iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveEnd_TF,waveEnd_Shift),true);
+//				  minorEnd_Shift = iBarShift(Symbol(),timeframeWorking,iTime(Symbol(),waveEnd_TF,waveEnd_Shift-1),true);
+//				  
+//				  waveEnd_Shift = iHighest (Symbol (),timeframeWorking, minorStart_Shift - minorEnd_Shift, minorEnd_Shift); 
+//				  waveEnd_TF = timeframeWorking;
+//				  waveEnd_Time = iTime (Symbol(),timeframeWorking,waveEnd_Shift);
+//
+//               //Print ("DecompressedTF+ waveEnd from TF"+waveEnd_": shiftStart="+shiftStart+"   shiftEnd="+shiftEnd+"   waveEnd_Shift="+waveEnd_Shift);
+//              }
+//			  // Setting cascade class variables
+//			  cascade.impulse[impulseCount].price_End = waveEnd_Price;
+//			  cascade.impulse[impulseCount].price_Start = waveStart_Price;
+//			  cascade.impulse[impulseCount].shift_End = waveEnd_Shift;
+//			  cascade.impulse[impulseCount].timeEnd = waveEnd_Time;
+//			  cascade.impulse[impulseCount].timeStart = waveStart_Time;
+//
+//            cascade.impulse[impulseCount].duration    = cascade.impulse[impulseCount].timeEnd - cascade.impulse[impulseCount].timeStart;
+//            cascade.impulse[impulseCount].length      = cascade.impulse[impulseCount].price_End - cascade.impulse[impulseCount].price_Start;
+//           }
+//
+//         // Compressing timeframes
+//         int tfh=TF_Higher(tfLocal);
+//         if(tfLocal!=0 && tfh!=0)
+//           {
+//            if(shift*tfLocal/tfh>=4)
+//              {
+//               shift=MathFloor(shift*tfLocal/tfh);
+//               //Print ("Compressing to "+tfh);
+//               tfLocal=tfh;
+//              }
+//           }
+//         shift++;
+//        }
+//
+//      // Draw waves
+//      for(int i=1; i<=impulseCount; i++)
+//        {
+//         Visualize_Draw("ImpulseWave+"+i,cascade.impulse[i].timeStart,cascade.impulse[i].timeEnd,cascade.impulse[i].price_Start,cascade.impulse[i].price_End,Green,1);
+//         //Print ("Drawing waves: timeStart="+Get_date_string(cascade.impulse[i].timeStart)+"   timeEnd="+Get_date_string(cascade.impulse[i].timeEnd)+"   price_Start="+cascade.impulse[i].price_Start+"   price_End="+cascade.impulse[i].price_End,Red);
+//        }
+//
+//     }
+//   return (impulseCount);
   }
 
 //+------------------------------------------------------------------+
