@@ -1,4 +1,3 @@
-
 //--- Logger variables
 
 #import "mt4logger.dll";

@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|                                                    Q10NIK DRIVER |
+//|                                                Q10NIK TRENDLINER |
 //|                                                   Zhinzhich Labs |
 //+------------------------------------------------------------------+
 
@@ -301,9 +301,28 @@ void _positions_open ()
     int      ticket;
     double   sl_price;
    
-    arrays (1,1);
+    arrays (1,5);
     
     // 1. Enter BUY ORDERS
+    
+    // 1. F5 Wave is downwards
+    
+    if (f_length [5][0] < 0
+      && MathAbs (f_length [5][0]) < MathAbs (f_length [5][1])){
+         if (trendlines_OP_BUY.FindInPeriod (OP_SELL, f_time [5][1], f_time [5][0]) > 0){
+            int extremum_shift = iHighest (Symbol (), timeframe_Main, MODE_HIGH, iBarShift (Symbol(), timeframe_Main, f_time [5][0], false), 0);
+            int extremum_time = iTime (Symbol(), timeframe_Main, extremum_shift);
+            double extremum_price = iHigh (Symbol (), timeframe_Main, extremum_shift);
+            
+            if (extremum_price >= ObjectGetValueByTime (0,"trendlineSell_1",extremum_time,0)){ // Trendline BO
+               //double corrector_price = wave.FindCorrector (timeframe_Main, OP_BUY, f_time [5][1],extremum_time);
+               }
+            }
+         }
+               
+            
+       
+      
     
     // 1.1. First find patern
     
@@ -316,11 +335,7 @@ void _positions_open ()
       && f_price [1][2] < f_price [1][4]
       && f_price [1][4] < f_price [1][6])
       {
-      
-      
-//      
-//    
-//    if (f_length [1][0] < 0
+//      if (f_length [1][0] < 0
 //      && f_outsideswing [1][4]
 //      && MathAbs (f_length [1][4]) > MathAbs (f_length [1][6])
 //      && MathAbs (f_length [1][4]) > costs_pips * 5

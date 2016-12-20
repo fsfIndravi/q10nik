@@ -28,6 +28,7 @@ int f_depth [7];
 
 void arrays (int timeframe_Local, int fNumber)
   {
+  
    int shift1 = 0;
    int shift2 = 0;
    double price1 = 0;
@@ -37,22 +38,7 @@ void arrays (int timeframe_Local, int fNumber)
    double price_Highest = 0;
    double price_Lowest = 0;
    int vertex = 0;
-   
-   // Setting variables   
-   if (depth [1] == 0 || swings_max [1] == 0){
-   depth [6] = 192;
-   depth [5] = 96;
-   depth [4] = 48;
-   depth [3] = 24;
-   depth [2] = 12;
-   depth [1] = 6;   
-   swings_max [1] = 7;
-   swings_max [2] = 18;
-   swings_max [3] = 12;
-   swings_max [4] = 12;
-   swings_max [5] = 12;
-   }
-   
+      
    while(!price1_found){
       price1=iCustom(Symbol(),timeframe_Local,"zigzag",depth [fNumber],deviation,backstep,0,shift1);
       if(fNumber >=4 && shift1>depth [fNumber] * 12) break;

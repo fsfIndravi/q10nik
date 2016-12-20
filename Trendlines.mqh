@@ -3,11 +3,11 @@
 //|                                   Copyright 2016, Zhinzhich Labs |
 //+------------------------------------------------------------------+
 
-class TrendlinesClass {
+class TrendlinesClass 
+  {
 private:
    int               tf[10];
    int               tf_lowest;
-
 
 public:
 
@@ -57,12 +57,12 @@ public:
       TrendlinesStruct  trendline[10];
      };
 
-   TrendlinesStruct trendline[10];
+   TrendlinesStruct  trendline[10];
 
    // Find trendline (with required amplitude) 
    double            Find(int direction,double amplitudeMin,int timeEarliest);
 
-   // Find trendline (with the smallest angle)
+   // Find trendlines in a period
    int               FindInPeriod(int direction,int periodTimeStart,int periodTimeEnd);
 
    // Find trendlines cascade
@@ -118,7 +118,7 @@ void TrendlinesClass::TrendlinesClass()
       tf_lowest=1;
 
      }
- //  Print("Constructor is called each time");
+//  Print("Constructor is called each time");
   }
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -202,8 +202,6 @@ int TrendlinesClass::FindInPeriod(int direction,int periodTimeStart,int periodTi
 
       if(waveShiftStart!=waveShiftEnd) waveAngle=(wavePriceStart-wavePriceEnd)/(waveTimeStart-waveTimeEnd);
 
-      //Print("Angle = "+waveAngle+"   waveTimeStart="+Get_date_string(waveTimeStart)+"   waveTimeEnd="+Get_date_string(waveTimeEnd)+"    wavePriceStart="+wavePriceStart+"   wavePriceEnd="+wavePriceEnd);
-
       ObjectDelete("wave_SELL");
       ObjectCreate("wave_SELL",OBJ_TREND,0,waveTimeStart,wavePriceStart,waveTimeEnd,wavePriceEnd);
       ObjectSet("wave_SELL",OBJPROP_STYLE,STYLE_SOLID);
@@ -233,10 +231,6 @@ int TrendlinesClass::FindInPeriod(int direction,int periodTimeStart,int periodTi
                angleMin=angle;
                vertex_Shift=shift;
               }
-            if(iHigh(Symbol(),tf_lowest,shift)==1.10574)
-              {
-               //Print("angle for 1.10574 = "+angle+"   shift = "+shift);
-              }
            }
 
          // If found more steep trendline - exit while loop
@@ -244,9 +238,6 @@ int TrendlinesClass::FindInPeriod(int direction,int periodTimeStart,int periodTi
 
          // Found trendline with less angle
          count++;
-
-         // If no trendlines found with less angle than the wave angle
-       //  Print("count = "+count+"   angleMin="+angleMin+"   waveAngle="+waveAngle+"   shiftVertex="+vertex_Shift);
 
          trendline[count].wave[1].shift_start  = shiftStart;
          trendline[count].wave[1].price_start  = iHigh (Symbol(), tf_lowest, shiftStart);
@@ -261,8 +252,6 @@ int TrendlinesClass::FindInPeriod(int direction,int periodTimeStart,int periodTi
          shiftStart  = trendline[count].wave[3].shift_start;
          priceStart  = trendline[count].wave[3].price_start;
          timeStart   = trendline[count].wave[3].time_start;
-
-      //   Print("shiftStart="+shiftStart+"    priceStart="+priceStart+"   timeStart="+Get_date_string(timeStart));
 
          string name=StringConcatenate("trendlineSell_",count);
 
@@ -373,8 +362,3 @@ string TrendlinesClass::Get_date_string(int time_input)
 //
 //	}
 //}
-
-					
-
-			
-

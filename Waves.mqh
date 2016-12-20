@@ -102,6 +102,7 @@ class WavesClass
 
    int               FindCascade(int c_direction,int c_minorWaveLengthMin,int c_majorWaveDurationMax,int c_drawWaves);
 	int 				   FindAll(int s_direction,double r_lengthMin);
+	double            FindCorrector (int c_timeframe, int c_direction, int c_waveTimeStart, int c_waveTimeEnd);
    bool              FindByLength(int f_direction,double r_lengthMin,int r_timeEndMax);
    bool              FindByPeriod(double periodMin);
    bool              FindByTime(int timeEnd);
@@ -112,7 +113,6 @@ class WavesClass
    bool              waveFind(int param);
    void              Compress(int compressRatio,int extremumType,int timeframeSource,int shiftSource);
    int               Decompress(int extremumType,int timeframeSource,int shiftSource,int timeframeTarget);
-
    double            CandleAverageBody();
    double            DirectionRatio();
    bool              FindByLength_Compressed(int f_direction,double r_lengthMin,int r_timeEndMax);
@@ -1087,5 +1087,17 @@ int WavesClass::Decompress(int extremumType,int timeframeSource,int shiftSource,
    return (shiftTarget);
   }
   
-
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+//
+//double WavesClass::FindCorrector(int c_timeframe,int c_direction, int c_waveTimeStart,int c_waveTimeEnd){
+//   double price_Highest, price_Lowest;
+//   int shiftEarlier, shiftLater;
+//   
+//   
+//   
+//   if (c_diretion == OP_BUY){
+//      for (int shift = shiftLater; shift <= shiftEarlier; shift++){
+//         
 
