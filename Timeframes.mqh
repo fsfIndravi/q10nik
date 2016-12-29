@@ -11,6 +11,7 @@ public:
    int      Lower (int l_timeframe);  // Get lower timeframe using timeframe factor
    int      Higher (int h_timeframe);  // Get higher timeframe using timeframe factor
    int      TF_Number (int n_timeframe); // Get timeframe number
+   int      Highest (int timeStart, int timeEnd, int fullCandlesCountMin); // Get the hiest timeframe with full candle closed in a period
    int      tf[10];
    
    void     Init (int i_timeframeFactorMin);
@@ -100,3 +101,18 @@ int TimeframesClass::TF_Number (int n_timeframe)
       }
    return (0);
    }
+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+
+int TimeframesClass::Highest (int timeStart, int timeEnd, int fullCandlesCountMin){
+   int shiftStart;
+   int shiftEnd;
+   for (int timeframe = tf [9]; timeframe >= tf [1]; timeframe--){
+      shiftStart = iBarShift (Symbol (), timeframe, timeStart, false);
+      shiftEnd = iBarShift (Symbol (), timeframe, timeEnd, false);
+      if (MathAbs (shiftStart - shiftEnd) >= fullCandlesCountMin) return (timeframe);
+   }
+}

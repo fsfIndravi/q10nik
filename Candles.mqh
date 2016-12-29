@@ -34,9 +34,21 @@ public:
       double      priceLow;
    };
    
-   // Find Core Driver
+   struct correctorStruct{
+      double      price;
+      int         timeframe;
+      double      length;              // Distance between corrector price and wave extremum
+      double      lengthFinetuned;     
+      bool        finetuned;
+      int         shift;
+      int         time;
+   };
    
+   // Find Core Driver   
    double FindCoreWaveDriver (int timeframeLowest, int waveDirection, int waveTimeStart, int waveTimeEnd, double wavePriceHigh, double wavePriceLow, double coreDriverWaveRangeKoef);
+   
+   // Find corrector
+   double FindCorrector (int c_timeframe, int c_direction, int c_timeStart, int c_timeEnd, bool finetuneWithPikes);
    
    // Find unnullivyed driver
    double Find (int f_timeframe, int f_direction, int f_timeEarlier, int f_timeLater, bool f_unnullifyed, double f_strengthMin);
@@ -511,3 +523,32 @@ double CandlesClass::FindCoreWaveDriver (int timeframeLowest, int waveDirection,
 //   }
 //}
 }
+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+//
+//double CandlesClass::FindCorrector (int c_timeframe, int c_direction, int c_timeStart, int c_timeEnd, bool finetuneWithPikes){
+//   double corrector_price;
+//   int shiftEarlier, shiftLater;
+//   
+//   if (c_timeStart < c_timeEnd){   
+//      shiftEarlier   = iBarShift (Symbol (), c_timeframe, c_timeStart,false);
+//      shiftLater     = iBarShift (Symbol (), c_timeframe, c_timeEnd,false);
+//   }
+//   else{
+//      shiftEarlier   = iBarShift (Symbol (), c_timeframe, c_timeEnd,false);
+//      shiftLater     = iBarShift (Symbol (), c_timeframe, c_timeStart,false);
+//   }
+//   
+//   // Finding correctors BUY
+//   
+//   if (c_diretion == OP_BUY){
+//      corrector_price = iHigh (Symbol(), c_timeframe, shiftLater);
+//      for (int shift = shiftLater; shift <= shiftEarlier; shift++){
+//         if (iHigh (Symbol(), c_timeframe, shift) < iHigh (Symbol(), c_timeframe, shift-1)
+//         && iHigh (Symbol(), c_timeframe, shift) < iHigh (Symbol(), c_timeframe, shift+1)
+//         && iHigh (Symbol(), c_timeframe, shift) < corrector_price
+//         && shift > 1){
+//            corrector_price = iHigh (Symbol(), c_timeframe, shift);

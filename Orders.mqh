@@ -2,6 +2,35 @@
 //| BEST IN CLASS 'ORDERS' CLASS :)))                                |
 //+------------------------------------------------------------------+
 
+// Defining constants
+   #define _IMPULSE_TIME_START 1
+   #define _IMPULSE_TIME_END 2
+   #define _CLOSED_NUMBER 3
+   #define _CLOSED_BE 4
+   #define _CLOSED_SL 5
+   #define _LOT_START 6
+   #define _TP 7
+   #define _SL 8
+   #define _DEAL_ID 9
+   #define _TYPE 10                  // 1 - Base. 2 - Add. 3 - Lock. 4 - Repair
+   #define _DRIVER_TIME 11
+   #define _DRIVER_TIMEFRAME 12
+   #define _SERIE_BASE_LOT 13
+   #define _SERIE_LAST_HIGH_TIME 14
+   #define _SERIE_LAST_LOW_TIME 15
+   #define _SERIE_LAST_HIGH_PRICE 16
+   #define _SERIE_LAST_LOW_PRICE 17
+   #define _SERIE_LAST_CLOSED_PROFIT 18
+   #define _SERIE_GRID_STEP_NUMBER 19
+   #define _SERIE_GRID_START_PRICE 20
+   #define _SERIE_GRID_STEP_LENGTH 21
+   
+   // Order types constants
+   #define _TYPE_MAIN    1
+   #define _TYPE_ADD     2
+   #define _TYPE_LOCK    3
+   #define _TYPE_REPAIR  4
+
 class OrdersClass {
 
 private:
@@ -70,6 +99,15 @@ public:
       double      profit_Closed_Buy;
       double      profit_Closed_Sell;
    };
+   
+   struct carrierWaveStruct {
+      int         timeStart;
+      int         timeEnd;
+      double      priceStart;
+      double      priceEnd;
+      double      length;
+      int         duration;
+   };
     
    // Class functions
    
@@ -137,27 +175,7 @@ public:
    dealsArray dealBuy;
    dealsArray dealSell;
    
-   // Defining constants
-   #define _IMPULSE_TIME_START 1
-   #define _IMPULSE_TIME_END 2
-   #define _CLOSED_NUMBER 3
-   #define _CLOSED_BE 4
-   #define _CLOSED_SL 5
-   #define _LOT_START 6
-   #define _DEAL_ID 7
-   #define _TYPE 8                  // 1 - Base. 2 - Add. 3 - Lock. 4 - Repair
-   #define _DRIVER_TIME 9
-   #define _DRIVER_TIMEFRAME 10
-   #define _SERIE_LAST_HIGH_TIME 11
-   #define _SERIE_LAST_LOW_TIME 12
-   #define _SERIE_LAST_HIGH_PRICE 13
-   #define _SERIE_LAST_LOW_PRICE 14
-   
-   // Order types constants
-   #define _TYPE_MAIN    1
-   #define _TYPE_ADD     2
-   #define _TYPE_LOCK    3
-   #define _TYPE_REPAIR  4
+
       
   };
 
@@ -658,3 +676,62 @@ void OrdersClass::LabelDraw (int orderTicket_d1, int direction_d1, double orderO
    }
 }
 
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+
+void OrdersClass::GVSerie_Set (int s_direction, int s_type, double s_value){
+   string name;
+   //   #define _SERIE_BASE_LOT 13
+   //#define _SERIE_LAST_HIGH_TIME 14
+   //#define _SERIE_LAST_LOW_TIME 15
+   //#define _SERIE_LAST_HIGH_PRICE 16
+   //#define _SERIE_LAST_LOW_PRICE 17
+   //#define _SERIE_LAST_CLOSED_PROFIT 18
+   //#define _SERIE_GRID_STEP_NUMBER 19
+   //#define _SERIE_GRID_START_PRICE 20
+   //#define _SERIE_GRID_STEP_LENGTH 21
+   if (s_type == _SERIE_BASE_LOT){
+      if (s_direction == OP_BUY) name = "SERIE_BASE_LOT_BUY";
+      if (s_direction == OP_SELL) name = "SERIE_BASE_LOT_SEL";
+      GlobalVariableSet (name, s_value);
+      return;
+   }
+   if (s_type == _SERIE_LAST_CLOSED_PROFIT){
+      if (s_direction == OP_BUY) name = "SERIE_LAST_CLOSED_PROFIT_BUY";
+      if (s_direction == OP_SELL) name = "SERIE_LAST_CLOSED_PROFIT_SEL";
+      GlobalVariableSet (name, s_value);
+      return;
+   }
+   if (s_type == _SERIE_LAST_CLOSED_PROFIT){
+      if (s_direction == OP_BUY) name = "SERIE_LAST_CLOSED_PROFIT_BUY";
+      if (s_direction == OP_SELL) name = "SERIE_LAST_CLOSED_PROFIT_SEL";
+      GlobalVariableSet (name, s_value);
+      return;
+   }
+}
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+
+double OrdersClass::GVSerie_Get(int s_direction,int s_type){
+   string name;
+   if (s_type == _SERIE_BASE_LOT){
+      if (s_direction == OP_BUY) name = "SERIE_SBL_BUY";
+      if (s_direction == OP_SELL) name = "SERIE_SBL_SELL";
+      return (GlobalVariableGet (name));
+   }
+   if (s_type == _SERIE_LAST_CLOSED_ORDER_NUMBER){
+      if (s_direction == OP_BUY) name = "SERIE_LCN_BUY";
+      if (s_direction == OP_SELL) name = "SERIE_LCN_SELL";
+      return (GlobalVariableGet (name));
+   }
+   if (s_type == _SERIE_LAST_CLOSED_PROFIT){
+      if (s_direction == OP_BUY) name = "SERIE_LCP_BUY";
+      if (s_direction == OP_SELL) name = "SERIE_LCP_SELL";
+      return (GlobalVariableGet (name));
+   }
+}
+   

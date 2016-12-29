@@ -102,7 +102,7 @@ class WavesClass
 
    int               FindCascade(int c_direction,int c_minorWaveLengthMin,int c_majorWaveDurationMax,int c_drawWaves);
 	int 				   FindAll(int s_direction,double r_lengthMin);
-	double            FindCorrector (int c_timeframe, int c_direction, int c_waveTimeStart, int c_waveTimeEnd);
+	double            FindCorrector (int c_timeframe, int c_direction, int c_timeStart, int c_timeEnd);
    bool              FindByLength(int f_direction,double r_lengthMin,int r_timeEndMax);
    bool              FindByPeriod(double periodMin);
    bool              FindByTime(int timeEnd);
@@ -792,6 +792,9 @@ int WavesClass::TF_Max(int x_timeEarlier,int x_timeLater)
 
 int WavesClass::FindCascade(int c_direction,int c_minorWaveLengthMin,int c_majorWaveDurationMax,int c_drawWaves)
   {
+  
+  
+  
 //// Find BUY cascade
 //   if(c_direction==OP_BUY)
 //     {
@@ -1087,17 +1090,8 @@ int WavesClass::Decompress(int extremumType,int timeframeSource,int shiftSource,
    return (shiftTarget);
   }
   
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-//
-//double WavesClass::FindCorrector(int c_timeframe,int c_direction, int c_waveTimeStart,int c_waveTimeEnd){
-//   double price_Highest, price_Lowest;
-//   int shiftEarlier, shiftLater;
-//   
-//   
-//   
-//   if (c_diretion == OP_BUY){
-//      for (int shift = shiftLater; shift <= shiftEarlier; shift++){
-//         
+
+            
+            
+            
 
