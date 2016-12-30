@@ -1,7 +1,7 @@
 //+------------------------------------------------------------------+
 //|                                                    Q10NIK EXPERT |
 //|                                   Copyright 2016, Zhinzhich Labs |
-//+------------------------------------------------------------------+
+
 
 class WavesClass
     {
@@ -45,6 +45,7 @@ class WavesClass
     #define _cascadeImpulsesMax 9
     #define LOWERLOW 1
     #define HIGHERHIGH 2
+    #define _compressionTFKoefMax 240
 
     public:
 
@@ -100,22 +101,23 @@ class WavesClass
 
 	 // Methods
 
-   int               FindCascade(int c_direction,int c_minorWaveLengthMin,int c_majorWaveDurationMax,int c_drawWaves);
-	int 				   FindAll(int s_direction,double r_lengthMin);
+    int               FindCascade(int c_direction,int c_minorWaveLengthMin,int c_majorWaveDurationMax,int c_drawWaves);
+    int 			  FindAll(int s_direction,double r_lengthMin);
+	int 			  FindAll2 (int a_direction, int a_timeStart, int a_timeEnd); 
 	double            FindCorrector (int c_timeframe, int c_direction, int c_timeStart, int c_timeEnd);
-   bool              FindByLength(int f_direction,double r_lengthMin,int r_timeEndMax);
-   bool              FindByPeriod(double periodMin);
-   bool              FindByTime(int timeEnd);
-   double            RetraceRatioMax(int r_direction,int r_timeStart,int r_timeEnd,double r_priceStart,double r_priceEnd);
-   void              Init(int timeframeWorking,int seekShiftMax,double dealCostsMax,int dealDurationMax,int visualizeWaves);
-   void              FindMajor(int m_direction,int m_minorTimeStart); // Find major wave to the seeked one
-   void              FindOpposite(int o_direction,int o_impulseTimeStart,int o_impulseTimeEnd,double o_impulsePriceEnd);
-   bool              waveFind(int param);
-   void              Compress(int compressRatio,int extremumType,int timeframeSource,int shiftSource);
-   int               Decompress(int extremumType,int timeframeSource,int shiftSource,int timeframeTarget);
-   double            CandleAverageBody();
-   double            DirectionRatio();
-   bool              FindByLength_Compressed(int f_direction,double r_lengthMin,int r_timeEndMax);
+    bool              FindByLength(int f_direction,double r_lengthMin,int r_timeEndMax);
+    bool              FindInPeriod(double periodMin);
+    bool              FindByTime(int timeEnd);
+    double            RetraceRatioMax(int r_direction,int r_timeStart,int r_timeEnd,double r_priceStart,double r_priceEnd);
+    void              Init(int timeframeWorking,int seekShiftMax,double dealCostsMax,int dealDurationMax,int visualizeWaves);
+    void              FindMajor(int m_direction,int m_minorTimeStart); // Find major wave to the seeked one
+    void              FindOpposite(int o_direction,int o_impulseTimeStart,int o_impulseTimeEnd,double o_impulsePriceEnd);
+    bool              waveFind(int param);
+    void              Compress(int compressRatio,int extremumType,int timeframeSource,int shiftSource);
+    int               Decompress(int extremumType,int timeframeSource,int shiftSource,int timeframeTarget);
+    double            CandleAverageBody();
+    double            DirectionRatio();
+    bool              FindByLength_Compressed(int f_direction,double r_lengthMin,int r_timeEndMax);
 
    // Initialize data structures and subclasses
 
@@ -124,6 +126,7 @@ class WavesClass
    waveStruct        majorRetrace;
    waveStruct        opposite;
    waveStruct        retrace;
+   waveStruct   wave[10];
 
    cascadeStruct     cascade;
 
@@ -1090,8 +1093,116 @@ int WavesClass::Decompress(int extremumType,int timeframeSource,int shiftSource,
    return (shiftTarget);
   }
   
+            
+            
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
 
+int WavesClass::FindAll2 (int directionLocal, double minor_length_min, int time_start_min){
+    if (directionLocal == OP_BUY){
+
+        int hh_shift = 0;
+        int hh_tf = 1;
+        int hh_time = iTime (Symbol(),hh_tf,0);
+        double hh_price = iHigh (Symbol (), hh_tf, 0);
+        double hhll_price = iLow (Symbol (), hh_tf, 0); // hhll - price of the lower low previus to the searched hh
+                                                               // this hhll is refreshed every lower low if HH is not yet formed
+
+        int ll_shift = 0;
+        int ll_tf = 1;
+        double ll_price = iLow (Symbol (), ll_tf, 0);
+        double llhh_price = iHigh (Symbol (), ll_tf, 0); 
+        int ll_time = iTime (Symbol(),ll_tf,0);
+
+        double wave_sell
+        int current_SHIFT = 0;
+        int current_TF = 1;
+        double current_HIGHEST_price;
+        double current_LOWEST_price;
+
+        int wave_count = 0;
+
+        while (current_SHIFT <= seekShiftMax){
+            double highCurrent = iHigh (Symbol(),current_TF,current_SHIFT); 
+            double lowCurrent = iLow (Symbol(),current_TF,current_SHIFT); 
+
+            if (highCurrent > current_HIGHEST_price){
+                current_HIGHEST_price = highCurrent;
+                
+
+            // Check refresh current high
+            if (highCurrent > hh_price){
+                // first check if it needs to compress the founded higher high
+                // if wave duration of sell wave is more that 2 full candles of the higher timeframe
+                // then compress to that higher timeframe
+                hh_tf = current_TF;_
+                hh_shift = current_SHIFT;
+                hh_time = iTime (Symbol(),hh_tf, hh_shift);
+                hh_price = highCurrent;
+                // check compress new hh
+                int tfh = TF_Higher (hh_tf);
+                if (tfh > 0 && (hh_time - ll_time) / tfh / 60 >= 3){ // if >=2 full candles for sell wave - compressing new HH
+                    current_TF = tfh; 
+                    current_SHIFT = iBarShift (Symbol(),current_TF,hh_time,false);
+                    hh_tf = current_TF;
+                    hh_shift = current_SHIFT;
+                    hh_time = iTime (Symbol(),current_TF,current_SHIFT);
+                }
+            }
+
+            if (lowCurrent < ll_price
+            && hh_price - lowCurrent > hh_price - ll_price
+            && hh_price - lowCurrent >= minor_length_min) { // this is new ll - buy wave found, hh fixed
+                ll_tf = current_TF;_
+                ll_shift = current_SHIFT;
+                ll_time = iTime (Symbol(),hh_tf, hh_shift);
+                ll_price = lowCurrent;
+                highCurrent = lowCurrent;
+                wave_count++;
+
+                wave[wave_count].price_End = hh_price;
+                wave[wave_count].time_End = hh_time;
+                wave[wave_count].shift_End = hh_shift;
+                wave[wave_count].tf_End = hh_tf;
+
+            }
             
+            if (lowCurrent < ll_price){
+                ll_tf = current_TF;_
+                ll_shift = current_SHIFT;
+                ll_time = iTime (Symbol(),hh_tf, hh_shift);
+                ll_price = lowCurrent;
+            }
+
+
+
+            if (hh_price - ll_price > 
             
-            
+
+            if (iLow (Symbol(),current_TF,current_SHIFT) < ll_price
+                && iTime (Symbol(),current_TF,current_SHIFT) > hh_time){
+                // if buy wave length is longer than 'minor_length_min' then after lower low the HH is fixing
+                ll_price = iLow (Symbol(),current_TF,current_SHIFT); 
+                if (hh_price - ll_price > minor_length_min)  
+                    
+                    
+                
+        
+
+
+
+
+
+        for (int shiftLocal = 1; shiftLocal <= seekShiftMax; shiftLocal++){
+            // 1. Searching for HH1
+           if (iHigh (Symbol(),timeframeLowest,0) > hh1_price){
+               // first check if it needs to compress the founded higher high
+               if (iBarShift (Symbol(), hh1_tf, shiftLocal) TF_Higher (hh1_tf) 
+
+
+        
+
+
+
 
