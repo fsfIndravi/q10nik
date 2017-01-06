@@ -3,7 +3,7 @@
 //|                                                   Zhinzhich Labs |
 //+------------------------------------------------------------------+
 
-#include "Waves.mqh"
+//#include "Waves.mqh"
 #include "Orders.mqh"
 #include "Candles.mqh"
 #include "Timeframes.mqh"
@@ -11,7 +11,7 @@
 #include "Trendlines.mqh"
 #include "arraysZIGZAG.mqh"
 
-WavesClass        wave;
+//WavesClass        wave;
 OrdersClass       order;
 CandlesClass      candle;
 TimeframesClass   timeframe;
@@ -173,7 +173,7 @@ int init()
    if (deal_costs_max_koef == 0) deal_costs_max_koef = 0.05;
    
    // initializing waves
-   wave.Init (timeframe_Lowest, seekShiftMax, deal_costs_max_koef, deal_duration_max_minutes, 0);
+   //wave.Init (timeframe_Lowest, seekShiftMax, deal_costs_max_koef, deal_duration_max_minutes, 0);
    
    return(0);
    
@@ -287,14 +287,14 @@ void close_all_orders (){
 
 void _positions_close (){
    
-   for (int orders = 1; orders <= order.totals.count; orders++){
-      
-      // 1. Closing order in BE
-      
-      if (order.positions[orders].direction == OP_BUY
-         && order.positions[orders].profit >= order.getCarrier
-         
-   }
+//   for (int orders = 1; orders <= order.totals.count; orders++){
+//      
+//      // 1. Closing order in BE
+//      
+//      if (order.positions[orders].direction == OP_BUY
+//         && order.positions[orders].profit >= order.getCarrier
+//         
+//   }
    
    }
 
@@ -342,58 +342,61 @@ void _positions_open ()
     double   sl, tp;
     int      ticket;
     double   sl_price;
+    double  correctorPrice;
    
     arrays (1,1);
+    arrays (1,2);
     
     // 1. Enter BUY ORDERS
-    
-    // 1. F5 Wave is downwards
-    
-    if (f_length [1][0] < 0
-      && MathAbs (f_length [1][1]) < MathAbs (f_length [1][2])
-      && MathAbs (f_length [1][1]) > MathAbs (f_length [1][3])
-      //&& MathAbs (f_length [1][1]) > f_length_avg [1]
-      && MathAbs (f_length [1][0]) >= MathAbs (f_length [1][1])
-      && MathAbs (f_length [1][1]) >= 0.66 * MathAbs (f_length [1][2])
-      && MathAbs (candle.FindMax (timeframe_Main, OP_SELL, f_time [1][3], f_time [1][2], false)) > MathAbs (candle.FindMax (timeframe_Main, OP_SELL, f_time [1][1], f_time [1][0], false))
-      //&& MathAbs (candle.FindMax (timeframe.Highest (f_time [1][3],f_time [1][2], 2), OP_SELL, f_time [1][3], f_time [1][2], false)) > MathAbs (candle.FindMax (timeframe.Highest (f_time [1][1],f_time [1][0], 2), OP_SELL, f_time [1][1], f_time [1][0], false))
-      
-      ){
-      
-         order.RefreshFast ();
-          if (check_spread ()
-            && order.totals.countBuy == 0
-            ){
-               lotToOpen = NormalizeDouble (AccountBalance () / (1000 / 0.5),lotDigits);
-               if (lotToOpen < lotMin && lotToOpen > 0) lotToOpen = lotMin;
-               if (lotToOpen > lotMax && lotToOpen > 0) lotToOpen = lotMax;
-               tp = f_price [1][1];
-               sl = f_price [1][2] - 0.5 * MathAbs (f_length [1][1]) * Point;
-               log_add_line ("sl="+sl+"   tp="+tp,Red);
-               ticket = OrderSend (Symbol(),OP_BUY,lotToOpen,Ask,5,0,0,1,1,0,Blue);
-               if (ticket > 0){
-                  if (OrderSelect (ticket,SELECT_BY_TICKET,MODE_TRADES)){
-                     log_add_line ("ADDING BUY ORDER #"+ticket+" at price "+DoubleToStr (Ask,Digits)+ ". Lot "+lotToOpen,DarkGreen);
-                     order.Add (ticket, OP_BUY, wave.impulse.timeStart, wave.impulse.timeEnd, TimeCurrent ());
-                     order.GVSerie_Set (OP_BUY, _SERIE_BASE_LOT, lotToOpen);
-                     order.GVSerie_Set (OP_BUY, _SERIE_LAST_CLOSED_ORDER_NUMBER, 0);
-                     order.GVSerie_Set (OP_BUY, _SERIE_LAST_CLOSED_PROFIT, 0);
-                     order.GV_Set (OrderOpenPrice(), _TP, tp);
-                     order.GV_Set (OrderOpenPrice(), _SL, sl);
-                     order.GV_Set (OrderOpenPrice(), _LOT_START, lotToOpen);
-                     OrderSend (Symbol(),OP_BUYLIMIT,lotToOpen * grid_lot_inc_koef,            NormalizeDouble (f_price [1][2] - 0.5 * MathAbs (f_length [1][1])* Point,Digits),5,f_price [1][2] - MathAbs (f_length [1][1]) * Point,f_price [1][2],1,1,0,Blue);
-                     OrderSend (Symbol(),OP_BUYLIMIT,lotToOpen * MathPow (grid_lot_inc_koef,2),NormalizeDouble (f_price [1][2] - 1.0 * MathAbs (f_length [1][1])* Point,Digits),5,f_price [1][2] - MathAbs (f_length [1][1]) * 1.5 * Point,f_price [1][2] - MathAbs (f_length [1][1]) * 0.5 * Point,2,2,0,Blue);
-                     OrderSend (Symbol(),OP_BUYLIMIT,lotToOpen * MathPow (grid_lot_inc_koef,2),NormalizeDouble (f_price [1][2] - 1.5 * MathAbs (f_length [1][1])* Point,Digits),5,f_price [1][2] - MathAbs (f_length [1][1]) * 2 * Point,f_price [1][2] - MathAbs (f_length [1][1]) * Point,3,3,0,Blue);
-                     OrderSend (Symbol(),OP_BUYLIMIT,lotToOpen * MathPow (grid_lot_inc_koef,2),NormalizeDouble (f_price [1][2] - 2.0 * MathAbs (f_length [1][1])* Point,Digits),5,f_price [1][2] - MathAbs (f_length [1][1]) * 2.5 * Point,f_price [1][2] - MathAbs (f_length [1][1]) * 1.5 * Point,3,3,0,Blue);
-                     order.RefreshFULL ();
-                     }
-                  showLog = true;
-                  }
-               else log_add_line ("ERROR SENDING ORDER BUY at price "+DoubleToStr (Ask,Digits)+". Lot "+lotToOpen+".   Reason: "+ErrorDescription (GetLastError()),Red);
-               showLog = true;
-               }           
-      }
 
+    for (int f = 2; f >= 1; f--){
+        // 1.1. Flat started after 1-wave impulse order-wise
+        correctorPrice = candle.FindCorrector (1,OP_BUY,f_time [f][4]);
+        if (f_length [f][0] < 0
+        //&& MathAbs (f_length [f][4]) > f_length_avg [f]
+        && MathAbs (f_length [f][3]) >= 0.5 * MathAbs (f_length [f][4])
+        && f_price [f][1] < f_price [f][5]
+        && f_price [f][3] < f_price [f][5]
+        && f_price [f][2] > f_price [f][4]
+        && f_price [f][1] > f_price [f][3]
+        && ((f_price [f][2] > correctorPrice && f_price [f][0] < correctorPrice) 
+            || (f_price [f][2] <= correctorPrice && f_price [f][0] < f_price [f][4])) 
+        && MathAbs (candle.FindMax (timeframe_Main, OP_SELL, f_time [f][5], f_time [f][4], true)) > MathAbs (candle.FindMax (timeframe_Main, OP_SELL, f_time [f][3], f_time [f][0], true))
+        && MathAbs (candle.FindMax (timeframe.Highest (f_time [f][5],f_time [f][4], 2), OP_SELL, f_time [f][5], f_time [f][4], false)) > MathAbs (candle.FindMax (timeframe.Highest (f_time [f][3],f_time [f][0], 2), OP_SELL, f_time [f][3], f_time [f][0], false))
+          
+          ){
+          
+             order.RefreshFast ();
+              if (check_spread ()
+                && order.totals.countBuy == 0
+                ){
+                   lotToOpen = NormalizeDouble (AccountBalance () / (1000 / 0.5),lotDigits);
+                   if (lotToOpen < lotMin && lotToOpen > 0) lotToOpen = lotMin;
+                   if (lotToOpen > lotMax && lotToOpen > 0) lotToOpen = lotMax;
+                   tp = f_price [f][5];
+                   sl = f_price [f][4] - 0.5 * (f_price [f][1] - f_price [f][4]);
+                   log_add_line ("sl="+sl+"   tp="+tp,Red);
+                   ticket = OrderSend (Symbol(),OP_BUY,lotToOpen,Ask,5,0,0,1,1,0,Blue);
+                   if (ticket > 0){
+                      if (OrderSelect (ticket,SELECT_BY_TICKET,MODE_TRADES)){
+                         log_add_line ("ADDING BUY ORDER #"+ticket+" at price "+DoubleToStr (Ask,Digits)+ ". Lot "+lotToOpen,DarkGreen);
+                         //order.Add (ticket, OP_BUY, wave.impulse.timeStart, wave.impulse.timeEnd, TimeCurrent ());
+                         order.GVSerie_Set (OP_BUY, _SERIE_BASE_LOT, lotToOpen);
+                         order.GVSerie_Set (OP_BUY, _SERIE_GRID_START_PRICE, OrderOpenPrice ());
+                         order.GVSerie_Set (OP_BUY, _SERIE_GRID_STEP_NUMBER, 1);
+                         order.GVSerie_Set (OP_BUY, _SERIE_LAST_CLOSED_PROFIT, 0);
+                         order.GV_Set (OrderOpenPrice(), _TP, tp);
+                         order.GV_Set (OrderOpenPrice(), _SL, sl);
+                         order.GV_Set (OrderOpenPrice(), _LOT_START, lotToOpen);
+                         order.RefreshFULL ();
+                         }
+                      showLog = true;
+                      }
+                   else log_add_line ("ERROR SENDING ORDER BUY at price "+DoubleToStr (Ask,Digits)+". Lot "+lotToOpen+".   Reason: "+ErrorDescription (GetLastError()),Red);
+                   showLog = true;
+                   }           
+          }
+    }
     log_add_line ("f_length [1][0]="+f_length[1][0]+"   f_length [1][1]="+f_length[1][1]+"   f_length [1][2]="+f_length[1][2]+"   f_length [1][3]="+f_length[1][3]+"   f_length [1][4]="+f_length[1][4]+"   f_length [1][5]="+f_length[1][5]+"   f_length [1][6]="+f_length[1][6]+"   f_length [1][7]="+f_length[1][7]+"   f_length [1][8]="+f_length[1][8],Blue);
     log_add_line ("f_length [1][35]="+f_length[1][35]+"   f_length [1][34]="+f_length[1][34]+"   f_length [1][33]="+f_length[1][33]+"   f_length [1][32]="+f_length[1][32],Blue);
     log_add_line ("f_outs [1][0]="+f_outsideswing [1][0]+"   f_outs [1][1]="+f_outsideswing [1][1]+"   f_outs [1][2]="+f_outsideswing [1][2]+"   f_outs [1][3]="+f_outsideswing [1][3]+"   f_outs [1][4]="+f_outsideswing [1][4]+"   f_outs [1][5]="+f_outsideswing [1][5]+"   f_outs [1][6]="+f_outsideswing [1][6],Blue);

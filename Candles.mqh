@@ -43,13 +43,20 @@ public:
       int         shift;
       int         time;
    };
+
+   // Find candles mass
+   int CandlesMass (int tfLocal, int extremumTime1, int extremumTime2);
    
    // Find Core Driver   
    double FindCoreWaveDriver (int timeframeLowest, int waveDirection, int waveTimeStart, int waveTimeEnd, double wavePriceHigh, double wavePriceLow, double coreDriverWaveRangeKoef);
    
    // Find corrector
-   double FindCorrector (int c_timeframe, int c_direction, int c_timeStart, int c_timeEnd, bool finetuneWithPikes);
-   
+   double FindCorrector (int timeframeLocal, int directionLocal, int vertex_time);
+
+   // Find pike
+   // Pike hits a level where price changed its direction
+   double FindPike (int timeframeLocal, int timeStart, int timeEnd, double priceLowest, double priceHighest, double pikeRangeRatio, double pikeLengthMin);
+
    // Find unnullivyed driver
    double Find (int f_timeframe, int f_direction, int f_timeEarlier, int f_timeLater, bool f_unnullifyed, double f_strengthMin);
    
@@ -528,27 +535,112 @@ double CandlesClass::FindCoreWaveDriver (int timeframeLowest, int waveDirection,
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-//
-//double CandlesClass::FindCorrector (int c_timeframe, int c_direction, int c_timeStart, int c_timeEnd, bool finetuneWithPikes){
-//   double corrector_price;
-//   int shiftEarlier, shiftLater;
-//   
-//   if (c_timeStart < c_timeEnd){   
-//      shiftEarlier   = iBarShift (Symbol (), c_timeframe, c_timeStart,false);
-//      shiftLater     = iBarShift (Symbol (), c_timeframe, c_timeEnd,false);
-//   }
-//   else{
-//      shiftEarlier   = iBarShift (Symbol (), c_timeframe, c_timeEnd,false);
-//      shiftLater     = iBarShift (Symbol (), c_timeframe, c_timeStart,false);
-//   }
-//   
-//   // Finding correctors BUY
-//   
-//   if (c_diretion == OP_BUY){
-//      corrector_price = iHigh (Symbol(), c_timeframe, shiftLater);
-//      for (int shift = shiftLater; shift <= shiftEarlier; shift++){
-//         if (iHigh (Symbol(), c_timeframe, shift) < iHigh (Symbol(), c_timeframe, shift-1)
-//         && iHigh (Symbol(), c_timeframe, shift) < iHigh (Symbol(), c_timeframe, shift+1)
-//         && iHigh (Symbol(), c_timeframe, shift) < corrector_price
-//         && shift > 1){
-//            corrector_price = iHigh (Symbol(), c_timeframe, shift);
+
+double CandlesClass::FindCorrector (int timeframeLocal, int directionLocal, int vertex_time){
+    double corrector_price;
+    int vertex_shift = iBarShift (Symbol(),timeframeLocal,vertex_time,false);
+    //  Finding correctors BUY
+    if (directionLocal == OP_BUY){
+        double vertex_low = iLow (Symbol(),timeframeLocal,vertex_shift);
+        // Finding the first corrector to the right 
+        int shiftRight = vertex_shift;
+        bool foundRight = false;
+        while (shiftRight>0){
+            if (iHigh (Symbol(), timeframeLocal, shiftRight) < iHigh (Symbol(), timeframeLocal, shiftRight-1)
+            && iHigh (Symbol(), timeframeLocal, shiftRight) < iHigh (Symbol(), timeframeLocal, shiftRight+1)) {foundRight=true;break;}
+            shiftRight--; 
+        }
+        // Finding the first corrector to the left
+        int shiftLeft = vertex_shift+1;
+        bool foundLeft = false;
+        while (shiftLeft<vertex_shift+12){
+            if (iHigh (Symbol(), timeframeLocal, shiftLeft) < iHigh (Symbol(), timeframeLocal, shiftLeft-1)
+            && iHigh (Symbol(), timeframeLocal, shiftLeft) < iHigh (Symbol(), timeframeLocal, shiftLeft+1)) {foundLeft=true;break;}
+            shiftLeft++;
+        }
+        // Finding the lowest corrector between the two
+        if (foundRight && foundLeft){
+            if (iHigh (Symbol(), timeframeLocal, shiftRight) <= iHigh (Symbol(), timeframeLocal, shiftLeft)) return (iHigh (Symbol(), timeframeLocal, shiftRight));
+                else return (iHigh (Symbol(), timeframeLocal, shiftLeft));
+        }
+        if (!foundRight && foundLeft) return (iHigh (Symbol(), timeframeLocal, shiftLeft));
+        if (foundRight && !foundLeft) return (iHigh (Symbol(), timeframeLocal, shiftRight));
+
+    }
+
+    if (directionLocal == OP_SELL){
+        double vertex_high = iHigh (Symbol(),timeframeLocal,vertex_shift);
+        // Finding the first corrector to the right 
+        shiftRight = vertex_shift;
+        foundRight = false;
+        while (shiftRight>0){
+            if (iLow (Symbol(), timeframeLocal, shiftRight) > iLow (Symbol(), timeframeLocal, shiftRight-1)
+            && iLow (Symbol(), timeframeLocal, shiftRight) > iLow (Symbol(), timeframeLocal, shiftRight+1)) {foundRight=true;break;}
+            shiftRight--; 
+        }
+        // Finding the first corrector to the left
+        shiftLeft = vertex_shift+1;
+        foundLeft = false;
+        while (shiftLeft<vertex_shift+12){
+            if (iLow (Symbol(), timeframeLocal, shiftLeft) > iLow (Symbol(), timeframeLocal, shiftLeft-1)
+            && iLow (Symbol(), timeframeLocal, shiftLeft) > iLow (Symbol(), timeframeLocal, shiftLeft+1)) {foundLeft=true;break;}
+            shiftLeft++;
+        }
+        // Finding the lowest corrector between the two
+        if (foundRight && foundLeft){
+            if (iLow (Symbol(), timeframeLocal, shiftRight) >= iLow (Symbol(), timeframeLocal, shiftLeft)) return (iLow (Symbol(), timeframeLocal, shiftRight));
+                else return (iLow (Symbol(), timeframeLocal, shiftLeft));
+        }
+        if (!foundRight && foundLeft) return (iLow (Symbol(), timeframeLocal, shiftLeft));
+        if (foundRight && !foundLeft) return (iLow (Symbol(), timeframeLocal, shiftRight));
+    }
+
+
+}
+   
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+
+double CandlesClass::FindPike (int timeframeLocal, int timeStart, int timeEnd, double priceLowest, double priceHighest, double pikeRangeRatio, double pikeLengthMin){
+    int shiftStart = iBarShift (Symbol(),timeframeLocal,timeStart,false);
+    int shiftEnd = iBarShift (Symbol(),timeframeLocal,timeStart,false);
+    double priceHigh;
+    double priceClose;
+    double priceOpen;
+    double priceLow;
+    // comment2222222!!
+    if (shiftStart <= shiftEnd){
+        int swap = shiftStart;
+        shiftStart = shiftEnd;
+        shiftEnd = swap;
+    }
+    for (int shiftLocal = shiftEnd; shiftLocal <= shiftStart; shiftLocal++){
+        priceHigh = iHigh(Symbol(),timeframeLocal,shiftLocal);
+        priceClose = iClose(Symbol(),timeframeLocal,shiftLocal);
+        priceOpen = iOpen(Symbol(),timeframeLocal,shiftLocal);
+        priceLow = iLow(Symbol(),timeframeLocal,shiftLocal);
+        if (priceHigh - priceLow > 0){
+            // Finding 1-candle HIGH pikes
+            if (priceHigh - priceClose >= pikeLengthMin
+            && priceHigh - priceOpen >= pikeLengthMin 
+            && (priceHigh - priceClose) / (priceHigh - priceLow) >= pikeRangeRatio
+            && (priceHigh - priceOpen) / (priceHigh - priceLow) >= pikeRangeRatio
+            && priceHigh <= priceHighest
+            && priceHigh >= priceLowest)
+                return (priceHigh); 
+            // Finding 1-candle LOW pikes
+            if (priceClose - priceLow >= pikeLengthMin
+            && priceOpen - priceLow >= pikeLengthMin 
+            && (priceClose - priceLow) / (priceHigh - priceLow) >= pikeRangeRatio
+            && (priceOpen - priceLow) / (priceHigh - priceLow) >= pikeRangeRatio
+            && priceLow <= priceHighest
+            && priceLow >= priceLowest)
+                return (priceLow); 
+        }
+    }
+}
+
+
+
+

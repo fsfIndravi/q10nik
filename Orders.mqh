@@ -683,15 +683,6 @@ void OrdersClass::LabelDraw (int orderTicket_d1, int direction_d1, double orderO
 
 void OrdersClass::GVSerie_Set (int s_direction, int s_type, double s_value){
    string name;
-   //   #define _SERIE_BASE_LOT 13
-   //#define _SERIE_LAST_HIGH_TIME 14
-   //#define _SERIE_LAST_LOW_TIME 15
-   //#define _SERIE_LAST_HIGH_PRICE 16
-   //#define _SERIE_LAST_LOW_PRICE 17
-   //#define _SERIE_LAST_CLOSED_PROFIT 18
-   //#define _SERIE_GRID_STEP_NUMBER 19
-   //#define _SERIE_GRID_START_PRICE 20
-   //#define _SERIE_GRID_STEP_LENGTH 21
    if (s_type == _SERIE_BASE_LOT){
       if (s_direction == OP_BUY) name = "SERIE_BASE_LOT_BUY";
       if (s_direction == OP_SELL) name = "SERIE_BASE_LOT_SEL";
@@ -710,6 +701,24 @@ void OrdersClass::GVSerie_Set (int s_direction, int s_type, double s_value){
       GlobalVariableSet (name, s_value);
       return;
    }
+   if (s_type == _SERIE_GRID_STEP_NUMBER){
+      if (s_direction == OP_BUY) name = "SERIE_GRID_STEP_NUMBER_BUY";
+      if (s_direction == OP_SELL) name = "SERIE_GRID_STEP_NUMBER_SELL";
+      GlobalVariableSet (name, s_value);
+      return;
+   }
+   if (s_type == _SERIE_GRID_START_PRICE){
+      if (s_direction == OP_BUY) name = "SERIE_GRID_START_PRICE_BUY";
+      if (s_direction == OP_SELL) name = "SERIE_GRID_START_PRICE_SELL";
+      GlobalVariableSet (name, s_value);
+      return;
+   }
+   if (s_type == _SERIE_GRID_STEP_LENGTH){
+      if (s_direction == OP_BUY) name = "SERIE_GRID_STEP_LENGTH_BUY";
+      if (s_direction == OP_SELL) name = "SERIE_GRID_STEP_LENGTH_SELL";
+      GlobalVariableSet (name, s_value);
+      return;
+   }
 }
 
 //+------------------------------------------------------------------+
@@ -723,15 +732,26 @@ double OrdersClass::GVSerie_Get(int s_direction,int s_type){
       if (s_direction == OP_SELL) name = "SERIE_SBL_SELL";
       return (GlobalVariableGet (name));
    }
-   if (s_type == _SERIE_LAST_CLOSED_ORDER_NUMBER){
-      if (s_direction == OP_BUY) name = "SERIE_LCN_BUY";
-      if (s_direction == OP_SELL) name = "SERIE_LCN_SELL";
-      return (GlobalVariableGet (name));
-   }
    if (s_type == _SERIE_LAST_CLOSED_PROFIT){
       if (s_direction == OP_BUY) name = "SERIE_LCP_BUY";
       if (s_direction == OP_SELL) name = "SERIE_LCP_SELL";
       return (GlobalVariableGet (name));
    }
+   if (s_type == _SERIE_GRID_STEP_NUMBER){
+      if (s_direction == OP_BUY) name = "SERIE_GRID_STEP_NUMBER_BUY";
+      if (s_direction == OP_SELL) name = "SERIE_GRID_STEP_NUMBER_SELL";
+      return (GlobalVariableGet (name));
+   }
+   if (s_type == _SERIE_GRID_START_PRICE){
+      if (s_direction == OP_BUY) name = "SERIE_GRID_START_PRICE_BUY";
+      if (s_direction == OP_SELL) name = "SERIE_GRID_START_PRICE_SELL";
+      return (GlobalVariableGet (name));
+   }
+   if (s_type == _SERIE_GRID_STEP_LENGTH){
+      if (s_direction == OP_BUY) name = "SERIE_GRID_STEP_LENGTH_BUY";
+      if (s_direction == OP_SELL) name = "SERIE_GRID_STEP_LENGTH_SELL";
+      return (GlobalVariableGet (name));
+   }
+   return (-1);
 }
    
