@@ -2,6 +2,18 @@
 //| BEST IN CLASS 'ORDERS' CLASS :)))                                |
 //+------------------------------------------------------------------+
 
+// Defining Global variables
+
+double   tickValue; 
+int      spread;
+int      spread_max;
+int      spread_avg;
+int      spreadArray[10];
+double   commission;
+double   commissionPips;
+double   costs;
+int      costs_pips;
+
 // Defining constants
    #define _IMPULSE_TIME_START 1
    #define _IMPULSE_TIME_END 2
@@ -36,6 +48,8 @@ class OrdersClass {
 private:
    int            deals_count;
    int            lastReinitTime;
+   double         commissionPips;
+   double         tickValue;
 public:
    // Orders data structure
    struct ordersArray{
@@ -110,7 +124,13 @@ public:
    };
     
    // Class functions
-   
+
+   double Serie_BE_Set (int directionLocal, double commissionPips, double tickValue, ordersTotals &totals, ordersArray &positions[]);
+
+   double Serie_BE_New (int directionLocal, double newPriceLocal, double newLotLocal, double commissionPips, double tickValue);
+
+   void Serie_SL_Set (int directionLocal, double newSLPriceLocal);
+
    void Delete (int ticket);
    
    void Add (int ticket, int orderDirection, int waveTimeStart, int waveTimeEnd, int driverTime);
@@ -168,14 +188,17 @@ public:
    
    // Draw labels
    void LabelsDraw ();
+
+   // Costs set
+
+
+   
    
    // Loading structures   
    ordersArray positions[99];
    ordersTotals totals;
    dealsArray dealBuy;
    dealsArray dealSell;
-   
-
       
   };
 
@@ -755,3 +778,160 @@ double OrdersClass::GVSerie_Get(int s_direction,int s_type){
    return (-1);
 }
    
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+
+double Serie_BE_New (int directionLocal, double newPriceLocal, double newLotLocal, ordersTotals &totals, ordersArray &positions[]){
+   double numerator = 0, denominator = 0;
+   double serieSL_Local = 0;
+   if (directionLocal == OP_BUY){
+      for (int index = 1; index <= totals.count; index++){
+         if (positions[index].direction == OP_BUY){
+            numerator += (positions[index].openPrice + commissionPips * Point) * positions[index].lot * tickValue / Point;
+            denominator += positions[index].lot * tickValue / Point;
+         }
+      }
+      numerator += (newPriceLocal  + commissionPips * Point) * newLotLocal * tickValue / Point;
+   }
+   
+   if (directionLocal == OP_SELL){
+      for (index = 1; index <= totals.count; index++){
+         if (positions[index].direction == OP_SELL){
+            numerator += (positions[index].openPrice - commissionPips * Point) * positions[index].lot * tickValue / Point;
+            denominator += positions[index].lot * tickValue / Point;
+         }
+      }
+      numerator += (newPriceLocal  - commissionPips * Point) * newLotLocal * tickValue / Point;
+   }
+   denominator += newLotLocal * tickValue / Point;
+   if (denominator != 0) serieSL_Local = numerator / denominator;
+   return (serieSL_Local);
+}
+
+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+
+double Serie_BE_Get (int directionLocal, double newPriceLocal, double newLotLocal, ordersTotals &totals, ordersArray &positions[]){
+   double numerator = 0, denominator = 0;
+   double serieSL_Local = 0;
+   if (directionLocal == OP_BUY){
+      for (int index = 1; index <= totals.count; index++){
+         if (positions[index].direction == OP_BUY){
+            numerator += (positions[index].openPrice + commissionPips * Point) * positions[index].lot * tickValue / Point;
+            denominator += positions[index].lot * tickValue / Point;
+         }
+      }
+      numerator += (newPriceLocal  + commissionPips * Point) * newLotLocal * tickValue / Point;
+   }
+   
+   if (directionLocal == OP_SELL){
+      for (index = 1; index <= totals.count; index++){
+         if (positions[index].direction == OP_SELL){
+            numerator += (positions[index].openPrice - commissionPips * Point) * positions[index].lot * tickValue / Point;
+            denominator += positions[index].lot * tickValue / Point;
+         }
+      }
+      numerator += (newPriceLocal  - commissionPips * Point) * newLotLocal * tickValue / Point;
+   }
+   denominator += newLotLocal * tickValue / Point;
+   if (denominator != 0) serieSL_Local = numerator / denominator;
+   return (serieSL_Local);
+}
+
+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+
+void Serie_SL_Set (int directionLocal, double newSLPriceLocal, ordersTotals &totals, ordersArray &positions[]){
+   bool modifyResult;
+   if (directionLocal == OP_BUY){
+      for (int index = 1; index <= totals.count; index++){
+         if (positions[index].direction == OP_BUY){
+            modifyResult = OrderModify (positions[index].ticket,positions[index].openPrice,newSLPriceLocal,positions[index].tp,0,Blue);
+            }
+         }
+      }
+
+   if (directionLocal == OP_SELL){
+      for (index = 1; index <= totals.count; index++){
+         if (positions[index].direction == OP_SELL){
+            modifyResult = OrderModify (positions[index].ticket,positions[index].openPrice,newSLPriceLocal,positions[index].tp,0,Blue);
+            }
+         }
+      }
+}
+
+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+
+//double Serie_BE_Set (int directionLocal, ordersTotals &totals, ordersArray &positions[]){
+//    double price_BE;
+//    if (directionLocal == OP_BUY){
+//        for (int index = 1; index <= totals.count; index++){
+//            if (positions[index].direction == OP_BUY){
+//            }
+//        }
+//    }
+//        
+//}
+
+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+
+void costs_set (int spread_defaultLocal, double commission_default)
+   {
+   // Calculating average spread;   
+   int spread_total = 0;   
+   for (int s = 9; s > 0; s--){
+      spreadArray [s] = spreadArray [s-1];
+      spread_total += spreadArray [s];
+      }      
+   spreadArray [0] = MarketInfo (Symbol(), MODE_SPREAD);
+   spread_total += spreadArray [0];
+   spread_avg = NormalizeDouble (spread_total / 10,0);     
+   if (spreadArray [9] == 0){
+      spread_avg = spread_defaultLocal;
+      }
+      
+   // Calculating commission   
+   if (OrdersHistoryTotal () == 0) 
+      commission = commission_default;
+   else {
+      for (int orderLocal = 0; orderLocal <= OrdersHistoryTotal ()-1; orderLocal++){
+         if (OrderSelect (orderLocal,SELECT_BY_POS,MODE_HISTORY)){
+            if (OrderSymbol () == Symbol () && OrderLots () > 0){
+               commission = OrderCommission () / OrderLots ();
+               }               
+            }
+         }
+       }
+      
+   // Calculating costs per lot   
+   costs = commission + spread_avg * tickValue;   
+   if (tickValue > 0) 
+      costs_pips = NormalizeDouble (costs / tickValue,0);
+   }
+   
+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+
+int deal_new_id (){
+   string id_string = StringSubstr (TimeCurrent (),StringLen(TimeCurrent()) - 6,6);
+   return (StrToInteger (id_string));
+}

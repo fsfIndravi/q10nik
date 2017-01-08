@@ -44,6 +44,9 @@ public:
       int         time;
    };
 
+   // Find max candle range in a period
+   double FindMaxRange (int x_timeframe, int x_timeEarlier, int x_timeLater);
+
    // Find candles mass
    int CandlesMass (int tfLocal, int extremumTime1, int extremumTime2);
    
@@ -53,7 +56,6 @@ public:
    // Find corrector
    double FindCorrector (int timeframeLocal, int directionLocal, int vertex_time);
 
-   // Find pike
    // Pike hits a level where price changed its direction
    double FindPike (int timeframeLocal, int timeStart, int timeEnd, double priceLowest, double priceHighest, double pikeRangeRatio, double pikeLengthMin);
 
@@ -274,6 +276,28 @@ double CandlesClass::FindMax (int x_timeframe, int x_direction, int x_timeEarlie
    return (x_strengthMax);
    
    }
+
+
+
+
+//+------------------------------------------------------------------+
+//| Find maximum unnillifyed candle in a period                      |
+//+------------------------------------------------------------------+
+
+double CandlesClass::FindMaxRange (int x_timeframe, int x_timeEarlier, int x_timeLater){
+   double x_rangeMax = 0;
+   int shiftEarlier  = iBarShift (Symbol(), x_timeframe, x_timeEarlier, false);
+   int shiftLater    = iBarShift (Symbol(), x_timeframe, x_timeLater, false);
+   if (shiftLater > shiftEarlier){
+       int swap = shiftLater;
+       shiftEarlier = shiftLater;
+       shiftLater = swap;
+   }
+   for (int x_shift = shiftLater; x_shift <= shiftEarlier; x_shift++) {
+       if (iHigh (Symbol(), x_timeframe, x_shift) - iLow (Symbol(), x_timeframe, x_shift) > x_rangeMax) x_rangeMax = iHigh (Symbol(), x_timeframe, x_shift) - iLow (Symbol(), x_timeframe, x_shift);
+  }
+  return (x_rangeMax);
+}
 
 
 
@@ -609,7 +633,7 @@ double CandlesClass::FindPike (int timeframeLocal, int timeStart, int timeEnd, d
     double priceClose;
     double priceOpen;
     double priceLow;
-    // comment2222222!!
+
     if (shiftStart <= shiftEnd){
         int swap = shiftStart;
         shiftStart = shiftEnd;

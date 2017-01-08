@@ -75,15 +75,7 @@ double   lotStep;
 double   lotMin;
 double   lotMax;
 int      lotDigits;
-double   tickValue;
 double   stopoutLevel;
-int      spread;
-int      spread_max;
-int      spread_avg;
-int      spreadArray[10];
-double   commission;
-double   costs;
-int      costs_pips;
 int      BUY = 1;
 int      SELL = -1;
 int      tf [10];
@@ -215,13 +207,11 @@ int start()
    
    if (GlobalVariableGet ("gv_show_log") == 1) showLog = true;
    
-   costs_set ();
+   costs_set (spread_default, commission_default_per_lot);
    
-//   _positions_close ();
-
    if (TimeCurrent () - time_start < skiphours * 3600) return (0);
    
-   if (OrdersTotal () > 0) return (0);
+   //if (OrdersTotal () > 0) return (0);
    
    _positions_close ();
    
@@ -342,30 +332,28 @@ void _positions_open ()
     double   sl, tp;
     int      ticket;
     double   sl_price;
-    double  correctorPrice;
+    double   correctorPrice;
    
+    // Starting M5 arrays first - for finding waves
     arrays (1,1);
     arrays (1,2);
+//    arrays (1,3);
+//    arrays (1,4);
+//    arrays (1,5);
     
     // 1. Enter BUY ORDERS
-
     for (int f = 2; f >= 1; f--){
         // 1.1. Flat started after 1-wave impulse order-wise
-        correctorPrice = candle.FindCorrector (1,OP_BUY,f_time [f][4]);
+        correctorPrice = candle.FindCorrector (5,OP_BUY,f_time [f][4]);
         if (f_length [f][0] < 0
-        //&& MathAbs (f_length [f][4]) > f_length_avg [f]
-        && MathAbs (f_length [f][3]) >= 0.5 * MathAbs (f_length [f][4])
-        && f_price [f][1] < f_price [f][5]
-        && f_price [f][3] < f_price [f][5]
-        && f_price [f][2] > f_price [f][4]
-        && f_price [f][1] > f_price [f][3]
-        && ((f_price [f][2] > correctorPrice && f_price [f][0] < correctorPrice) 
-            || (f_price [f][2] <= correctorPrice && f_price [f][0] < f_price [f][4])) 
-        && MathAbs (candle.FindMax (timeframe_Main, OP_SELL, f_time [f][5], f_time [f][4], true)) > MathAbs (candle.FindMax (timeframe_Main, OP_SELL, f_time [f][3], f_time [f][0], true))
-        && MathAbs (candle.FindMax (timeframe.Highest (f_time [f][5],f_time [f][4], 2), OP_SELL, f_time [f][5], f_time [f][4], false)) > MathAbs (candle.FindMax (timeframe.Highest (f_time [f][3],f_time [f][0], 2), OP_SELL, f_time [f][3], f_time [f][0], false))
-          
+        && MathAbs (f_length [f][1]) > costs_pips / deal_costs_max_koef 
+        && MathAbs (f_length [f][1]) > MathAbs (f_length [f][0])
+        && MathAbs (f_length [f][1]) < MathAbs (f_length [f][2])
+        && MathAbs (f_length [f][1]) > 0.66 * MathAbs (f_length [f][2])
+        && MathAbs (f_length [f][0]) > 0.66 * MathAbs (f_length [f][1])
+        && MathAbs (candle.FindMax (timeframe_Main, OP_SELL, f_time [f][3], f_time [f][2], false)) > MathAbs (candle.FindMax (timeframe_Main, OP_SELL, f_time [f][1], f_time [f][0], false))
+        && MathAbs (candle.FindMax (timeframe.Highest (f_time [f][3],f_time [f][2], 2), OP_SELL, f_time [f][3], f_time [f][2], false)) > MathAbs (candle.FindMax (timeframe.Highest (f_time [f][1],f_time [f][0], 2), OP_SELL, f_time [f][1], f_time [f][0], false))
           ){
-          
              order.RefreshFast ();
               if (check_spread ()
                 && order.totals.countBuy == 0
@@ -601,61 +589,3 @@ bool check_spread (){
 }
   
 
-
-
-
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-
-int deal_new_id (){
-   string id_string = StringSubstr (TimeCurrent (),StringLen(TimeCurrent()) - 6,6);
-   log_add_line ("deal_id_new = "+id_string,Red);
-   return (StrToInteger (id_string));
-}
-
-
-
-
- 
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-
-void costs_set ()
-   {
-   
-   // Calculating average spread;   
-   int spread_total = 0;   
-   for (int s = 9; s > 0; s--){
-      spreadArray [s] = spreadArray [s-1];
-      spread_total += spreadArray [s];
-      }      
-   spreadArray [0] = MarketInfo (Symbol(), MODE_SPREAD);
-   spread_total += spreadArray [0];
-   spread_avg = NormalizeDouble (spread_total / 10,0);     
-   if (spreadArray [9] == 0){
-      spread_avg = spread_default;
-      }
-      
-   // Calculating commission   
-   if (OrdersHistoryTotal () == 0) 
-      commission = commission_default_per_lot;
-   else {
-      for (int order = 0; order <= OrdersHistoryTotal ()-1; order++){
-         if (OrderSelect (order,SELECT_BY_POS,MODE_HISTORY)){
-            if (OrderSymbol () == Symbol () && OrderLots () > 0){
-               commission = OrderCommission () / OrderLots ();
-               }               
-            }
-         }
-       }
-      
-   // Calculating costs per lot   
-   costs = commission + spread_avg * tickValue;   
-   if (tickValue > 0) 
-      costs_pips = NormalizeDouble (costs / tickValue,0);
-   }
-   
