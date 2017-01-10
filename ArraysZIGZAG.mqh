@@ -427,3 +427,20 @@ int vertex_find_index (int directionLocal, int fNumberLocal, double priceLimit){
    
    }
 
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+
+int outsideswing_check (int fNumberLocal, int directionLocal){
+    if (directionLocal == OP_BUY){
+        for (int indexLocal = 3; indexLocal <= swings_max [fNumberLocal]-1; indexLocal++)
+            if (f_outsideswing [fNumberLocal][indexLocal]
+            && f_length [fNumberLocal][indexLocal] > 0) return (indexLocal);
+    }
+    if (directionLocal == OP_SELL){
+        for (indexLocal = 3; indexLocal <= swings_max [fNumberLocal]-1; indexLocal++)
+            if (f_outsideswing [fNumberLocal][indexLocal]
+            && f_length [fNumberLocal][indexLocal] < 0) return (indexLocal);
+    }
+    return (0);
+}

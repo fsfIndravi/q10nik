@@ -935,3 +935,36 @@ int deal_new_id (){
    string id_string = StringSubstr (TimeCurrent (),StringLen(TimeCurrent()) - 6,6);
    return (StrToInteger (id_string));
 }
+
+
+
+////+------------------------------------------------------------------+
+////|                                                                  |
+////+------------------------------------------------------------------+
+//
+//void draw_f_numbers (){
+//   string textLabel;
+//   delete_objects_by_namePart ("OrderLabel_");
+//   for (int orderIndex = 1; orderIndex <= totals.count; orderIndex++){
+//      if (opositions[orderIndex].direction == OP_BUY){
+//         textLabel = StringConcatenate ("OrderLabel_BUY_F",positions[orderIndex].fNumber);
+//         order.LabelDraw (positions[orderIndex].ticket,positions[orderIndex].direction,positions[orderIndex].openPrice,positions[orderIndex].openTime,textLabel,DodgerBlue);
+//         }
+//      if (opositions[orderIndex].direction = OP_SELL){
+//         textLabel = StringConcatenate ("OrderLabel_SELL_F",positions[orderIndex].fNumber);
+//         order.LabelDraw (positions[orderIndex].ticket,positions[orderIndex].direction,positions[orderIndex].openPrice,positions[orderIndex].openTime,textLabel,Maroon);
+//         }
+//      }
+//   }
+//
+//
+//
+////+------------------------------------------------------------------+
+////|                                                                  |
+////+------------------------------------------------------------------+
+//
+//void delete_objects_by_namePart (string namePartLocal){
+//   for (int pos = ObjectsTotal (); pos >=0; pos--){
+//      if (StringSubstr (ObjectName (pos),0,StringLen (namePartLocal)) == namePartLocal) ObjectDelete (ObjectName (pos));
+//   }
+//}
