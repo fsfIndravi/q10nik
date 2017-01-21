@@ -17,8 +17,8 @@ CandlesClass      candle;
 TimeframesClass   timeframe;
 StatsClass        stats;
 
-TrendlinesClass   trendlines_OP_SELL;
-TrendlinesClass   trendlines_OP_BUY;
+//TrendlinesClass   trendlines_OP_SELL;
+//TrendlinesClass   trendlines_OP_BUY;
 
 // Current version variables
 
@@ -200,6 +200,8 @@ int deinit()
 int start()
   {
 
+   if (TimeCurrent () - time_start < skiphours * 3600) return (0);
+
    showLog = false;
 
    arrays_done [1] = false;
@@ -213,8 +215,6 @@ int start()
    
    costs_set (spread_default, commission_default_per_lot);
    
-   if (TimeCurrent () - time_start < skiphours * 3600) return (0);
-   
    //if (OrdersTotal () > 0) return (0);
    
    _positions_close ();
@@ -223,7 +223,7 @@ int start()
    
    log_show ();
 
-   draw_f_numbers ();
+   //draw_f_numbers ();
    
    tick_count++;
       
@@ -424,21 +424,38 @@ void _positions_open ()
     int      ticket;
     double   sl_price;
     double   correctorPrice;
-   
+    bool     patternCur            = false;
+
+    // ENTER BUY ORDERS 
     if (iHigh (Symbol(),1,0) > iHigh (Symbol(),1,1)
     && Bid > iHigh (Symbol(),1,1)
-    && check_spread ()
-    && order.totals.countBuy == 0){
+    && check_spread ())
+        patternCur = true;
+   
+    if (patternCur){
         // Check refresh zigzag arrays
         if (!arrays_done [5]){arrays(1,5);arrays_done[5]=true;}
         int f = 5;
         int zone = 0;
-        int shift_o = outsideswing_check (f, OP_SELL);
+        int index_OS = outsideswing_check (f, OP_SELL);
+
+        //double FindCorrector (int timeframeLocal, int directionLocal, int vertex_time);
+
+        //if (f_length [f][0] < 0
+        //&& MathAbs (f_length [f][1]) > 0.66 * MathAbs (f_length [f][2])
+        //&& MathAbs (f_length [f][2]) > MathAbs (f_length [f][4])
+        //&& f_price [f][0] <= f_price [f][2] + 0.33 * MathAbs (f_length [f][1]) * Point
+        ////   int TimeframesClass::Highest (int timeStart, int timeEnd, int fullCandlesCountMin){
+        //// double FindMax (int x_timeframe, int x_direction, int x_timeEarlier, int x_timeLater, bool x_unnullifyed);
+        //&& candle.FindCorrector (
+        //&& MathAbs (candle.FindMax (timeframe.Highest (f_time [f][3],f_time [f][2],1),OP_SELL,f_time [f][3],f_time [f][2],false)) > MathAbs (candle.FindMax (timeframe.Highest (f_time [f][3],f_time [f][2],1),OP_SELL,f_time [f][3],f_time [f][2],false))){ // Candles get slower
+        //    zone = 1;
+        //}
         
         // 1. MAIN ORDER BUY
         // 1.1. Enter on 5+wave completion (zone 1)
         if (f_length [f][0] < 0
-        && (shift_o == 0 || shift_o > 3)
+        && (index_OS == 0 || index_OS > 3)
         && MathAbs (f_length [f][0]) > MathAbs (f_length [f][1])
         && MathAbs (f_length [f][0]) < MathAbs (f_length [f][2]) // wave [0] is less than 2 - the last wave is 5th
         && MathAbs (f_length [f][1]) < MathAbs (f_length [f][2])
@@ -448,13 +465,25 @@ void _positions_open ()
         
         // 1.2. Enter on 3 wave completion (zone 2)
         if (f_length [f][0] < 0
-        && (shift_o == 0 || shift_o > 3)
+        && (index_OS == 0 || index_OS > 3)
         && MathAbs (f_length [f][0]) > MathAbs (f_length [f][1])
         && MathAbs (f_length [f][0]) < MathAbs (f_length [f][2]) // wave [0] is less than 2 - the last wave is 5th
         && MathAbs (f_length [f][1]) < MathAbs (f_length [f][2])
         && MathAbs (f_length [f][2]) > MathAbs (f_length [f][4]) // wave [2] must be accelerating
         && MathAbs (f_length [f][1]) > 0.5 * MathAbs (f_length [f][2]))
             zone = 2;
+
+       // 1.3. Completed outsideswing
+
+       int index_OS_comp = outsideswing_completed (f,OP_SELL);
+       double price_max = vertex_max (f,index_OS_comp,1);
+
+       if (f_length [f][0] < 0
+       && index_OS_comp >= 4
+       && f_price [f][0] < f_price [f][index_OS_comp]
+       && price_max >= 0.5 * (f_price [f][index_OS_comp] + f_price [f][index_OS_comp+1])
+       && MathAbs (f_length [f][0]) > MathAbs (f_length [f][1]))
+           zone = 3;
         
         if (zone > 0){
             // Finding lower impulse
@@ -492,12 +521,18 @@ void _positions_open ()
                 pattern = 3;
 
         if (pattern > 0){
+                order.RefreshFULL ();
+                lotToOpen = NormalizeDouble (AccountBalance () / (1000 / 0.5),lotDigits);
                 if (lotToOpen < lotMin && lotToOpen > 0) lotToOpen = lotMin;
                 if (lotToOpen > lotMax && lotToOpen > 0) lotToOpen = lotMax;
                 tp = f_price [f][5];
                 sl = f_price [f][4] - 0.5 * (f_price [f][1] - f_price [f][4]);
                 log_add_line ("sl="+sl+"   tp="+tp,Red);
-                ticket = OrderSend (Symbol(),OP_BUY,lotToOpen,Ask,5,0,0,f,f,0,Blue);
+                if (order.dealBuy.time_LastOpened_Buy < f_time [f][1]){ 
+                    Print ("Opening order BUY: lastopenedtime="+order.dealBuy.time_LastOpened_Buy);
+                int mNumber = StringConcatenate (_TYPE_MAIN,f);
+                ticket = OrderSend (Symbol(),OP_BUY,lotToOpen,Ask,5,0,0,mNumber,mNumber,0,Blue);
+                }
                 if (ticket > 0){
                    if (OrderSelect (ticket,SELECT_BY_TICKET,MODE_TRADES)){
                       log_add_line ("ADDING BUY ORDER #"+ticket+" at price "+DoubleToStr (Ask,Digits)+ ". Lot "+lotToOpen,DarkGreen);

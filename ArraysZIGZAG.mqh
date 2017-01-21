@@ -54,6 +54,9 @@ void arrays (int timeframe_Local, int fNumber)
          
          while(vertex < swings_max [fNumber]){
             price2 = iCustom(Symbol(),timeframe_Local,"zigzag",depth [fNumber],deviation,backstep,0,shift2);
+            if (price2 > 0 
+            && shift2 == f_shift [fNumber][1]
+            && price2 == f_price [fNumber][1]) return; // if vertex [1] is unchanged than exit
             if(price2==0 || price2==price1) shift2++;
             if(fNumber >= 4 && (shift2-shift1)>depth[fNumber] * 12) break;
             if(price2>0 && price2!=price1){
@@ -203,12 +206,9 @@ void draw_f_number (string fNumberLocal, int directionLocal, double priceLocal, 
 
 void delete_f_number (int fNumberLocal, int directionLocal)
    {
-   
    string objName;
-   
    if (directionLocal > 0) objName = StringConcatenate ("Label F",fNumberLocal," BUY");
    if (directionLocal < 0) objName = StringConcatenate ("Label F",fNumberLocal," SELL");
-   
    }
    
 
@@ -264,14 +264,14 @@ int sum_duration (int fNumberLocal, int shiftStart, int shiftEnd)
 //|                                                                  |
 //+------------------------------------------------------------------+
 
-double max_swing (int fNumberLocal, int directionLocal, int shiftStartLocal)
+double max_swing (int fNumberLocal, int directionLocal, int indexStartLocal)
    {
    
    double max_swing_local = 0;
    
    if (directionLocal == 1)
       {
-      for (int index = shiftStartLocal; index >= 0; index--)
+      for (int index = indexStartLocal; index >= 0; index--)
          {
          if (f_length [fNumberLocal][index] > 0
             && f_length [fNumberLocal][index] > max_swing_local) max_swing_local = f_length [fNumberLocal][index];
@@ -280,7 +280,7 @@ double max_swing (int fNumberLocal, int directionLocal, int shiftStartLocal)
    
    if (directionLocal == -1)
       {
-      for (index = shiftStartLocal; index >= 0; index--)
+      for (index = indexStartLocal; index >= 0; index--)
          {
          if (f_length [fNumberLocal][index] < 0
             && MathAbs (f_length [fNumberLocal][index]) > MathAbs (max_swing_local)) max_swing_local = f_length [fNumberLocal][index];
@@ -355,24 +355,15 @@ int get_f_wave_shift_start (int timeStartLocal,int fNumberLocal)
 
 double f_price_max (int fNumberLocal, int timeStartLocal, int timeEndLocal)
    {
-   
    double priceMaxLocal = 0;
-   
    for (int index = 1; index <= swings_max [fNumberLocal]; index++)
       {
-      
       if (f_time [fNumberLocal][index] < timeStartLocal) break;
-      
       if (f_price [fNumberLocal][index] > priceMaxLocal
          && f_time [fNumberLocal][index] <= timeEndLocal) priceMaxLocal = f_price [fNumberLocal][index];
-      
       }
-   
    return (priceMaxLocal);
-   
    }
- 
- 
  
  
  
@@ -380,27 +371,17 @@ double f_price_max (int fNumberLocal, int timeStartLocal, int timeEndLocal)
 //|                                                                  |
 //+------------------------------------------------------------------+
 
-double f_price_min (int fNumberLocal, int timeStartLocal, int timeEndLocal)
-   {
-   
+double f_price_min (int fNumberLocal, int timeStartLocal, int timeEndLocal){
    double priceMinLocal = 0;
-   
-   for (int index = 1; index <= swings_max [fNumberLocal]; index++)
-      {
-      
+   for (int index = 1; index <= swings_max [fNumberLocal]; index++){
       if (f_time [fNumberLocal][index] < timeStartLocal) break;
-      
       if (priceMinLocal == 0
          && f_time [fNumberLocal][index] <= timeEndLocal) priceMinLocal = f_price [fNumberLocal][index];
-      
       if (f_price [fNumberLocal][index] < priceMinLocal
          && f_time [fNumberLocal][index] <= timeEndLocal) priceMinLocal = f_price [fNumberLocal][index];
-      
       }
-   
    return (priceMinLocal);
-   
-   }
+}
 
 
 
@@ -410,26 +391,26 @@ double f_price_min (int fNumberLocal, int timeStartLocal, int timeEndLocal)
 //+------------------------------------------------------------------+
 
 int vertex_find_index (int directionLocal, int fNumberLocal, double priceLimit){   
-   
    if (directionLocal == 1){
       for (int index = 0; index <= swings_max [fNumberLocal]; index++){
          if (f_price [fNumberLocal][index] > priceLimit) return (index);
          }
       }
-   
    if (directionLocal == -1){
       for (index = 0; index <= swings_max [fNumberLocal]; index++){
          if (f_price [fNumberLocal][index] < priceLimit) return (index);
          }
       }
-   
    return (-1);
-   
-   }
+}
 
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
+//---------------------------------------------------------------------------
+// Name          : outsideswing_check
+// Description   : checks if there is an outsideswing up to the current wave 
+// Input         : wave fNumber, wave direction (OP_BUY | O_SELL) 
+// Returns       : outsideswing wave vertex index 
+// Usage         : main expert module 
+//---------------------------------------------------------------------------
 
 int outsideswing_check (int fNumberLocal, int directionLocal){
     if (directionLocal == OP_BUY){
@@ -443,4 +424,109 @@ int outsideswing_check (int fNumberLocal, int directionLocal){
             && f_length [fNumberLocal][indexLocal] < 0) return (indexLocal);
     }
     return (0);
+}
+
+
+//---------------------------------------------------------------------------
+// Name          : outsideswing_completed
+// Description   : finds outsideswing that was completed  on the current wave 
+// Input         : wave fNumber, wave direction (OP_BUY | O_SELL) 
+// Returns       : wave vertex index 
+// Usage         : main expert module 
+//---------------------------------------------------------------------------
+
+int outsideswing_completed (int fNumberLocal, int directionLocal){
+   if (directionLocal == OP_BUY){
+       for (int indexLocal = 4; indexLocal <= swings_max [fNumberLocal]-1;indexLocal++){
+           if (f_price [fNumberLocal][0] > f_price [fNumberLocal][indexLocal]
+           && vertex_min (fNumberLocal, indexLocal, 1) >= f_price [fNumberLocal][indexLocal+1]   // outsideswing detection - swings inside swing
+           && vertex_max (fNumberLocal, indexLocal, 1) <= f_price [fNumberLocal][indexLocal]){
+               return (indexLocal);
+           }
+       }
+   }
+   if (directionLocal == OP_SELL){
+       for (indexLocal = 4; indexLocal <= swings_max [fNumberLocal]-1;indexLocal++){
+           if (f_price [fNumberLocal][0] < f_price [fNumberLocal][indexLocal]
+           && vertex_min (fNumberLocal, indexLocal, 1) >= f_price [fNumberLocal][indexLocal]   // outsideswing detection - swings inside swing
+           && vertex_max (fNumberLocal, indexLocal, 1) <= f_price [fNumberLocal][indexLocal+1]){
+               return (indexLocal);
+           }
+       }
+   }
+}
+
+
+//---------------------------------------------------------------------------
+// Name                 : outsideswing_nullifyed
+// Description          : finds outsideswing that was nullifyed on the current wave // Input                : wave fNumber, wave direction (OP_BUY | O_SELL) 
+// Returns              : wave vertex index 
+// Usage                : main expert module 
+//---------------------------------------------------------------------------
+
+int outsideswing_nullifyed (int fNumberLocal, int directionLocal){
+   if (directionLocal == OP_BUY){
+       for (int indexLocal = 4; indexLocal <= swings_max [fNumberLocal]-1;indexLocal++){
+           if (f_price [fNumberLocal][0] < f_price [fNumberLocal][indexLocal+1]
+           && vertex_min (fNumberLocal, indexLocal, 1) >= f_price [fNumberLocal][indexLocal+1]   // outsideswing detection - swings inside swing
+           && vertex_max (fNumberLocal, indexLocal, 1) <= f_price [fNumberLocal][indexLocal]){
+               return (indexLocal);
+           }
+       }
+   }
+   if (directionLocal == OP_SELL){
+       for (indexLocal = 4; indexLocal <= swings_max [fNumberLocal]-1;indexLocal++){
+           if (f_price [fNumberLocal][0] > f_price [fNumberLocal][indexLocal+1]
+           && vertex_min (fNumberLocal, indexLocal, 1) >= f_price [fNumberLocal][indexLocal+1]   // outsideswing detection - swings inside swing
+           && vertex_max (fNumberLocal, indexLocal, 1) <= f_price [fNumberLocal][indexLocal]){
+               return (indexLocal);
+           }
+       }
+   }
+}
+
+
+//---------------------------------------------------------------------------
+// Name                 : vertex_min
+// Description          : finds minimum vertex price in a period of vertexes
+// Input                : fNumber of the waves | shift start | shift end
+// Returns              : minimum price
+// Usage                : main expert module 
+//---------------------------------------------------------------------------
+
+double vertex_min (int fNumberLocal, int shiftStart, int shiftEnd){
+    double priceMin = f_price [fNumberLocal][shiftStart];
+    if (shiftEnd > shiftStart){
+        int swap = shiftEnd;
+        shiftEnd = shiftStart;
+        shiftStart = swap;
+    }
+    for (int indexLocal = shiftStart; indexLocal >= 1; indexLocal--){
+        if (f_price [fNumberLocal][indexLocal] < priceMin) priceMin = f_price [fNumberLocal][indexLocal];
+    }
+
+    return (priceMin);
+}
+    
+
+//---------------------------------------------------------------------------
+// Name                 : vertex_max
+// Description          : finds maximum vertex price in a period of vertexes
+// Input                : fNumber of the waves | shift start | shift end
+// Returns              : maximum price
+// Usage                : main expert module 
+//---------------------------------------------------------------------------
+
+double vertex_max (int fNumberLocal, int shiftStart, int shiftEnd){
+    double priceMax = f_price [fNumberLocal][shiftStart];
+    if (shiftEnd > shiftStart){
+        int swap = shiftEnd;
+        shiftEnd = shiftStart;
+        shiftStart = swap;
+    }
+    for (int indexLocal = shiftStart; indexLocal >= 1; indexLocal--){
+        if (f_price [fNumberLocal][indexLocal] > priceMax) priceMax = f_price [fNumberLocal][indexLocal];
+    }
+
+    return (priceMax);
 }

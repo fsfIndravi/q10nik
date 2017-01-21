@@ -60,6 +60,7 @@ public:
       double      openPrice;
       string      symbol;
       int         type;                   // 1 - Base. 2 - Add. 3. Lock. 4. Repair
+      int         fNumber;
       double      lot;
       double      lotStart;               // Order start lot
       int         magic;
@@ -236,6 +237,7 @@ OrdersClass::RefreshFULL (){   // Refreshes full
             positions[a_count].magic               = OrderMagicNumber ();
             positions[a_count].openPrice           = OrderOpenPrice ();
             positions[a_count].type                = StrToInteger (StringSubstr (positions[a_count].magic,0,1));
+            positions[a_count].fNumber             = StrToInteger (StringSubstr (positions[a_count].magic,1,1));
             positions[a_count].dealID              = StrToInteger (StringSubstr (positions[a_count].magic, StringLen (positions[a_count].magic)-5,5));
             positions[a_count].openTime            = OrderOpenTime ();
             positions[a_count].profit              = OrderProfit () + OrderCommission () + OrderSwap ();
@@ -248,7 +250,7 @@ OrdersClass::RefreshFULL (){   // Refreshes full
             positions[a_count].closedBE            = GV_Get (OrderOpenPrice (), _CLOSED_BE);
             positions[a_count].closedSL            = GV_Get (OrderOpenPrice (), _CLOSED_SL);
             positions[a_count].closedNumber        = GV_Get (OrderOpenPrice (), _CLOSED_NUMBER);
-            positions[a_count].lotStart            = GV_Get (OrderOpenPrice (), _LOT_START);
+            positions[a_count].lotStart            = GV_Get (OrderOpenPrice (), _LOT_START); 
             if (positions[a_count].lotStart > positions[a_count].lot) positions[a_count].closedPartially = true;  // Check partial closing
             totalProfit += positions[a_count].profit;                                  
             if (positions[a_count].direction == OP_BUY)  totalProfitBuy += positions[a_count].profit;
@@ -709,12 +711,6 @@ void OrdersClass::GVSerie_Set (int s_direction, int s_type, double s_value){
    if (s_type == _SERIE_BASE_LOT){
       if (s_direction == OP_BUY) name = "SERIE_BASE_LOT_BUY";
       if (s_direction == OP_SELL) name = "SERIE_BASE_LOT_SEL";
-      GlobalVariableSet (name, s_value);
-      return;
-   }
-   if (s_type == _SERIE_LAST_CLOSED_PROFIT){
-      if (s_direction == OP_BUY) name = "SERIE_LAST_CLOSED_PROFIT_BUY";
-      if (s_direction == OP_SELL) name = "SERIE_LAST_CLOSED_PROFIT_SEL";
       GlobalVariableSet (name, s_value);
       return;
    }
