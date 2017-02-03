@@ -290,90 +290,198 @@ void _positions_close (){
    
    for (int orders = order.totals.count; orders > 0; orders--){
 
-      // Optimizing performance for arrays func call
-      if (!arrays_done [1]){arrays(1,1);arrays_done[1]=true;}
-      if (!arrays_done [5]){arrays(1,5);arrays_done[5]=true;}
+       // Find order carrier wave
+
+       int      carrier_start_shift = iLowest (Symbol(), 1, MODE_LOW, iBarShift (Symbol(), 1, order.positions[orders].openTime, false),0);
+       double   carrier_start_price = iLow (Symbol(), 1, carrier_start_shift);
+       int      carrier_start_time  = iTime (Symbol(), 1, carrier_start_shift);
+
+       // Optimizing performance for arrays func call
+       if (!arrays_done [1]){arrays(1,1);arrays_done[1]=true;}
+       if (!arrays_done [5]){arrays(1,5);arrays_done[5]=true;}
+            
+       // 1. 3-wave F5 with 50+% retrace 
+       
+       if (order.positions[orders].direction == OP_BUY
+       // no popunty outsideswing 
+       && outsideswing_check (5, OP_BUY) == 0
+       && f_length [5][0] > 0
+       && MathAbs (f_length [5][2]) > MathAbs (f_length [5][4])
+       && MathAbs (f_length [5][0]) > MathAbs (f_length [5][1])
+       && MathAbs (f_length [5][2]) > MathAbs (f_length [5][1])
+       && MathAbs (f_length [5][1]) > 0.5 * MathAbs (f_length [5][2])
+       // f1 pattern
+       && ((f_length [1][0] > 0
+             && MathAbs (f_length [1][0]) < MathAbs (f_length [1][2])
+             && MathAbs (f_length [1][1]) < MathAbs (f_length [1][2])
+             && MathAbs (f_length [1][2]) > MathAbs (f_length [1][4]))
+         || 
+         (f_length [1][0] < 0
+             && f_price [1][1] >= f_price [5][0] // f1 wave must start from the highest high
+             && MathAbs (f_length [1][0]) < 1.15 * MathAbs (f_length [1][1])
+             && MathAbs (f_length [1][0]) >= 0.5 * MathAbs (f_length [1][1])
+             && MathAbs (f_length [1][1]) < MathAbs (f_length [1][3])))
+       && iLow (Symbol(),1,0) < iLow (Symbol(),1,1)
+       && Bid < iLow (Symbol(),1,1)
+       && f_time [5][2] > order.positions[orders].openTime
+       ){
            
-      // 1. 3-wave F5 with 50+% retrace 
-      
+         lotToClose = NormalizeDouble (order.positions[orders].lot,lotDigits);
+         closeResult = OrderClose (order.positions[orders].ticket,lotToClose,Bid,5,Yellow);
+         if (closeResult) 
+            {
+            //lastCloseTime_Buy = TimeCurrent ();
+            log_add_line ("Close order BUY #"+order.positions[orders].ticket+" F5: 3-wave F5 ",Red);
+            showLog = true;
+            }
+       }
+
+       // 2. Opposite OU F5
+       log_add_line ("order.positions[orders].direction == "+order.positions[orders].direction,Red); 
+       log_add_line ("order.positions[orders].openPrice == "+order.positions[orders].openPrice,Red); 
+
+       if (order.positions[orders].direction == OP_BUY
+       // no popunty outsideswing 
+       && outsideswing_check (5, OP_BUY) == 0
+       // f5 pattern
+       && ((f_length [5][0] > 0
+             && MathAbs (f_length [5][1]) > MathAbs (f_length [5][2])
+             && MathAbs (f_length [5][2]) > MathAbs (f_length [5][3])
+             && MathAbs (f_length [5][0]) >= 0.5 *  MathAbs (f_length [5][1]))
+         ||
+         (f_length [5][0] < 0
+             && MathAbs (f_length [5][0]) > MathAbs (f_length [5][1])
+             && MathAbs (f_length [5][1]) > MathAbs (f_length [5][2])
+             && iHigh (Symbol (), 1, iHighest (Symbol (),1,f_shift [5][0],0)) >= f_price [5][0] + 0.5 * MathAbs (f_length [5][0]) * Point))
+       // f1 pattern
+       && ((f_length [1][0] > 0
+             && MathAbs (f_length [1][0]) < MathAbs (f_length [1][2])
+             && MathAbs (f_length [1][1]) < MathAbs (f_length [1][2])
+             && MathAbs (f_length [1][2]) > MathAbs (f_length [1][4]))
+         || 
+         (f_length [1][0] < 0
+             && f_price [1][1] >= f_price [5][0] // f1 wave must start from the highest high
+             && MathAbs (f_length [1][0]) < 1.15 * MathAbs (f_length [1][1])
+             && MathAbs (f_length [1][0]) >= 0.5 * MathAbs (f_length [1][1])
+             && MathAbs (f_length [1][1]) < MathAbs (f_length [1][3])))
+       && iLow (Symbol(),1,0) < iLow (Symbol(),1,1)
+       && Bid < iLow (Symbol(),1,1)
+       && f_time [5][2] > order.positions[orders].openTime
+       ){
+           
+         lotToClose = NormalizeDouble (order.positions[orders].lot,lotDigits);
+         closeResult = OrderClose (order.positions[orders].ticket,lotToClose,Bid,5,Yellow);
+         if (closeResult) 
+            {
+            //lastCloseTime_Buy = TimeCurrent ();
+            log_add_line ("Close order BUY #"+order.positions[orders].ticket+": opposite OU F5 ",Red);
+            showLog = true;
+            }
+       }
+
+      // 3. OutsideSwing completion 
+      int index_OS_comp = outsideswing_completed (5,OP_BUY);
+      double price_min = vertex_min (5,index_OS_comp,1);
+
       if (order.positions[orders].direction == OP_BUY
-      // no popunty outsideswing 
-      && outsideswing_check (5, OP_BUY) == 0
       && f_length [5][0] > 0
-      && MathAbs (f_length [5][2]) > MathAbs (f_length [5][4])
+      && index_OS_comp >= 4
+      && f_price [5][0] > f_price [5][index_OS_comp]
+      && price_min <= 0.5 * (f_price [5][index_OS_comp] + f_price [5][index_OS_comp+1])
       && MathAbs (f_length [5][0]) > MathAbs (f_length [5][1])
-      && MathAbs (f_length [5][2]) > MathAbs (f_length [5][1])
-      && MathAbs (f_length [5][1]) > 0.5 * MathAbs (f_length [5][2])
-      // f1 pattern
-      && ((f_length [1][0] > 0
-            && MathAbs (f_length [1][0]) < MathAbs (f_length [1][2])
-            && MathAbs (f_length [1][1]) < MathAbs (f_length [1][2])
-            && MathAbs (f_length [1][2]) > MathAbs (f_length [1][4]))
-        || 
-        (f_length [1][0] < 0
-            && f_price [1][1] >= f_price [5][0] // f1 wave must start from the highest high
-            && MathAbs (f_length [1][0]) < 1.15 * MathAbs (f_length [1][1])
-            && MathAbs (f_length [1][0]) >= 0.5 * MathAbs (f_length [1][1])
-            && MathAbs (f_length [1][1]) < MathAbs (f_length [1][3])))
+      && MathAbs (f_length [5][0]) < 1.3 * MathAbs (f_length [5][index_OS_comp])          // wave [0] is less than 1.3x of the OutsideSwing. Otherwise wave [0] will be 3rd in the trend
       && iLow (Symbol(),1,0) < iLow (Symbol(),1,1)
       && Bid < iLow (Symbol(),1,1)
-      && f_time [5][2] > order.positions[orders].openTime
-      ){
-          
-        lotToClose = NormalizeDouble (order.positions[orders].lot,lotDigits);
-        closeResult = OrderClose (order.positions[orders].ticket,lotToClose,Bid,5,Yellow);
-        if (closeResult) 
-           {
-           //lastCloseTime_Buy = TimeCurrent ();
-           log_add_line ("Close order BUY #"+order.positions[orders].ticket+" F5: 3-wave F5 ",Red);
-           showLog = true;
-           }
-      }
+      && f_time [5][index_OS_comp] > order.positions[orders].openTime){
+         lotToClose = NormalizeDouble (order.positions[orders].lot,lotDigits);
+         closeResult = OrderClose (order.positions[orders].ticket,lotToClose,Bid,5,Yellow);
+         if (closeResult) 
+            {
+            //lastCloseTime_Buy = TimeCurrent ();
+            log_add_line ("Close order BUY #"+order.positions[orders].ticket+": OutsideSwing completion ",Red);
+            showLog = true;
+            }
+       }
 
-      // 2. Opposite OU F5
-      log_add_line ("order.positions[orders].direction == "+order.positions[orders].direction,Red); 
-      log_add_line ("order.positions[orders].openPrice == "+order.positions[orders].openPrice,Red); 
+      // 4. Swing breakout after favor 3-wave
 
       if (order.positions[orders].direction == OP_BUY
-      // no popunty outsideswing 
-      && outsideswing_check (5, OP_BUY) == 0
-      // f5 pattern
-      && ((f_length [5][0] > 0
-            && MathAbs (f_length [5][1]) > MathAbs (f_length [5][2])
-            && MathAbs (f_length [5][2]) > MathAbs (f_length [5][3])
-            && MathAbs (f_length [5][0]) >= 0.5 *  MathAbs (f_length [5][1]))
-        ||
-        (f_length [5][0] < 0
-            && MathAbs (f_length [5][0]) > MathAbs (f_length [5][1])
-            && MathAbs (f_length [5][1]) > MathAbs (f_length [5][2])
-            && iHigh (Symbol (), 1, iHighest (Symbol (),1,f_shift [5][0],0)) >= f_price [5][0] + 0.5 * MathAbs (f_length [5][0]) * Point))
-      // f1 pattern
-      && ((f_length [1][0] > 0
-            && MathAbs (f_length [1][0]) < MathAbs (f_length [1][2])
-            && MathAbs (f_length [1][1]) < MathAbs (f_length [1][2])
-            && MathAbs (f_length [1][2]) > MathAbs (f_length [1][4]))
-        || 
-        (f_length [1][0] < 0
-            && f_price [1][1] >= f_price [5][0] // f1 wave must start from the highest high
-            && MathAbs (f_length [1][0]) < 1.15 * MathAbs (f_length [1][1])
-            && MathAbs (f_length [1][0]) >= 0.5 * MathAbs (f_length [1][1])
-            && MathAbs (f_length [1][1]) < MathAbs (f_length [1][3])))
+      && f_length [5][0] > 0
+      && f_price [5][4] < order.positions[orders].openPrice                    // Previous opposite wave started lower than the order open price (breakout confirmed)
+      && f_price [5][0] > f_price [5][4]                                       // Opposite level (reversal point) reached
+      && f_price [5][0] - f_price [5][4] < f_price [5][4] - f_price [5][3]     // Iceberg upper side is smaller than its bottom
+      && f_price [5][1] > f_price [5][3]
+      && f_price [5][2] < f_price [5][4]
       && iLow (Symbol(),1,0) < iLow (Symbol(),1,1)
       && Bid < iLow (Symbol(),1,1)
-      && f_time [5][2] > order.positions[orders].openTime
-      ){
-          
-        lotToClose = NormalizeDouble (order.positions[orders].lot,lotDigits);
-        closeResult = OrderClose (order.positions[orders].ticket,lotToClose,Bid,5,Yellow);
-        if (closeResult) 
-           {
-           //lastCloseTime_Buy = TimeCurrent ();
-           log_add_line ("Close order BUY #"+order.positions[orders].ticket+": opposite OU F5 ",Red);
-           showLog = true;
-           }
+      && f_time [5][2] > order.positions[orders].openTime){
+         lotToClose = NormalizeDouble (order.positions[orders].lot,lotDigits);
+         closeResult = OrderClose (order.positions[orders].ticket,lotToClose,Bid,5,Yellow);
+         if (closeResult) 
+            {
+            //lastCloseTime_Buy = TimeCurrent ();
+            log_add_line ("Close order BUY #"+order.positions[orders].ticket+": opposite swing BO ",Red);
+            showLog = true;
+            }
+       }
+
+      // 4. Swing breakout after favor 3-wave
+
+      if (order.positions[orders].direction == OP_BUY
+      && f_length [5][0] > 0
+      && f_price [5][2] < order.positions[orders].openPrice                    // Previous opposite wave started lower than the order open price (breakout confirmed)
+      && f_price [5][0] > f_price [5][2]                                       // Opposite level (reversal point) reached
+      && f_price [5][0] - f_price [5][2] < f_price [5][2] - f_price [5][1]     // Iceberg upper side is smaller than its bottom
+      && f_price [5][1] > f_price [5][3]
+      && iLow (Symbol(),1,0) < iLow (Symbol(),1,1)
+      && Bid < iLow (Symbol(),1,1)
+      && f_time [5][2] > order.positions[orders].openTime){
+         lotToClose = NormalizeDouble (order.positions[orders].lot,lotDigits);
+         closeResult = OrderClose (order.positions[orders].ticket,lotToClose,Bid,5,Yellow);
+         if (closeResult) 
+            {
+            //lastCloseTime_Buy = TimeCurrent ();
+            log_add_line ("Close order BUY #"+order.positions[orders].ticket+": opposite swing BO ",Red);
+            showLog = true;
+            }
+       }
+
+      //log_add_line ("carrier_price_start = "+carrier_start_price+"   carrier_start_time="+get_date_string(carrier_start_time),Blue);
+      //log_add_line ("iLowest="+iLowest (Symbol(), 1, MODE_LOW, iBarShift (Symbol(), 1, order.positions[orders].openTime, false),0),Blue);
+      
+      for (int indexLocal = 3; indexLocal <= swings_max [5]; indexLocal++){
+          // 5. Closing on reaching corrector of the opposite 3+ waves
+          if (f_length [5][indexLocal] < 0
+          && f_price [5][0] >= candle.FindCorrector (1, OP_SELL, f_time [5][indexLocal+1])          // corrector at the vertex of the 3rd wave start
+          //&& MathAbs (f_length [5][indexLocal]) > MathAbs (f_length [5][indexLocal+2])              // opposite 3rd wave is accelerating
+          && f_time [5][indexLocal+1] > order.positions[orders].openTime                            // opposite 3rd wave started after the order open time
+          && f_time [5][indexLocal-2] <= carrier_start_time                                         // opposite 3+ wave finished before the carrier start
+          && f_price [5][indexLocal+1] - order.positions[orders].openPrice < order.positions[orders].openPrice - carrier_start_price){ // Iceberg upper side is smaller than its bottom
+              lotToClose = NormalizeDouble (order.positions[orders].lot,lotDigits);
+              closeResult = OrderClose (order.positions[orders].ticket,lotToClose,Bid,5,Yellow);
+//                        newSLprice = priceReach - riskPipsExtra * Point;
+//                        newSLpips = (order_OpenPrice [orders] - newSLprice) / Point;
+//                        lotToOpenNew = NormalizeDouble ((AccountBalance () + order_Profit [orders]) * riskPercentDeal / 100 / tickValue / newSLpips,lotDigits);
+//                        lotToClose = order_Lot [orders] - lotToOpenNew;
+//                        if (lotToClose / order_Lot [orders] > partialCloseLimit) lotToClose = order_Lot [orders];
+              if (closeResult){
+                  //lastCloseTime_Buy = TimeCurrent ();
+                  log_add_line ("Close order BUY #"+order.positions[orders].ticket+": opposite 3+ wave",Red);
+                  showLog = true;
+                  order.RefreshFULL();
+              }
+          }
       }
 
+
+          // 6. Closing on the corrector of the opposite wave after 3+ wave after the order carrier start
+
+          
+              
+
+
       
+
          
    }
 }
@@ -432,59 +540,49 @@ void _positions_open ()
     && check_spread ())
         patternCur = true;
    
-    if (patternCur){
+    if (patternCur
+    && order.dealBuy.time_LastOpened_Buy < f_time [5][1]){
         // Check refresh zigzag arrays
         if (!arrays_done [5]){arrays(1,5);arrays_done[5]=true;}
         int f = 5;
         int zone = 0;
         int index_OS = outsideswing_check (f, OP_SELL);
 
-        //double FindCorrector (int timeframeLocal, int directionLocal, int vertex_time);
-
-        //if (f_length [f][0] < 0
-        //&& MathAbs (f_length [f][1]) > 0.66 * MathAbs (f_length [f][2])
-        //&& MathAbs (f_length [f][2]) > MathAbs (f_length [f][4])
-        //&& f_price [f][0] <= f_price [f][2] + 0.33 * MathAbs (f_length [f][1]) * Point
-        ////   int TimeframesClass::Highest (int timeStart, int timeEnd, int fullCandlesCountMin){
-        //// double FindMax (int x_timeframe, int x_direction, int x_timeEarlier, int x_timeLater, bool x_unnullifyed);
-        //&& candle.FindCorrector (
-        //&& MathAbs (candle.FindMax (timeframe.Highest (f_time [f][3],f_time [f][2],1),OP_SELL,f_time [f][3],f_time [f][2],false)) > MathAbs (candle.FindMax (timeframe.Highest (f_time [f][3],f_time [f][2],1),OP_SELL,f_time [f][3],f_time [f][2],false))){ // Candles get slower
-        //    zone = 1;
-        //}
-        
         // 1. MAIN ORDER BUY
         // 1.1. Enter on 5+wave completion (zone 1)
         if (f_length [f][0] < 0
         && (index_OS == 0 || index_OS > 3)
         && MathAbs (f_length [f][0]) > MathAbs (f_length [f][1])
-        && MathAbs (f_length [f][0]) < MathAbs (f_length [f][2]) // wave [0] is less than 2 - the last wave is 5th
+        && MathAbs (f_length [f][0]) < MathAbs (f_length [f][2])             // wave [0] is less than 1.3x of wave [2] - the last wave is 5th
         && MathAbs (f_length [f][1]) < MathAbs (f_length [f][2])
-        && MathAbs (f_length [f][3]) < MathAbs (f_length [f][4])
-        && MathAbs (f_length [f][1]) > 0.38 * MathAbs (f_length [f][2]))
+        && MathAbs (f_length [f][1]) > 0.38 * MathAbs (f_length [f][2])
+        && MathAbs (f_length [f][4]) < MathAbs (f_length [f][2])             // wave [2] is accelerating
+        && MathAbs (f_length [f][3]) < MathAbs (f_length [f][4]))
             zone = 1;
         
         // 1.2. Enter on 3 wave completion (zone 2)
         if (f_length [f][0] < 0
         && (index_OS == 0 || index_OS > 3)
         && MathAbs (f_length [f][0]) > MathAbs (f_length [f][1])
-        && MathAbs (f_length [f][0]) < MathAbs (f_length [f][2]) // wave [0] is less than 2 - the last wave is 5th
+        && MathAbs (f_length [f][0]) < 1.3 * MathAbs (f_length [f][2]) // wave [0] is less than 1.3x of wave [2] - the last wave is 3rd
         && MathAbs (f_length [f][1]) < MathAbs (f_length [f][2])
         && MathAbs (f_length [f][2]) > MathAbs (f_length [f][4]) // wave [2] must be accelerating
         && MathAbs (f_length [f][1]) > 0.5 * MathAbs (f_length [f][2]))
             zone = 2;
 
-       // 1.3. Completed outsideswing
+        // 1.3. Completed outsideswing
 
-       int index_OS_comp = outsideswing_completed (f,OP_SELL);
-       double price_max = vertex_max (f,index_OS_comp,1);
+        int index_OS_comp = outsideswing_completed (f,OP_SELL);
+        double price_max = vertex_max (f,index_OS_comp,1);
 
-       if (f_length [f][0] < 0
-       && index_OS_comp >= 4
-       && f_price [f][0] < f_price [f][index_OS_comp]
-       && price_max >= 0.5 * (f_price [f][index_OS_comp] + f_price [f][index_OS_comp+1])
-       && MathAbs (f_length [f][0]) > MathAbs (f_length [f][1]))
-           zone = 3;
-        
+        if (f_length [f][0] < 0
+        && index_OS_comp >= 4
+        && f_price [f][0] < f_price [f][index_OS_comp]
+        && price_max >= 0.5 * (f_price [f][index_OS_comp] + f_price [f][index_OS_comp+1])
+        && MathAbs (f_length [f][0]) > MathAbs (f_length [f][1])
+        && MathAbs (f_length [f][0]) < 1.3 * MathAbs (f_length [f][index_OS_comp]))          // wave [0] is less than 1.3x of the OutsideSwing. Otherwise wave [0] will be 3rd in the trend
+            zone = 3;
+         
         if (zone > 0){
             // Finding lower impulse
             // Optimizing performance for arrays func call
@@ -521,18 +619,19 @@ void _positions_open ()
                 pattern = 3;
 
         if (pattern > 0){
-                order.RefreshFULL ();
-                lotToOpen = NormalizeDouble (AccountBalance () / (1000 / 0.5),lotDigits);
+                if (OrdersTotal () > 0) order.RefreshFULL ();
+                //lotToOpen = NormalizeDouble (AccountBalance () / (1000 / 0.5),lotDigits);
+                lotToOpen = 1; 
                 if (lotToOpen < lotMin && lotToOpen > 0) lotToOpen = lotMin;
                 if (lotToOpen > lotMax && lotToOpen > 0) lotToOpen = lotMax;
                 tp = f_price [f][5];
                 sl = f_price [f][4] - 0.5 * (f_price [f][1] - f_price [f][4]);
                 log_add_line ("sl="+sl+"   tp="+tp,Red);
-                if (order.dealBuy.time_LastOpened_Buy < f_time [f][1]){ 
-                    Print ("Opening order BUY: lastopenedtime="+order.dealBuy.time_LastOpened_Buy);
+                //if (order.dealBuy.time_LastOpened_Buy < f_time [f][1]){ 
+                //    Print ("Opening order BUY: lastopenedtime="+order.dealBuy.time_LastOpened_Buy);
                 int mNumber = StringConcatenate (_TYPE_MAIN,f);
-                ticket = OrderSend (Symbol(),OP_BUY,lotToOpen,Ask,5,0,0,mNumber,mNumber,0,Blue);
-                }
+                ticket = 0;
+                if (order.dealBuy.time_LastOpened_Buy < f_time [f][1]) ticket = OrderSend (Symbol(),OP_BUY,lotToOpen,Ask,5,0,0,mNumber,mNumber,0,Blue);
                 if (ticket > 0){
                    if (OrderSelect (ticket,SELECT_BY_TICKET,MODE_TRADES)){
                       log_add_line ("ADDING BUY ORDER #"+ticket+" at price "+DoubleToStr (Ask,Digits)+ ". Lot "+lotToOpen,DarkGreen);
@@ -557,56 +656,6 @@ void _positions_open ()
             
             
 
-
-    
-
-
-
-
-//    // 1. Enter BUY ORDERS
-//    for (int f = 2; f >= 1; f--){
-//        // 1.1. Flat started after 1-wave impulse order-wise
-//        correctorPrice = candle.FindCorrector (5,OP_BUY,f_time [f][4]);
-//        if (f_length [f][0] < 0
-//        && MathAbs (f_length [f][1]) > costs_pips / deal_costs_max_koef 
-//        && MathAbs (f_length [f][1]) > MathAbs (f_length [f][0])
-//        && MathAbs (f_length [f][1]) < MathAbs (f_length [f][2])
-//        && MathAbs (f_length [f][1]) > 0.66 * MathAbs (f_length [f][2])
-//        && MathAbs (f_length [f][0]) > 0.66 * MathAbs (f_length [f][1])
-//        && MathAbs (candle.FindMax (timeframe_Main, OP_SELL, f_time [f][3], f_time [f][2], false)) > MathAbs (candle.FindMax (timeframe_Main, OP_SELL, f_time [f][1], f_time [f][0], false))
-//        && MathAbs (candle.FindMax (timeframe.Highest (f_time [f][3],f_time [f][2], 2), OP_SELL, f_time [f][3], f_time [f][2], false)) > MathAbs (candle.FindMax (timeframe.Highest (f_time [f][1],f_time [f][0], 2), OP_SELL, f_time [f][1], f_time [f][0], false))
-//          ){
-//             order.RefreshFast ();
-//              if (check_spread ()
-//                && order.totals.countBuy == 0
-//                ){
-//                   lotToOpen = NormalizeDouble (AccountBalance () / (1000 / 0.5),lotDigits);
-//                   if (lotToOpen < lotMin && lotToOpen > 0) lotToOpen = lotMin;
-//                   if (lotToOpen > lotMax && lotToOpen > 0) lotToOpen = lotMax;
-//                   tp = f_price [f][5];
-//                   sl = f_price [f][4] - 0.5 * (f_price [f][1] - f_price [f][4]);
-//                   log_add_line ("sl="+sl+"   tp="+tp,Red);
-//                   ticket = OrderSend (Symbol(),OP_BUY,lotToOpen,Ask,5,0,0,1,1,0,Blue);
-//                   if (ticket > 0){
-//                      if (OrderSelect (ticket,SELECT_BY_TICKET,MODE_TRADES)){
-//                         log_add_line ("ADDING BUY ORDER #"+ticket+" at price "+DoubleToStr (Ask,Digits)+ ". Lot "+lotToOpen,DarkGreen);
-//                         //order.Add (ticket, OP_BUY, wave.impulse.timeStart, wave.impulse.timeEnd, TimeCurrent ());
-//                         order.GVSerie_Set (OP_BUY, _SERIE_BASE_LOT, lotToOpen);
-//                         order.GVSerie_Set (OP_BUY, _SERIE_GRID_START_PRICE, OrderOpenPrice ());
-//                         order.GVSerie_Set (OP_BUY, _SERIE_GRID_STEP_NUMBER, 1);
-//                         order.GVSerie_Set (OP_BUY, _SERIE_LAST_CLOSED_PROFIT, 0);
-//                         order.GV_Set (OrderOpenPrice(), _TP, tp);
-//                         order.GV_Set (OrderOpenPrice(), _SL, sl);
-//                         order.GV_Set (OrderOpenPrice(), _LOT_START, lotToOpen);
-//                         order.RefreshFULL ();
-//                         }
-//                      showLog = true;
-//                      }
-//                   else log_add_line ("ERROR SENDING ORDER BUY at price "+DoubleToStr (Ask,Digits)+". Lot "+lotToOpen+".   Reason: "+ErrorDescription (GetLastError()),Red);
-//                   showLog = true;
-//                   }           
-//          }
-//    }
     log_add_line ("f_length [1][0]="+f_length[1][0]+"   f_length [1][1]="+f_length[1][1]+"   f_length [1][2]="+f_length[1][2]+"   f_length [1][3]="+f_length[1][3]+"   f_length [1][4]="+f_length[1][4]+"   f_length [1][5]="+f_length[1][5]+"   f_length [1][6]="+f_length[1][6]+"   f_length [1][7]="+f_length[1][7]+"   f_length [1][8]="+f_length[1][8],Blue);
     log_add_line ("f_length [1][35]="+f_length[1][35]+"   f_length [1][34]="+f_length[1][34]+"   f_length [1][33]="+f_length[1][33]+"   f_length [1][32]="+f_length[1][32],Blue);
     log_add_line ("f_outs [1][0]="+f_outsideswing [1][0]+"   f_outs [1][1]="+f_outsideswing [1][1]+"   f_outs [1][2]="+f_outsideswing [1][2]+"   f_outs [1][3]="+f_outsideswing [1][3]+"   f_outs [1][4]="+f_outsideswing [1][4]+"   f_outs [1][5]="+f_outsideswing [1][5]+"   f_outs [1][6]="+f_outsideswing [1][6],Blue);
@@ -629,7 +678,6 @@ void _positions_open ()
     
    
    }
-
 
 
 //+------------------------------------------------------------------+
