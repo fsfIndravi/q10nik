@@ -323,7 +323,7 @@ int CandlesClass::Timeframe_Max_Period (int x_timeStart, int x_timeEnd)
 int CandlesClass::Timeframe_Max_Current (int x_timeStart)
    {
    for (int tf_num = 9; tf_num >= 1; tf_num--) {
-      if ((iTime (Symbol(), tf[tf_num], 0) - x_timeStart) / 60 >= tf[tf_num]) return (tf[tf_num]);
+      if (iTime (Symbol(), tf[tf_num], 1) > x_timeStart) return (tf[tf_num]);
       }
    return (0);
    }

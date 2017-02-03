@@ -167,6 +167,8 @@ int init()
    
    // initializing waves
    //wave.Init (timeframe_Lowest, seekShiftMax, deal_costs_max_koef, deal_duration_max_minutes, 0);
+
+   order.RefreshFULL();
    
    return(0);
    
@@ -541,12 +543,13 @@ void _positions_open ()
         patternCur = true;
    
     if (patternCur
-    && order.dealBuy.time_LastOpened_Buy < f_time [5][1]){
+    && (order.totals.count == 0 || order.dealBuy.time_LastOpened_Buy < f_time [5][1])){
         // Check refresh zigzag arrays
         if (!arrays_done [5]){arrays(1,5);arrays_done[5]=true;}
         int f = 5;
         int zone = 0;
         int index_OS = outsideswing_check (f, OP_SELL);
+        int tf_max = candle.Timeframe_Max_Current (f_time [f][1]);
 
         // 1. MAIN ORDER BUY
         // 1.1. Enter on 5+wave completion (zone 1)
@@ -557,7 +560,11 @@ void _positions_open ()
         && MathAbs (f_length [f][1]) < MathAbs (f_length [f][2])
         && MathAbs (f_length [f][1]) > 0.38 * MathAbs (f_length [f][2])
         && MathAbs (f_length [f][4]) < MathAbs (f_length [f][2])             // wave [2] is accelerating
-        && MathAbs (f_length [f][3]) < MathAbs (f_length [f][4]))
+        && MathAbs (f_length [f][3]) < MathAbs (f_length [f][4])
+        //&& FindMax (int x_timeframe, int x_direction, int x_timeEarlier, int x_timeLater, bool x_unnullifyed)
+        && MathAbs (candle.FindMax (tf_max, OP_SELL, f_time [f][3], f_time [f][2],false)) > MathAbs (candle.FindMax (tf_max, OP_SELL, f_time [f][1], f_time [f][0],false))
+        //{& candle.FindMaxRange (tf_max, f_time [f][3], f_time [f][2]) > candle.FindMaxRange (tf_max, f_time [f][1], f_time [f][0])
+        )
             zone = 1;
         
         // 1.2. Enter on 3 wave completion (zone 2)
@@ -567,7 +574,10 @@ void _positions_open ()
         && MathAbs (f_length [f][0]) < 1.3 * MathAbs (f_length [f][2]) // wave [0] is less than 1.3x of wave [2] - the last wave is 3rd
         && MathAbs (f_length [f][1]) < MathAbs (f_length [f][2])
         && MathAbs (f_length [f][2]) > MathAbs (f_length [f][4]) // wave [2] must be accelerating
-        && MathAbs (f_length [f][1]) > 0.5 * MathAbs (f_length [f][2]))
+        && MathAbs (f_length [f][1]) > 0.5 * MathAbs (f_length [f][2])
+        && MathAbs (candle.FindMax (tf_max, OP_SELL, f_time [f][3], f_time [f][2],false)) > MathAbs (candle.FindMax (tf_max, OP_SELL, f_time [f][1], f_time [f][0],false))
+        //&& candle.FindMaxRange (tf_max, f_time [f][3], f_time [f][2]) > candle.FindMaxRange (tf_max, f_time [f][1], f_time [f][0])
+        )
             zone = 2;
 
         // 1.3. Completed outsideswing
@@ -580,9 +590,16 @@ void _positions_open ()
         && f_price [f][0] < f_price [f][index_OS_comp]
         && price_max >= 0.5 * (f_price [f][index_OS_comp] + f_price [f][index_OS_comp+1])
         && MathAbs (f_length [f][0]) > MathAbs (f_length [f][1])
-        && MathAbs (f_length [f][0]) < 1.3 * MathAbs (f_length [f][index_OS_comp]))          // wave [0] is less than 1.3x of the OutsideSwing. Otherwise wave [0] will be 3rd in the trend
+        && MathAbs (f_length [f][0]) < 1.3 * MathAbs (f_length [f][index_OS_comp])          // wave [0] is less than 1.3x of the OutsideSwing. Otherwise wave [0] will be 3rd in the trend
+        && MathAbs (candle.FindMax (tf_max, OP_SELL, f_time [f][3], f_time [f][2],false)) > MathAbs (candle.FindMax (tf_max, OP_SELL, f_time [f][1], f_time [f][0],false))
+        //&& candle.FindMaxRange (tf_max, f_time [f][3], f_time [f][2]) > candle.FindMaxRange (tf_max, f_time [f][1], f_time [f][0])
+        )
             zone = 3;
-         
+
+        Print ("zone="+zone+"   tf_max="+tf_max+"   MaRange_wave 2 = "+candle.FindMaxRange (tf_max, f_time [f][3], f_time [f][2]),Blue);
+        Print ("candle.FindMax (tf_max, OP_SELL, f_time [f][3], f_time [f][2],false="+candle.FindMax (tf_max, OP_SELL, f_time [f][3], f_time [f][2],false));
+        Print ("candle.FindMax (tf_max, OP_SELL, f_time [f][1], f_time [f][0],false="+candle.FindMax (tf_max, OP_SELL, f_time [f][1], f_time [f][0],false));
+
         if (zone > 0){
             // Finding lower impulse
             // Optimizing performance for arrays func call
@@ -596,7 +613,7 @@ void _positions_open ()
             && f_price [1][1] <= f_price [f][0]                      // Favor wave starts from the end of the wave [f][0]
             && Ask <= f_price [f][0] + 0.33 * MathAbs (f_length [f][0]) * Point
             && MathAbs (f_length [1][0]) >= 0.5 * MathAbs (f_length [1][1])
-            && MathAbs (f_length [1][0]) < 1.165 * MathAbs (f_length [1][1]))
+            && MathAbs (f_length [1][0]) < 1.08 * MathAbs (f_length [1][1]))
                 pattern = 1;
 
             // Pattern 2: lower low from the opposite accelerating wave with 50+% retrace
