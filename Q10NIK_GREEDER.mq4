@@ -3,7 +3,7 @@
 //|                                                   Zhinzhich Labs |
 //+------------------------------------------------------------------+
 
-//#include "Waves.mqh"
+#include "Waves.mqh"
 #include "Orders.mqh"
 #include "Candles.mqh"
 #include "Timeframes.mqh"
@@ -11,7 +11,7 @@
 #include "Trendlines.mqh"
 #include "arraysZIGZAG.mqh"
 
-//WavesClass        wave;
+WavesClass        wave;
 OrdersClass       order;
 CandlesClass      candle;
 TimeframesClass   timeframe;
@@ -535,6 +535,8 @@ void _positions_open ()
     double   sl_price;
     double   correctorPrice;
     bool     patternCur            = false;
+    
+    int yu = wave.FindPush (OP_BUY,78787,989898,676,0.6,1800);
 
     // ENTER BUY ORDERS 
     if (iHigh (Symbol(),1,0) > iHigh (Symbol(),1,1)

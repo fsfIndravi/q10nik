@@ -45,13 +45,23 @@ public:
    };
 
    // Find max candle range in a period
-   double FindMaxRange (int x_timeframe, int x_timeEarlier, int x_timeLater);
+   double FindMaxRange (int x_timeframe, 
+                        int x_timeEarlier, 
+                        int x_timeLater);
 
    // Find candles mass
-   int CandlesMass (int tfLocal, int extremumTime1, int extremumTime2);
+   int CandlesMass           (int tfLocal, 
+                              int extremumTime1, 
+                              int extremumTime2);
    
    // Find Core Driver   
-   double FindCoreWaveDriver (int timeframeLowest, int waveDirection, int waveTimeStart, int waveTimeEnd, double wavePriceHigh, double wavePriceLow, double coreDriverWaveRangeKoef);
+   double FindCoreWaveDriver (int timeframeLowest, 
+                              int waveDirection, 
+                              int waveTimeStart, 
+                              int waveTimeEnd, 
+                              double wavePriceHigh, 
+                              double wavePriceLow, 
+                              double coreDriverWaveRangeKoef);
    
    // Find corrector
    double FindCorrector (int timeframeLocal, int directionLocal, int vertex_time);
