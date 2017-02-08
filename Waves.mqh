@@ -105,10 +105,10 @@ class WavesClass
         int             timeEnd_Wave_1;
         int             timeEnd_Wave_3;
         int             duration_Total;
+        int             duration_2touch;
         int             duration_Wave_1;
         int             duration_Wave_2;
         int             duration_Wave_3;
-        int             period;                     // Time between touches (timeEnd_Wave_1 and 3)
         double          priceStart_Wave_1;
         double          priceStart_Wave_3;
         double          priceEnd_Wave_1;
@@ -123,6 +123,7 @@ class WavesClass
 
     // Find push (2nd touch)
     bool    FindPush (int     direction, 
+                      int     timeframe,
                       int     timeStartToSeek,              // Time from which push will be searched
                       int     timeStartMin,                 // Minimum time from where the push must start (necessary in case of finding total grand 3-waves)
                       double  lengthMin, 
@@ -1250,7 +1251,27 @@ int WavesClass::FindAll2 (int directionLocal, double wave_length_min){
 //|                                                                  |
 //+------------------------------------------------------------------+
 
-bool WavesClass::FindPush (int direction,int timeStartToSeek,int timeStartMin,double lengthMin,double retraceRatioMin,int touchDurationKoefMin){
+bool WavesClass::FindPush (int direction,int timeframe,int timeStartToSeek,int timeStartMin,double lengthMin,double retraceRatioMin,int touchDurationKoefMin){
+    if (direction == OP_BUY){
+        int shiftStartLocal = iBarShift (Symbol(), timeframe, timeStartMin, false); 
+        int prev_high = iHigh (Symbol(), timeframe, shiftStartLocal); 
+        int prev_time = iTime (Symbol(), timeframe, shiftStartLocal); 
+        int prev_shift = shiftStartLocal;
+        int prev_duration_2touch = 0;
+        int cur_High, cur_Time;
+        for (int shiftLocal = shiftStartLocal-1; shiftLocal >= 0; shiftLocal--){
+            cur_High = iHigh (Symbol(), timeframe, shiftLocal); 
+            cur_Time = iTime (Symbol(), timeframe, shiftLocal); 
+            if (cur_High > prev_High
+            && cur_Time - prev_Time >= touchDurationKoefMin * prev_2touch_duration){
+                // Next 2-touch found
+                
+
+            
+
+        }
+    }
+            
 }
 
 
