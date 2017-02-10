@@ -170,23 +170,21 @@ class WavesClass
     double  DirectionRatio();
     bool    FindByLength_Compressed(int f_direction,double r_lengthMin,int r_timeEndMax);
 
-   // Initialize data structures and subclasses
+    // Initialize data structures and subclasses
+    waveStruct        impulse;
+    waveStruct        major;
+    waveStruct        majorRetrace;
+    waveStruct        opposite;
+    waveStruct        retrace;
+    waveStruct        wave[10];
 
-   waveStruct        impulse;
-   waveStruct        major;
-   waveStruct        majorRetrace;
-   waveStruct        opposite;
-   waveStruct        retrace;
-   waveStruct        wave[10];
+    cascadeStruct     cascade;
 
-   cascadeStruct     cascade;
+    pushStruct       push;                       // Current push parameters
+    pushStruct       push_prev;                  // Previous push parameters
 
-   pushStruct       push;                       // Current push parameters
-   pushStruct       push_prev;                  // Previous push parameters
-
-   // Main class constructor
-
-                     WavesClass();
+    // Main class constructor
+    WavesClass(int _tfWork, int _seekShiftMax, double _dealCostsKoefMax, int _dealDurationMax);
 
   };
 
@@ -194,27 +192,24 @@ class WavesClass
 //|                                                                  |
 //+------------------------------------------------------------------+
 
-WavesClass::WavesClass(void)
+WavesClass::WavesClass(int _tfWork, int _seekShiftMax, double _dealCostsKoefMax, int _dealDurationMax);
+
   {
 
-   if(tf[1]==0)
-     {
-      tf[1] = 1;
-      tf[2] = 5;
-      tf[3] = 15;
-      tf[4] = 30;
-      tf[5] = 60;
-      tf[6] = 240;
-      tf[7] = 1440;
-      tf[8] = 10080;
-      tf[9] = 43200;
-     }
+    tf[1] = 1;
+    tf[2] = 5;
+    tf[3] = 15;
+    tf[4] = 30;
+    tf[5] = 60;
+    tf[6] = 240;
+    tf[7] = 1440;
+    tf[8] = 10080;
+    tf[9] = 43200;
 
-   if(timeframeWorking==0) timeframeWorking=_timeframeWorking;
-   if(seekShiftMax == 0) seekShiftMax = _seekShiftMax;
-   if(dealCostsMax == 0) dealCostsMax = _deal_costs_max;
-   if(dealRiskCostsKoef==0) dealRiskCostsKoef=_deal_risk_costs_koef;
-   if(dealDurationMax==0) dealDurationMax=_dealDurationMax;
+    timeframeWorking    = _tfWork;
+    seekShiftMax        = _seekShiftMax;
+    dealRiskCostsKoef   = _dealCostsKoefMax;
+    dealDurationMax     = _dealDurationMax;
 
   }
 
