@@ -20,7 +20,7 @@ class WavesClass
     int     compressedTime;
     int     compressedTimeframe;
     
-    void    Visualize_Draw(string v_name,int v_timeStart,int v_timeEmd,double v_priceStart,double v_priceEnd,color v_color,int v_type);
+    void    Visualize_Draw(int v_number,int v_timeStart,int v_timeEmd,double v_priceStart,double v_priceEnd,color v_color,int v_type);
     void    Visualize_Clear(string c_name);
     string  Get_date_string(int time_input);
     int     TF_Number(int n_timeframe);
@@ -32,7 +32,7 @@ class WavesClass
     // DEFAULT PARAMETERS
     #define _decompressionTimeframeRatioMax 40
     #define _timeframeWorking 1
-    #define _seekShiftMax 200
+    #define _seekShiftMax 2400
     #define _visualizeWaves 0
     #define _deal_costs_max 0.05
     #define _deal_risk_costs_koef 5.0
@@ -43,9 +43,11 @@ class WavesClass
     #define _average_period 15
     #define _dealDurationMax 1440
     #define _cascadeImpulsesMax 9
+    #define _dealRiskCostsKoef 0.03
     #define LOWERLOW 1
     #define HIGHERHIGH 2
     #define _compressionTFKoefMax 240
+    #define _wave_countMax 10
 
     public:
 
@@ -120,6 +122,11 @@ class WavesClass
     };
 
 	// Methods
+	
+	 // Find triangle to work in
+    int FindTriangle (int    directionLocal, 
+                      double heightMin,
+                      int    durationMax);
 
     // Find push (2nd touch)
     bool    FindPush (int     direction, 
@@ -176,7 +183,7 @@ class WavesClass
     waveStruct        majorRetrace;
     waveStruct        opposite;
     waveStruct        retrace;
-    waveStruct        wave[10];
+    waveStruct        wave[_wave_countMax];
 
     cascadeStruct     cascade;
 
@@ -184,7 +191,9 @@ class WavesClass
     pushStruct       push_prev;                  // Previous push parameters
 
     // Main class constructor
-    WavesClass(int _tfWork, int _seekShiftMax, double _dealCostsKoefMax, int _dealDurationMax);
+    WavesClass ();
+    WavesClass(int tfWork, int seekShiftMax, double dealCostsKoefMax, int dealDurationMax);
+    
 
   };
 
@@ -192,10 +201,32 @@ class WavesClass
 //|                                                                  |
 //+------------------------------------------------------------------+
 
-WavesClass::WavesClass(int _tfWork, int _seekShiftMax, double _dealCostsKoefMax, int _dealDurationMax);
+WavesClass::WavesClass(){
+    if (tf[1]==0){
+        tf[1] = 1;
+        tf[2] = 5;
+        tf[3] = 15;
+        tf[4] = 30;
+        tf[5] = 60;
+        tf[6] = 240;
+        tf[7] = 1440;
+        tf[8] = 10080;
+        tf[9] = 43200;
 
+        timeframeWorking    = _timeframeWorking;
+        seekShiftMax        = _seekShiftMax;
+        dealRiskCostsKoef   = _dealRiskCostsKoef;
+        dealDurationMax     = _dealDurationMax;
+    }
+   
+}
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+
+WavesClass::WavesClass(int tfWork, int seekShiftMaxLocal, double dealCostsKoefMax, int dealDurationMaxLocal)
   {
-
     tf[1] = 1;
     tf[2] = 5;
     tf[3] = 15;
@@ -206,10 +237,10 @@ WavesClass::WavesClass(int _tfWork, int _seekShiftMax, double _dealCostsKoefMax,
     tf[8] = 10080;
     tf[9] = 43200;
 
-    timeframeWorking    = _tfWork;
-    seekShiftMax        = _seekShiftMax;
-    dealRiskCostsKoef   = _dealCostsKoefMax;
-    dealDurationMax     = _dealDurationMax;
+    timeframeWorking    = tfWork;
+    seekShiftMax        = seekShiftMaxLocal;
+    dealRiskCostsKoef   = dealCostsKoefMax;
+    dealDurationMax     = dealDurationMaxLocal;
 
   }
 
@@ -256,7 +287,7 @@ double WavesClass::RetraceRatioMax(int r_direction,int r_timeEarlier,int r_timeL
       priceLowest    = 0;
       checkFlag=false; // Flag used to mark a start for calculating maximum retrace
       shiftHighest=0;
-      Print("OP_BUY="+OP_BUY+"    r_direction="+r_direction+"   r_timeEarlier="+Get_date_string(r_timeEarlier)+"   r_timeLater="+Get_date_string(r_timeLater)+"   r_priceEarlier="+r_priceEarlier+"   r_priceLater="+r_priceLater);
+      //Print("OP_BUY="+OP_BUY+"    r_direction="+r_direction+"   r_timeEarlier="+Get_date_string(r_timeEarlier)+"   r_timeLater="+Get_date_string(r_timeLater)+"   r_priceEarlier="+r_priceEarlier+"   r_priceLater="+r_priceLater);
       for(int shiftLocal=shiftEarlier; shiftLocal>=shiftLater; shiftLocal--)
         {
          if(iHigh(Symbol(),timeframeWorking,shiftLocal)>=r_priceEarlier+0.66 *(r_priceLater-r_priceEarlier)) checkFlag=true;
@@ -730,7 +761,7 @@ int WavesClass::FindAll(int s_direction,double r_lengthMin)
 //|                                                                  |
 //+------------------------------------------------------------------+
 
-WavesClass::Visualize_Draw(string v_name,int v_timeStart,int v_timeEnd,double v_priceStart,double v_priceEnd,color v_color,int v_type)
+WavesClass::Visualize_Draw(int v_number,int v_timeStart,int v_timeEnd,double v_priceStart,double v_priceEnd,color v_color,int v_type)
   {
 
 	//+------------------------------------------------------------------+
@@ -738,10 +769,12 @@ WavesClass::Visualize_Draw(string v_name,int v_timeStart,int v_timeEnd,double v_
 	//| -- v_type=1 - draw line
 	//| -- v_type=2 - draw rectangle
 	//+------------------------------------------------------------------+
-
+   string v_name = StringConcatenate ("wave",v_number);
+   
+   
+   
    if(v_type==1) // Draw lines
      {
-      ObjectDelete(v_name);
       ObjectCreate(v_name,OBJ_TREND,0,v_timeStart,v_priceStart,v_timeEnd,v_priceEnd);
       ObjectSet(v_name,OBJPROP_STYLE,STYLE_SOLID);
       ObjectSet(v_name,OBJPROP_WIDTH,2);
@@ -1246,33 +1279,345 @@ int WavesClass::FindAll2 (int directionLocal, double wave_length_min){
 //|                                                                  |
 //+------------------------------------------------------------------+
 
-bool WavesClass::FindPush (int direction,int timeframe,int timeStartToSeek,int timeStartMin,double lengthMin,double retraceRatioMin,int touchDurationKoefMin){
-    if (direction == OP_BUY){
-        int shiftStartLocal = iBarShift (Symbol(), timeframe, timeStartMin, false); 
-        int prev_high = iHigh (Symbol(), timeframe, shiftStartLocal); 
-        int prev_time = iTime (Symbol(), timeframe, shiftStartLocal); 
-        int prev_shift = shiftStartLocal;
-        int prev_duration_2touch = 0;
-        int cur_High, cur_Time;
-        for (int shiftLocal = shiftStartLocal-1; shiftLocal >= 0; shiftLocal--){
-            cur_High = iHigh (Symbol(), timeframe, shiftLocal); 
-            cur_Time = iTime (Symbol(), timeframe, shiftLocal); 
-            if (cur_High > prev_High
-            && cur_Time - prev_Time >= touchDurationKoefMin * prev_2touch_duration){
-                // Next 2-touch found
-                
-
-            
-
-        }
-    }
-            
+bool WavesClass::FindPush (int directionLocal,int timeframeLocal,int timeStartToSeek,int timeStartMin,double lengthMin,double retraceRatioMin,int touchDurationKoefMin){
+//    if (direction == OP_BUY){
+//        int shiftStartLocal = iBarShift (Symbol(), timeframe, timeStartMin, false); 
+//        int prev_high = iHigh (Symbol(), timeframe, shiftStartLocal); 
+//        int prev_time = iTime (Symbol(), timeframe, shiftStartLocal); 
+//        int prev_shift = shiftStartLocal;
+//        int prev_duration_2touch = 0;
+//        int cur_High, cur_Time;
+//        for (int shiftLocal = shiftStartLocal-1; shiftLocal >= 0; shiftLocal--){
+//            cur_High = iHigh (Symbol(), timeframe, shiftLocal); 
+//            cur_Time = iTime (Symbol(), timeframe, shiftLocal); 
+//            if (cur_High > prev_High
+//            && cur_Time - prev_Time >= touchDurationKoefMin * prev_2touch_duration){
+//                // Next 2-touch found
+//                
+//
+//            
+//
+//              }
+//          }
+//                  
+//      }
 }
 
+int WavesClass::FindTriangle(int directionLocal,double heightMinPips, int durationMax){
+    
+    int     HH_shift;
+    int     HH_tf;
+    int     HH_time;
+    double  HH_price;
 
+    int     LL_shift;
+    int     LL_tf;
+    double  LL_price;
+    int     LL_time;
 
+    int     SHIFT;
+    int     TF;
+    int     TIME;
+
+    int     wave_count;
+
+    double  high_price;
+    double  low_price;
         
+    int     tfh;     // higher timeframe
+    int     sh;      // higher timeframe shift
+       
+    bool    wave0_found = false;
+        
+    int     seekWave;
+    
+    // SEEKING BUY CASCADE
+    if (directionLocal == OP_BUY){
+        
+        HH_shift   = 0;
+        HH_tf      = 1;
+        HH_time    = iTime (Symbol(),HH_tf,HH_shift);
+        HH_price   = iHigh (Symbol(),HH_tf,HH_shift);
+
+        LL_shift   = 0;
+        LL_tf      = 1;
+        LL_price   = iLow (Symbol(),LL_tf,LL_shift);
+        LL_time    = iTime (Symbol(),LL_tf,LL_shift);
+
+        SHIFT   = 0;       // current timeframe shift
+        TF      = 1;       // current timeframe
+        
+        // Lower timeframe variables
+        int shl_highest;
+        int shl_lowest;
+        double l_price_highest;
+        double l_price_lowest;
+        int l_time_highest;
+        int l_time_lowest;
+
+        wave_count = 0;
+        
+        seekWave = OP_SELL;        
+
+        while (SHIFT <= seekShiftMax){
+        
+            // 1. SETTING CURRENT VARIABLES
+            high_price  = iHigh (Symbol(),TF,SHIFT);
+            low_price   = iLow (Symbol(),TF,SHIFT);
+            TIME        = iTime (Symbol(),TF,SHIFT);
+            
+            //// 1.1. Check decompress prices            
+            //if (high_price > HH_price
+            //&& low_price < LL_price){     // current candle is out of the current seeking range
+            //    // Try to decompress current TF
+            //    if (TF > 1){
+            //        int shl_highest;
+            //        int shl_lowest;
+            //        double l_price_highest;
+            //        double l_price_lowest;
+            //        // Find highest and lowest vertexes inside current TF candle on the lower timeframe
+            //        for (int tfl = TF_Lower (TF); tfl >= 1; tfl--){
+            //            shl_highest = iHighest (Symbol(),tfl,MODE_HIGH,TF/tfl,(SHIFT - 1) * TF / tfl);
+            //            shl_lowest = iLowest (Symbol(),tfl,MODE_LOW,TF/tfl,(SHIFT - 1) * TF / tfl);
+            //            l_price_highest = iHigh (Symbol(),tfl,shl_highest);
+            //            l_price_lowest = iLow (Symbol(),tfl,shl_lowest);
+            //            if (shl_highest < shl_lowest
+            //            && l_price_lowest >= LL_price){  // The highest vertex on the lower TF is closer to the vertex on the current TF
+            //                TF = tfl;
+            //                SHIFT = shl_highest;
+            //                high_price  = iHigh (Symbol(),TF,SHIFT);
+            //                low_price   = iLow (Symbol(),TF,SHIFT);
+            //                TIME = iTime (Symbol(),TF,SHIFT);
+            //            }
+            //            if (shl_highest > shl_lowest
+            //            && l_price_highest <= HH_price){  // The lowest vertex on the lower TF is closer to the vertex on the current TF
+            //                TF = tfl;
+            //                SHIFT = shl_lowest;
+            //                high_price  = iHigh (Symbol(),TF,SHIFT);
+            //                low_price   = iLow (Symbol(),TF,SHIFT);
+            //                TIME = iTime (Symbol(),TF,SHIFT);
+            //            }
+            //        }
+            //    }
+            //}
+             
+            // 2. Check found wave0 with required length
+            if (!wave0_found
+            && (high_price <= HH_price || low_price >= LL_price)        // current candle must be inside the current seeking range
+            && HH_time < LL_time
+            && (HH_price - LL_price) / Point >= heightMinPips)
+                wave0_found = true;
+            
+            // 3. CHECK FOR CHANGING SEEK WAVE DIRECTION FROM SELL TO BUY (new wave found)
+            if (wave0_found
+            && (high_price <= HH_price || low_price >= LL_price)        // current candle must be inside the current seeking range
+            && HH_time < LL_time         // the current wave is SELL wave
+            && HH_price > LL_price
+            && low_price < LL_price){
+                //// Decompressing HH of the current TF to the lowest TF
+                //shl_highest      = iHighest (Symbol(),1,MODE_HIGH,TF,(SHIFT - 1) * TF + iBarShift (Symbol(),1,iTime (Symbol(),TF,0),false));
+                //l_price_highest  = iHigh (Symbol(),1,shl_highest);
+                //l_time_highest  = iTime (Symbol(),1,shl_highest);
+                // Increasing wave count
+                wave_count++;
+                // Setting SELL wave parameters
+                wave[wave_count].length        = HH_price - LL_price;
+                wave[wave_count].duration      = LL_time - HH_time;
+                wave[wave_count].timeStart     = HH_time;
+                wave[wave_count].timeEnd       = LL_time;
+                wave[wave_count].price_Start   = HH_price;
+                wave[wave_count].price_End     = LL_price;
+            }
+            
+            // 4. CHECK FOR CHANGING SEEK WAVE DIRECTION FROM BUY TO SELL (new wave found)
+            if (wave0_found
+            && HH_time > LL_time         // the current wave is BUY wave
+            && HH_price > LL_price
+            && high_price > HH_price){
+                // Increasing wave count
+                wave_count++;
+                // Setting SELL wave parameters
+                wave[wave_count].length        = HH_price - LL_price;
+                wave[wave_count].duration      = HH_time - LL_time;
+                wave[wave_count].timeStart     = LL_time;
+                wave[wave_count].timeEnd       = HH_time;
+                wave[wave_count].price_Start   = LL_price;
+                wave[wave_count].price_End     = HH_price;
+            }
+                
+            // 5. REFRESHING HH AND LL
+            //    New HH and LL check MUST be AFTER the CHANGING seek direction check (above) so that not to loose HH and LL initial parameters for checking direction check
+            if (high_price > HH_price){
+                HH_tf      = TF;
+                HH_shift   = SHIFT;
+                HH_time    = TIME;
+                HH_price   = high_price;
+            }
+            if (low_price < LL_price){
+                LL_tf      = TF;
+                LL_shift   = SHIFT;
+                LL_time    = TIME;
+                LL_price   = low_price;
+            }
+            
+            // 5.5. Check for breaking the loop due to maximum duration
+            //if (MathAbs (HH_time - LL_time) / 60 >= durationMax) break;
+        
+            // 6. Check compress TF
+            //tfh = TF_Higher (TF);
+            //sh = iBarShift (Symbol(),tfh, TIME, false);
+            //if (TimeCurrent () - TIME >= tfh * 60 * 3       // two full candles compress into the current SELL wave and the next candle is less than the low of the SELL wave
+            //&& iHigh (Symbol(),tfh,sh) <= HH_price
+            //&& iLow (Symbol(),tfh,sh) >= LL_price){     // higher timeframe candle must be included in range between HH and LL in order to be compressed to
+            //    // compressing
+            //    TF        = tfh;
+            //    SHIFT     = sh;
+            //}   
+        // Preparing next loop
+        SHIFT++;     
+        }
+    }
+    
+    // Visualizing waves
+    string nameLocal;
+    for (int cx = 1; cx <= _wave_countMax; cx++){
+       string namex = StringConcatenate ("wave",cx);
+       ObjectDelete (0,namex);
+    }
+    for (int indexLocal = 0; indexLocal <= wave_count; indexLocal++){
+        nameLocal = StringConcatenate ("wave",indexLocal);
+                    //Visualize_Draw("ImpulseWave",impulse.timeStart,impulse.timeEnd,impulse.price_Start,impulse.price_End,Green,1);
+        Visualize_Draw (indexLocal, wave[indexLocal].timeStart,wave[indexLocal].timeEnd,wave[indexLocal].price_Start,wave[indexLocal].price_End,Green,1);
+    }
+    
+    return (wave_count);
+}
+  
+  
+//            // 1. FINDING WAVE REVERSAL FROM SELL TO BUY
+//            //    AND SETTING NEW WAVE PARAMETERS
+//            if (wave0_found
+//            && HH_time < LL_time         // the current wave is SELL wave
+//            && HH_price > LL_price
+//            && low_price < LL_price){     // wave reversal is found
+//                // Check if length conditions are met on the reversed SELL wave
+//                if ((HH_price - LL_price) / Point >= heightMinPips){  // wave with requested length is found
+//                    // Setting SELL wave number parameters
+//                    if (wave_count <= _wave_countMax-1){
+//                        wave[wave_count].length        = HH_price - LL_price;
+//                        wave[wave_count].duration      = LL_time - HH_time;
+//                        wave[wave_count].timeStart     = HH_time;
+//                        wave[wave_count].timeEnd       = LL_time;
+//                        wave[wave_count].price_Start   = HH_price;
+//                        wave[wave_count].price_End     = LL_price;                    
+//                        // Increasing wave count
+//                        Print ("Wave["+wave_count+"].length="+(HH_price - LL_price) / Point);
+//                        wave_count++;
+//                    }
+//                }
+//                // Setting new LL parameters
+//                LL_tf     = TF;
+//                LL_shift  = SHIFT;
+//                LL_price  = low_price;
+//                LL_time   = TIME;
+//            }
+//            
+//            // 2. FINDING WAVE REVERSAL FROM BUY TO SELL
+//            //    AND SETTING NEW WAVE PARAMETERS
+//            if (wave0_found
+//            && HH_time > LL_time         // the current wave is BUY wave
+//            && HH_price > LL_price
+//            && high_price > HH_price){     // wave reversal is found
+//                // Check if length conditions are met on the reversed SELL wave
+//                if ((HH_price - LL_price) / Point >= heightMin){  // wave with requested length is found
+//                    // Setting BUY wave number parameters
+//                    if (wave_count <= _wave_countMax-1){
+//                        wave[wave_count].length        = HH_price - LL_price;
+//                        wave[wave_count].duration      = HH_time - LL_time;
+//                        wave[wave_count].timeStart     = LL_time;
+//                        wave[wave_count].timeEnd       = HH_time;
+//                        wave[wave_count].price_Start   = LL_price;
+//                        wave[wave_count].price_End     = HH_price;
+//                        // Increasing wave count
+//                        wave_count++;
+//                    }
+//                }
+//                // Setting new HH parameters
+//                HH_tf     = TF;
+//                HH_shift  = SHIFT;
+//                HH_price  = high_price;
+//                HH_time   = TIME;
+//            }
+//                
+//                //// check / compress new HH
+//                //tfh = TF_Higher (TF);
+//                //sh = iBarShift (Symbol(),tfh, HH_time, false);
+//                //if (LL_time - HH_time <= tfh * 60 * 3       // two full candles compress into the current SELL wave and the next candle is less than the low of the SELL wave
+//                //&& iLow (Symbol(),tfh,sh) >= LL_price){     // check if low of the higher timeframe of the HH shift is higher than the low of the LL_price (because if not then decompression will loose the vertex)
+//                //    // compressing HH
+//                //    //Print ("Compressing HH to "+tfh);
+//                //    TF        = tfh;
+//                //    SHIFT     = sh;
+//                //    TIME      = iTime (Symbol(),TF,SHIFT);
+//                //    HH_tf     = TF;
+//                //    HH_shift  = SHIFT;
+//                //    HH_time   = TIME;
+//                //    HH_price  = iHigh (Symbol(),TF,SHIFT);
+//                //}
+//            }
+//            
+//            // 4. SEEKING INSIDE BUY WAVE
+//            //    AND COMPRESSING VERTEXES
+//            if (HH_time > LL_time
+//            && low_price < LL_price){
+//                // check if durationMax is reached to exit function
+//                if (HH_time - TIME > durationMax) return (wave_count);
+//                // check / compress new LL
+//                LL_tf      = TF;
+//                LL_shift   = SHIFT;
+//                LL_time    = TIME;
+//                LL_price   = low_price;
+//                //// check / compress new LL
+//                //tfh = TF_Higher (TF);
+//                //sh = iBarShift (Symbol(),tfh, LL_time, false);
+//                //if (HH_time - LL_time <= tfh * 60 * 3       // two full candles compress into the current BUY wave and the next candle is less than the high of the BUY wave
+//                //&& iHigh (Symbol(),tfh,sh) <= HH_price){    // check if high of the higher timeframe of the LL shift is lower than the high of the HH_price (because if not then decompression will loose the vertex)
+//                //    // compressing LL
+//                //    TF        = tfh;
+//                //    SHIFT     = sh;
+//                //    TIME      = iTime (Symbol(),TF,SHIFT);
+//                //    LL_tf     = TF;
+//                //    LL_shift  = SHIFT;
+//                //    LL_time   = TIME;
+//                //    LL_price  = iHigh (Symbol(),TF,SHIFT);
+//                //}
+//            }
+//            
+//            // 5. PREPARING THE NEXT LOOP
+//            SHIFT++;
+//        }
+//    }
+//    string nameLocal;
+//    for (int cx = 0; cx <= _wave_countMax; cx++){
+//       string namex = StringConcatenate ("wave",cx);
+//       ObjectDelete (0,namex);
+//   }
+//    for (int indexLocal = 0; indexLocal <= wave_count; indexLocal++){
+//        nameLocal = StringConcatenate ("wave",indexLocal);
+//                    //Visualize_Draw("ImpulseWave",impulse.timeStart,impulse.timeEnd,impulse.price_Start,impulse.price_End,Green,1);
+//        Visualize_Draw (indexLocal, wave[indexLocal].timeStart,wave[indexLocal].timeEnd,wave[indexLocal].price_Start,wave[indexLocal].price_End,Green,1);
+//    }
+//    
+//    return (wave_count);
+//}
 
 
-
+// Questions:
+// - how to find from what candle to seek for the current retrace with minimum length requirements
+// -- answer: you need to first find just a majot wave to rhe current retrace
+// -- then inside the retrace you find opposite push!!!
+// -- so 1) you find waves cascade 2) in the cascade you find pushes and levels
+// -- levels: 1) a point of price reversal. 
+// -- find price goal usign candle strength (what triangle to use - this is candles to decide)
+// -- 
 

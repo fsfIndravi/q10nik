@@ -1,0 +1,472 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BUY	Q10NIK _DRIVER_ 1.01.mq4	/^int      BUY = 1;$/;"	v
+BUY	Q10NIK _TRENDLINER.mq4	/^int      BUY = 1;$/;"	v
+BUY	Q10NIK_GREEDER.mq4	/^int      BUY = 1;$/;"	v
+BUY	Q10NIK_TRIPPLER.mq4	/^int      BUY = 1;$/;"	v
+BUY	Q10NIK_WAVER.mq4	/^int      BUY = 1;$/;"	v
+ErrorDescription	Q10NIK _DRIVER_ 1.01.mq4	/^string ErrorDescription(int error_code){$/;"	f
+ErrorDescription	Q10NIK _TRENDLINER.mq4	/^string ErrorDescription(int error_code){$/;"	f
+ErrorDescription	Q10NIK_GREEDER.mq4	/^string ErrorDescription(int error_code){$/;"	f
+ErrorDescription	Q10NIK_TRIPPLER.mq4	/^string ErrorDescription(int error_code){$/;"	f
+ErrorDescription	Q10NIK_WAVER.mq4	/^string ErrorDescription(int error_code){$/;"	f
+SELL	Q10NIK _DRIVER_ 1.01.mq4	/^int      SELL = -1;$/;"	v
+SELL	Q10NIK _TRENDLINER.mq4	/^int      SELL = -1;$/;"	v
+SELL	Q10NIK_GREEDER.mq4	/^int      SELL = -1;$/;"	v
+SELL	Q10NIK_TRIPPLER.mq4	/^int      SELL = -1;$/;"	v
+SELL	Q10NIK_WAVER.mq4	/^int      SELL = -1;$/;"	v
+_positions_close	Q10NIK _DRIVER_ 1.01.mq4	/^void _positions_close (){$/;"	f
+_positions_close	Q10NIK _TRENDLINER.mq4	/^void _positions_close (){$/;"	f
+_positions_close	Q10NIK_GREEDER.mq4	/^void _positions_close (){$/;"	f
+_positions_close	Q10NIK_TRIPPLER.mq4	/^void _positions_close (){$/;"	f
+_positions_close	Q10NIK_WAVER.mq4	/^void _positions_close (){$/;"	f
+_positions_open	Q10NIK _DRIVER_ 1.01.mq4	/^void _positions_open ()$/;"	f
+_positions_open	Q10NIK _TRENDLINER.mq4	/^void _positions_open ()$/;"	f
+_positions_open	Q10NIK_GREEDER.mq4	/^void _positions_open ()$/;"	f
+_positions_open	Q10NIK_TRIPPLER.mq4	/^void _positions_open ()$/;"	f
+_positions_open	Q10NIK_WAVER.mq4	/^void _positions_open ()$/;"	f
+alert	TrendFinder.mq4	/^bool alert;$/;"	v
+alert_allow	TrendFinder.mq4	/^bool alert_allow;$/;"	v
+alert_frequency_seconds	TrendFinder.mq4	/^extern int alert_frequency_seconds = 60;$/;"	v
+alert_last_time	TrendFinder.mq4	/^int alert_last_time;$/;"	v
+alerts_on	TrendFinder.mq4	/^extern bool alerts_on = true;$/;"	v
+arrays	TrendFinder.mq4	/^void arrays ()$/;"	f
+arrays_done	Q10NIK_GREEDER.mq4	/^bool     arrays_done [7];$/;"	v
+average_period	Q10NIK _DRIVER_ 1.01.mq4	/^extern int     average_period = 15;$/;"	v
+average_period	Q10NIK _TRENDLINER.mq4	/^extern int     average_period = 15;$/;"	v
+average_period	Q10NIK_GREEDER.mq4	/^extern int     average_period = 15;$/;"	v
+average_period	Q10NIK_TRIPPLER.mq4	/^extern int     average_period = 15;$/;"	v
+average_period	Q10NIK_WAVER.mq4	/^extern int     average_period = 15;$/;"	v
+averages	TrendFinder.mq4	/^void averages ()$/;"	f
+backstep	TrendFinder.mq4	/^int backstep = 3;$/;"	v
+baseLotMult	TrendFinder.mq4	/^double baseLotMult;$/;"	v
+candle	Q10NIK _DRIVER_ 1.01.mq4	/^CandlesClass      candle;$/;"	v
+candle	Q10NIK _TRENDLINER.mq4	/^CandlesClass      candle;$/;"	v
+candle	Q10NIK_GREEDER.mq4	/^CandlesClass      candle;$/;"	v
+candle	Q10NIK_TRIPPLER.mq4	/^CandlesClass      candle;$/;"	v
+candle	Q10NIK_WAVER.mq4	/^CandlesClass      candle;$/;"	v
+check_draw_patterns	TrendFinder.mq4	/^void check_draw_patterns ()$/;"	f
+check_spread	Q10NIK _DRIVER_ 1.01.mq4	/^bool check_spread (){$/;"	f
+check_spread	Q10NIK _TRENDLINER.mq4	/^bool check_spread (){$/;"	f
+check_spread	Q10NIK_GREEDER.mq4	/^bool check_spread (){$/;"	f
+check_spread	Q10NIK_TRIPPLER.mq4	/^bool check_spread (){$/;"	f
+check_spread	Q10NIK_WAVER.mq4	/^bool check_spread (){$/;"	f
+clear_objects	Q10NIK _DRIVER_ 1.01.mq4	/^void clear_objects (){   $/;"	f
+clear_objects	Q10NIK _TRENDLINER.mq4	/^void clear_objects (){   $/;"	f
+clear_objects	Q10NIK_GREEDER.mq4	/^void clear_objects (){   $/;"	f
+clear_objects	Q10NIK_TRIPPLER.mq4	/^void clear_objects (){   $/;"	f
+clear_objects	Q10NIK_WAVER.mq4	/^void clear_objects (){   $/;"	f
+clear_objects	TrendFinder.mq4	/^void clear_objects ()$/;"	f
+close_all_orders	Q10NIK _DRIVER_ 1.01.mq4	/^void close_all_orders (){$/;"	f
+close_all_orders	Q10NIK _TRENDLINER.mq4	/^void close_all_orders (){$/;"	f
+close_all_orders	Q10NIK_GREEDER.mq4	/^void close_all_orders (){$/;"	f
+close_all_orders	Q10NIK_TRIPPLER.mq4	/^void close_all_orders (){$/;"	f
+close_all_orders	Q10NIK_WAVER.mq4	/^void close_all_orders (){$/;"	f
+comment1	Q10NIK _DRIVER_ 1.01.mq4	/^extern string  comment1 = "==== Overall options =====";$/;"	v
+comment1	Q10NIK _TRENDLINER.mq4	/^extern string  comment1 = "==== Overall options =====";$/;"	v
+comment1	Q10NIK_GREEDER.mq4	/^extern string  comment1 = "==== Overall options =====";$/;"	v
+comment1	Q10NIK_TRIPPLER.mq4	/^extern string  comment1 = "==== Overall options =====";$/;"	v
+comment1	Q10NIK_WAVER.mq4	/^extern string  comment1 = "==== Overall options =====";$/;"	v
+comment2	Q10NIK _DRIVER_ 1.01.mq4	/^extern string  comment2 = "==== Drivers options =====";$/;"	v
+comment2	Q10NIK _TRENDLINER.mq4	/^extern string  comment2 = "==== Drivers options =====";$/;"	v
+comment2	Q10NIK_GREEDER.mq4	/^extern string  comment2 = "==== Drivers options =====";$/;"	v
+comment2	Q10NIK_TRIPPLER.mq4	/^extern string  comment2 = "==== Drivers options =====";$/;"	v
+comment2	Q10NIK_WAVER.mq4	/^extern string  comment2 = "==== Drivers options =====";$/;"	v
+comment2	TrendFinder.mq4	/^extern string comment2 = "====  Appearance options =====";$/;"	v
+comment4	Q10NIK _DRIVER_ 1.01.mq4	/^extern string  comment4 = "==== Tech options =====";$/;"	v
+comment4	Q10NIK _TRENDLINER.mq4	/^extern string  comment4 = "==== Tech options =====";$/;"	v
+comment4	Q10NIK_GREEDER.mq4	/^extern string  comment4 = "==== Tech options =====";$/;"	v
+comment4	Q10NIK_TRIPPLER.mq4	/^extern string  comment4 = "==== Tech options =====";$/;"	v
+comment4	Q10NIK_WAVER.mq4	/^extern string  comment4 = "==== Tech options =====";$/;"	v
+comment_ver	Q10NIK _DRIVER_ 1.01.mq4	/^string comment_ver="standard edition";$/;"	v
+comment_ver	Q10NIK _TRENDLINER.mq4	/^string comment_ver="standard edition";$/;"	v
+comment_ver	Q10NIK_GREEDER.mq4	/^string comment_ver="standard edition";$/;"	v
+comment_ver	Q10NIK_TRIPPLER.mq4	/^string comment_ver="standard edition";$/;"	v
+comment_ver	Q10NIK_WAVER.mq4	/^string comment_ver="standard edition";$/;"	v
+commission	Q10NIK _DRIVER_ 1.01.mq4	/^double   commission;$/;"	v
+commission	Q10NIK _TRENDLINER.mq4	/^double   commission;$/;"	v
+commission	Q10NIK_TRIPPLER.mq4	/^double   commission;$/;"	v
+commission	Q10NIK_WAVER.mq4	/^double   commission;$/;"	v
+commission_default_per_lot	Q10NIK _DRIVER_ 1.01.mq4	/^extern double  commission_default_per_lot = 10;                   \/\/ Amount in deposit currency Per 100,000 of base currency$/;"	v
+commission_default_per_lot	Q10NIK _TRENDLINER.mq4	/^extern double  commission_default_per_lot = 10;                   \/\/ Amount in deposit currency Per 100,000 of base currency$/;"	v
+commission_default_per_lot	Q10NIK_GREEDER.mq4	/^extern double  commission_default_per_lot = 10;                   \/\/ Amount in deposit currency Per 100,000 of base currency$/;"	v
+commission_default_per_lot	Q10NIK_TRIPPLER.mq4	/^extern double  commission_default_per_lot = 10;                   \/\/ Amount in deposit currency Per 100,000 of base currency$/;"	v
+commission_default_per_lot	Q10NIK_WAVER.mq4	/^extern double  commission_default_per_lot = 10;                   \/\/ Amount in deposit currency Per 100,000 of base currency$/;"	v
+costs	Q10NIK _DRIVER_ 1.01.mq4	/^double   costs;$/;"	v
+costs	Q10NIK _TRENDLINER.mq4	/^double   costs;$/;"	v
+costs	Q10NIK_TRIPPLER.mq4	/^double   costs;$/;"	v
+costs	Q10NIK_WAVER.mq4	/^double   costs;$/;"	v
+costs_pips	Q10NIK _DRIVER_ 1.01.mq4	/^int      costs_pips;$/;"	v
+costs_pips	Q10NIK _TRENDLINER.mq4	/^int      costs_pips;$/;"	v
+costs_pips	Q10NIK_TRIPPLER.mq4	/^int      costs_pips;$/;"	v
+costs_pips	Q10NIK_WAVER.mq4	/^int      costs_pips;$/;"	v
+costs_set	Q10NIK _DRIVER_ 1.01.mq4	/^void costs_set ()$/;"	f
+costs_set	Q10NIK _TRENDLINER.mq4	/^void costs_set ()$/;"	f
+costs_set	Q10NIK_TRIPPLER.mq4	/^void costs_set ()$/;"	f
+costs_set	Q10NIK_WAVER.mq4	/^void costs_set ()$/;"	f
+deal_RR_min	Q10NIK _DRIVER_ 1.01.mq4	/^extern double  deal_RR_min = 1;                                   \/\/ Deal RR min$/;"	v
+deal_RR_min	Q10NIK _TRENDLINER.mq4	/^extern double  deal_RR_min = 1;                                   \/\/ Deal RR min$/;"	v
+deal_RR_min	Q10NIK_GREEDER.mq4	/^extern double  deal_RR_min = 1;                                   \/\/ Deal RR min$/;"	v
+deal_RR_min	Q10NIK_TRIPPLER.mq4	/^extern double  deal_RR_min = 1;                                   \/\/ Deal RR min$/;"	v
+deal_RR_min	Q10NIK_WAVER.mq4	/^extern double  deal_RR_min = 3.0;                                 \/\/ Deal RR min$/;"	v
+deal_costs_max_koef	Q10NIK _DRIVER_ 1.01.mq4	/^extern double  deal_costs_max_koef = 0.06;                        \/\/ Maximum percent of transaction costs (spread+commission) from estimated profit per deal$/;"	v
+deal_costs_max_koef	Q10NIK _TRENDLINER.mq4	/^extern double  deal_costs_max_koef = 0.06;                        \/\/ Maximum percent of transaction costs (spread+commission) from estimated profit per deal$/;"	v
+deal_costs_max_koef	Q10NIK_GREEDER.mq4	/^extern double  deal_costs_max_koef = 0.06;                        \/\/ Maximum percent of transaction costs (spread+commission) from estimated profit per deal$/;"	v
+deal_costs_max_koef	Q10NIK_TRIPPLER.mq4	/^extern double  deal_costs_max_koef = 0.06;                        \/\/ Maximum percent of transaction costs (spread+commission) from estimated profit per deal$/;"	v
+deal_costs_max_koef	Q10NIK_WAVER.mq4	/^extern double  deal_costs_max_koef = 0.06;                        \/\/ Maximum percent of transaction costs (spread+commission) from estimated profit per deal$/;"	v
+deal_duration_max_minutes	Q10NIK _DRIVER_ 1.01.mq4	/^extern int     deal_duration_max_minutes = 1440;                  \/\/ Maximum period (in minutes) of Impulse wave for a deal (transaction)$/;"	v
+deal_duration_max_minutes	Q10NIK _TRENDLINER.mq4	/^extern int     deal_duration_max_minutes = 1440;                  \/\/ Maximum period (in minutes) of Impulse wave for a deal (transaction)$/;"	v
+deal_duration_max_minutes	Q10NIK_GREEDER.mq4	/^extern int     deal_duration_max_minutes = 1440;                  \/\/ Maximum period (in minutes) of Impulse wave for a deal (transaction)$/;"	v
+deal_duration_max_minutes	Q10NIK_TRIPPLER.mq4	/^extern int     deal_duration_max_minutes = 1440;                  \/\/ Maximum period (in minutes) of Impulse wave for a deal (transaction)$/;"	v
+deal_duration_max_minutes	Q10NIK_WAVER.mq4	/^extern int     deal_duration_max_minutes = 1440;                  \/\/ Maximum period (in minutes) of Impulse wave for a deal (transaction)$/;"	v
+deal_new_id	Q10NIK _DRIVER_ 1.01.mq4	/^int deal_new_id (){$/;"	f
+deal_new_id	Q10NIK _TRENDLINER.mq4	/^int deal_new_id (){$/;"	f
+deal_new_id	Q10NIK_TRIPPLER.mq4	/^int deal_new_id (){$/;"	f
+deal_new_id	Q10NIK_WAVER.mq4	/^int deal_new_id (){$/;"	f
+deal_risk_percent	Q10NIK _DRIVER_ 1.01.mq4	/^extern double  deal_risk_percent = 3.0;                           \/\/ Risk percent per deal (percent from deposit)$/;"	v
+deal_risk_percent	Q10NIK _TRENDLINER.mq4	/^extern double  deal_risk_percent = 3.0;                           \/\/ Risk percent per deal (percent from deposit)$/;"	v
+deal_risk_percent	Q10NIK_GREEDER.mq4	/^extern double  deal_risk_percent = 3.0;                           \/\/ Risk percent per deal (percent from deposit)$/;"	v
+deal_risk_percent	Q10NIK_TRIPPLER.mq4	/^extern double  deal_risk_percent = 3.0;                           \/\/ Risk percent per deal (percent from deposit)$/;"	v
+deal_risk_percent	Q10NIK_WAVER.mq4	/^extern double  deal_risk_percent = 3.0;                           \/\/ Risk percent per deal (percent from deposit)$/;"	v
+deinit	Q10NIK _DRIVER_ 1.01.mq4	/^int deinit()$/;"	f
+deinit	Q10NIK _TRENDLINER.mq4	/^int deinit()$/;"	f
+deinit	Q10NIK_GREEDER.mq4	/^int deinit()$/;"	f
+deinit	Q10NIK_TRIPPLER.mq4	/^int deinit()$/;"	f
+deinit	Q10NIK_WAVER.mq4	/^int deinit()$/;"	f
+deinit	TrendFinder.mq4	/^int deinit ()$/;"	f
+delete_label	Q10NIK _DRIVER_ 1.01.mq4	/^void delete_label (int orderTicketLocal){$/;"	f
+delete_label	Q10NIK _TRENDLINER.mq4	/^void delete_label (int orderTicketLocal){$/;"	f
+delete_label	Q10NIK_GREEDER.mq4	/^void delete_label (int orderTicketLocal){$/;"	f
+delete_label	Q10NIK_TRIPPLER.mq4	/^void delete_label (int orderTicketLocal){$/;"	f
+delete_label	Q10NIK_WAVER.mq4	/^void delete_label (int orderTicketLocal){$/;"	f
+delete_limits	Q10NIK_GREEDER.mq4	/^void delete_limits (int orderType){$/;"	f
+deviation	TrendFinder.mq4	/^int deviation= 5;$/;"	v
+driver_range_avg_koef	Q10NIK _DRIVER_ 1.01.mq4	/^extern double  driver_range_avg_koef = 2.0;$/;"	v
+driver_range_avg_koef	Q10NIK _TRENDLINER.mq4	/^extern double  driver_range_avg_koef = 2.0;$/;"	v
+driver_range_avg_koef	Q10NIK_GREEDER.mq4	/^extern double  driver_range_avg_koef = 2.0;$/;"	v
+driver_range_avg_koef	Q10NIK_TRIPPLER.mq4	/^extern double  driver_range_avg_koef = 2.0;$/;"	v
+driver_range_avg_koef	Q10NIK_WAVER.mq4	/^extern double  driver_range_avg_koef = 2.0;$/;"	v
+driver_retrace_koef	Q10NIK _DRIVER_ 1.01.mq4	/^extern double  driver_retrace_koef = 0.6;$/;"	v
+driver_retrace_koef	Q10NIK _TRENDLINER.mq4	/^extern double  driver_retrace_koef = 0.6;$/;"	v
+driver_retrace_koef	Q10NIK_GREEDER.mq4	/^extern double  driver_retrace_koef = 0.6;$/;"	v
+driver_retrace_koef	Q10NIK_TRIPPLER.mq4	/^extern double  driver_retrace_koef = 0.6;$/;"	v
+driver_retrace_koef	Q10NIK_WAVER.mq4	/^extern double  driver_retrace_koef = 0.6;$/;"	v
+driver_strength_koef	Q10NIK _DRIVER_ 1.01.mq4	/^extern double  driver_strength_koef = 0.87;$/;"	v
+driver_strength_koef	Q10NIK _TRENDLINER.mq4	/^extern double  driver_strength_koef = 0.87;$/;"	v
+driver_strength_koef	Q10NIK_GREEDER.mq4	/^extern double  driver_strength_koef = 0.87;$/;"	v
+driver_strength_koef	Q10NIK_TRIPPLER.mq4	/^extern double  driver_strength_koef = 0.87;$/;"	v
+driver_strength_koef	Q10NIK_WAVER.mq4	/^extern double  driver_strength_koef = 0.87;$/;"	v
+f1_depth	TrendFinder.mq4	/^int f1_depth = 6;$/;"	v
+f1_swings_max	TrendFinder.mq4	/^int f1_swings_max = 40;$/;"	v
+f2_depth	TrendFinder.mq4	/^int f2_depth = 12;$/;"	v
+f2_swings_max	TrendFinder.mq4	/^int f2_swings_max = 30;$/;"	v
+f3_depth	TrendFinder.mq4	/^int f3_depth = 24;$/;"	v
+f3_swings_max	TrendFinder.mq4	/^int f3_swings_max = 20;$/;"	v
+f4_depth	TrendFinder.mq4	/^int f4_depth = 48;$/;"	v
+f4_swings_max	TrendFinder.mq4	/^int f4_swings_max = 20;$/;"	v
+f5_depth	TrendFinder.mq4	/^int f5_depth = 96;$/;"	v
+f5_swings_max	TrendFinder.mq4	/^int f5_swings_max = 20;$/;"	v
+f6_depth	TrendFinder.mq4	/^int f6_depth = 192;$/;"	v
+f6_swings_max	TrendFinder.mq4	/^int f6_swings_max = 20;$/;"	v
+f_angle	TrendFinder.mq4	/^double f_angle[7][40];$/;"	v
+f_color	TrendFinder.mq4	/^color f_color[7];$/;"	v
+f_depth	TrendFinder.mq4	/^int f_depth [7];$/;"	v
+f_duration	TrendFinder.mq4	/^int f_duration[7][40];$/;"	v
+f_duration_avg	TrendFinder.mq4	/^double f_duration_avg[7];$/;"	v
+f_length	TrendFinder.mq4	/^double f_length[7][40];$/;"	v
+f_length_avg	TrendFinder.mq4	/^double f_length_avg[7];$/;"	v
+f_price	TrendFinder.mq4	/^double f_price[7][40];$/;"	v
+f_shift	TrendFinder.mq4	/^int f_shift [7][40];$/;"	v
+f_swings_max	TrendFinder.mq4	/^int f_swings_max[7];$/;"	v
+f_time	TrendFinder.mq4	/^int f_time[7][40];$/;"	v
+found_wave_BUY	Q10NIK _DRIVER_ 1.01.mq4	/^int      found_wave_BUY;$/;"	v
+found_wave_BUY	Q10NIK _TRENDLINER.mq4	/^int      found_wave_BUY;$/;"	v
+found_wave_BUY	Q10NIK_GREEDER.mq4	/^int      found_wave_BUY;$/;"	v
+found_wave_BUY	Q10NIK_TRIPPLER.mq4	/^int      found_wave_BUY;$/;"	v
+found_wave_BUY	Q10NIK_WAVER.mq4	/^int      found_wave_BUY;$/;"	v
+found_wave_SELL	Q10NIK _DRIVER_ 1.01.mq4	/^int      found_wave_SELL;$/;"	v
+found_wave_SELL	Q10NIK _TRENDLINER.mq4	/^int      found_wave_SELL;$/;"	v
+found_wave_SELL	Q10NIK_GREEDER.mq4	/^int      found_wave_SELL;$/;"	v
+found_wave_SELL	Q10NIK_TRIPPLER.mq4	/^int      found_wave_SELL;$/;"	v
+found_wave_SELL	Q10NIK_WAVER.mq4	/^int      found_wave_SELL;$/;"	v
+freeMargin	TrendFinder.mq4	/^double freeMargin;$/;"	v
+get_date_string	Q10NIK _DRIVER_ 1.01.mq4	/^string get_date_string(int time_input){$/;"	f
+get_date_string	Q10NIK _TRENDLINER.mq4	/^string get_date_string(int time_input){$/;"	f
+get_date_string	Q10NIK_GREEDER.mq4	/^string get_date_string(int time_input){$/;"	f
+get_date_string	Q10NIK_TRIPPLER.mq4	/^string get_date_string(int time_input){$/;"	f
+get_date_string	Q10NIK_WAVER.mq4	/^string get_date_string(int time_input){$/;"	f
+grid_BUY_active	Q10NIK_GREEDER.mq4	/^bool     grid_BUY_active, grid_SELL_active;$/;"	v
+grid_BUY_lastClosedNumber	Q10NIK_GREEDER.mq4	/^int      grid_BUY_lastClosedNumber, grid_SELL_lastClosedNumber;$/;"	v
+grid_BUY_lastClosed_Profit	Q10NIK_GREEDER.mq4	/^double   grid_BUY_lastClosed_Profit, grid_SELL_lastClosed_Profit;$/;"	v
+grid_BUY_lotStart	Q10NIK_GREEDER.mq4	/^double   grid_BUY_lotStart, grid_SELL_lotStart;$/;"	v
+grid_BUY_price	Q10NIK_GREEDER.mq4	/^double   grid_BUY_price [10], grid_SELL_price [10];$/;"	v
+grid_SELL_active	Q10NIK_GREEDER.mq4	/^bool     grid_BUY_active, grid_SELL_active;$/;"	v
+grid_SELL_lastClosedNumber	Q10NIK_GREEDER.mq4	/^int      grid_BUY_lastClosedNumber, grid_SELL_lastClosedNumber;$/;"	v
+grid_SELL_lastClosed_Profit	Q10NIK_GREEDER.mq4	/^double   grid_BUY_lastClosed_Profit, grid_SELL_lastClosed_Profit;$/;"	v
+grid_SELL_lotStart	Q10NIK_GREEDER.mq4	/^double   grid_BUY_lotStart, grid_SELL_lotStart;$/;"	v
+grid_SELL_price	Q10NIK_GREEDER.mq4	/^double   grid_BUY_price [10], grid_SELL_price [10];$/;"	v
+grid_lot_inc_koef	Q10NIK_GREEDER.mq4	/^extern double  grid_lot_inc_koef = 2.0;$/;"	v
+grid_risk_start_percent	Q10NIK_GREEDER.mq4	/^extern double  grid_risk_start_percent = 3.0;$/;"	v
+grid_steps_max	Q10NIK_GREEDER.mq4	/^extern int     grid_steps_max = 5;$/;"	v
+init	Q10NIK _DRIVER_ 1.01.mq4	/^int init()$/;"	f
+init	Q10NIK _TRENDLINER.mq4	/^int init()$/;"	f
+init	Q10NIK_GREEDER.mq4	/^int init()$/;"	f
+init	Q10NIK_TRIPPLER.mq4	/^int init()$/;"	f
+init	Q10NIK_WAVER.mq4	/^int init()$/;"	f
+init	TrendFinder.mq4	/^int init()$/;"	f
+lastTime	Q10NIK _DRIVER_ 1.01.mq4	/^int      lastTime;$/;"	v
+lastTime	Q10NIK _TRENDLINER.mq4	/^int      lastTime;$/;"	v
+lastTime	Q10NIK_GREEDER.mq4	/^int      lastTime;$/;"	v
+lastTime	Q10NIK_TRIPPLER.mq4	/^int      lastTime;$/;"	v
+lastTime	Q10NIK_WAVER.mq4	/^int      lastTime;$/;"	v
+levelLineColor	TrendFinder.mq4	/^extern color levelLineColor = Gray;$/;"	v
+levelLineType	TrendFinder.mq4	/^extern int levelLineType = STYLE_DOT;$/;"	v
+levelLineWidth	TrendFinder.mq4	/^extern int levelLineWidth = 1;$/;"	v
+limit_orders	Q10NIK _DRIVER_ 1.01.mq4	/^extern bool    limit_orders = false;                              $/;"	v
+limit_orders	Q10NIK _TRENDLINER.mq4	/^extern bool    limit_orders = false;                              $/;"	v
+limit_orders	Q10NIK_GREEDER.mq4	/^extern bool    limit_orders = false;                              $/;"	v
+limit_orders	Q10NIK_TRIPPLER.mq4	/^extern bool    limit_orders = false;                              $/;"	v
+limit_orders	Q10NIK_WAVER.mq4	/^extern bool    limit_orders = false;                              $/;"	v
+line_time	Q10NIK _DRIVER_ 1.01.mq4	/^string   line_time;$/;"	v
+line_time	Q10NIK _TRENDLINER.mq4	/^string   line_time;$/;"	v
+line_time	Q10NIK_GREEDER.mq4	/^string   line_time;$/;"	v
+line_time	Q10NIK_TRIPPLER.mq4	/^string   line_time;$/;"	v
+line_time	Q10NIK_WAVER.mq4	/^string   line_time;$/;"	v
+logLineColor	Q10NIK _DRIVER_ 1.01.mq4	/^color    logLineColor [300];$/;"	v
+logLineColor	Q10NIK _TRENDLINER.mq4	/^color    logLineColor [300];$/;"	v
+logLineColor	Q10NIK_GREEDER.mq4	/^color    logLineColor [300];$/;"	v
+logLineColor	Q10NIK_TRIPPLER.mq4	/^color    logLineColor [300];$/;"	v
+logLineColor	Q10NIK_WAVER.mq4	/^color    logLineColor [300];$/;"	v
+logLineCount	Q10NIK _DRIVER_ 1.01.mq4	/^int      logLineCount = 0;$/;"	v
+logLineCount	Q10NIK _TRENDLINER.mq4	/^int      logLineCount = 0;$/;"	v
+logLineCount	Q10NIK_GREEDER.mq4	/^int      logLineCount = 0;$/;"	v
+logLineCount	Q10NIK_TRIPPLER.mq4	/^int      logLineCount = 0;$/;"	v
+logLineCount	Q10NIK_WAVER.mq4	/^int      logLineCount = 0;$/;"	v
+logLineString	Q10NIK _DRIVER_ 1.01.mq4	/^string   logLineString [300];$/;"	v
+logLineString	Q10NIK _TRENDLINER.mq4	/^string   logLineString [300];$/;"	v
+logLineString	Q10NIK_GREEDER.mq4	/^string   logLineString [300];$/;"	v
+logLineString	Q10NIK_TRIPPLER.mq4	/^string   logLineString [300];$/;"	v
+logLineString	Q10NIK_WAVER.mq4	/^string   logLineString [300];$/;"	v
+log_add_line	Q10NIK _DRIVER_ 1.01.mq4	/^void log_add_line (string stringLogLocal, color colorLocal){$/;"	f
+log_add_line	Q10NIK _TRENDLINER.mq4	/^void log_add_line (string stringLogLocal, color colorLocal){$/;"	f
+log_add_line	Q10NIK_GREEDER.mq4	/^void log_add_line (string stringLogLocal, color colorLocal){$/;"	f
+log_add_line	Q10NIK_TRIPPLER.mq4	/^void log_add_line (string stringLogLocal, color colorLocal){$/;"	f
+log_add_line	Q10NIK_WAVER.mq4	/^void log_add_line (string stringLogLocal, color colorLocal){   $/;"	f
+log_message	Q10NIK _DRIVER_ 1.01.mq4	/^void log_message(string message_local,int color_local){$/;"	f
+log_message	Q10NIK _TRENDLINER.mq4	/^void log_message(string message_local,int color_local){$/;"	f
+log_message	Q10NIK_GREEDER.mq4	/^void log_message(string message_local,int color_local){$/;"	f
+log_message	Q10NIK_TRIPPLER.mq4	/^void log_message(string message_local,int color_local){$/;"	f
+log_message	Q10NIK_WAVER.mq4	/^void log_message(string message_local,int color_local){$/;"	f
+log_show	Q10NIK _DRIVER_ 1.01.mq4	/^void log_show (){$/;"	f
+log_show	Q10NIK _TRENDLINER.mq4	/^void log_show (){$/;"	f
+log_show	Q10NIK_GREEDER.mq4	/^void log_show (){$/;"	f
+log_show	Q10NIK_TRIPPLER.mq4	/^void log_show (){$/;"	f
+log_show	Q10NIK_WAVER.mq4	/^void log_show (){$/;"	f
+loss_limit	TrendFinder.mq4	/^double loss_limit;$/;"	v
+lotDigits	Q10NIK _DRIVER_ 1.01.mq4	/^int      lotDigits;$/;"	v
+lotDigits	Q10NIK _TRENDLINER.mq4	/^int      lotDigits;$/;"	v
+lotDigits	Q10NIK_GREEDER.mq4	/^int      lotDigits;$/;"	v
+lotDigits	Q10NIK_TRIPPLER.mq4	/^int      lotDigits;$/;"	v
+lotDigits	Q10NIK_WAVER.mq4	/^int      lotDigits;$/;"	v
+lotDigits	TrendFinder.mq4	/^int lotDigits;$/;"	v
+lotMax	Q10NIK _DRIVER_ 1.01.mq4	/^double   lotMax;$/;"	v
+lotMax	Q10NIK _TRENDLINER.mq4	/^double   lotMax;$/;"	v
+lotMax	Q10NIK_GREEDER.mq4	/^double   lotMax;$/;"	v
+lotMax	Q10NIK_TRIPPLER.mq4	/^double   lotMax;$/;"	v
+lotMax	Q10NIK_WAVER.mq4	/^double   lotMax;$/;"	v
+lotMax	TrendFinder.mq4	/^double lotStep, lotMin, lotMax;$/;"	v
+lotMin	Q10NIK _DRIVER_ 1.01.mq4	/^double   lotMin;$/;"	v
+lotMin	Q10NIK _TRENDLINER.mq4	/^double   lotMin;$/;"	v
+lotMin	Q10NIK_GREEDER.mq4	/^double   lotMin;$/;"	v
+lotMin	Q10NIK_TRIPPLER.mq4	/^double   lotMin;$/;"	v
+lotMin	Q10NIK_WAVER.mq4	/^double   lotMin;$/;"	v
+lotMin	TrendFinder.mq4	/^double lotStep, lotMin, lotMax;$/;"	v
+lotStep	Q10NIK _DRIVER_ 1.01.mq4	/^double   lotStep;$/;"	v
+lotStep	Q10NIK _TRENDLINER.mq4	/^double   lotStep;$/;"	v
+lotStep	Q10NIK_GREEDER.mq4	/^double   lotStep;$/;"	v
+lotStep	Q10NIK_TRIPPLER.mq4	/^double   lotStep;$/;"	v
+lotStep	Q10NIK_WAVER.mq4	/^double   lotStep;$/;"	v
+lotStep	TrendFinder.mq4	/^double lotStep, lotMin, lotMax;$/;"	v
+order	Q10NIK _DRIVER_ 1.01.mq4	/^OrdersClass       order;$/;"	v
+order	Q10NIK _TRENDLINER.mq4	/^OrdersClass       order;$/;"	v
+order	Q10NIK_GREEDER.mq4	/^OrdersClass       order;$/;"	v
+order	Q10NIK_TRIPPLER.mq4	/^OrdersClass       order;$/;"	v
+order	Q10NIK_WAVER.mq4	/^OrdersClass       order;$/;"	v
+s1	TrendFinder.mq4	/^double s1[];$/;"	v
+seekShiftMax	Q10NIK _DRIVER_ 1.01.mq4	/^extern int     seekShiftMax = 200;$/;"	v
+seekShiftMax	Q10NIK _TRENDLINER.mq4	/^extern int     seekShiftMax = 200;$/;"	v
+seekShiftMax	Q10NIK_GREEDER.mq4	/^extern int     seekShiftMax = 200;$/;"	v
+seekShiftMax	Q10NIK_TRIPPLER.mq4	/^extern int     seekShiftMax = 200;$/;"	v
+seekShiftMax	Q10NIK_WAVER.mq4	/^extern int     seekShiftMax = 200;$/;"	v
+showHistory	Q10NIK _DRIVER_ 1.01.mq4	/^extern bool    showHistory = true;$/;"	v
+showHistory	Q10NIK _TRENDLINER.mq4	/^extern bool    showHistory = true;$/;"	v
+showHistory	Q10NIK_GREEDER.mq4	/^extern bool    showHistory = true;$/;"	v
+showHistory	Q10NIK_TRIPPLER.mq4	/^extern bool    showHistory = true;$/;"	v
+showHistory	Q10NIK_WAVER.mq4	/^extern bool    showHistory = true;$/;"	v
+showLog	Q10NIK _DRIVER_ 1.01.mq4	/^bool     showLog = false;$/;"	v
+showLog	Q10NIK _TRENDLINER.mq4	/^bool     showLog = false;$/;"	v
+showLog	Q10NIK_GREEDER.mq4	/^bool     showLog = false;$/;"	v
+showLog	Q10NIK_TRIPPLER.mq4	/^bool     showLog = false;$/;"	v
+showLog	Q10NIK_WAVER.mq4	/^bool     showLog = false;$/;"	v
+showStats	Q10NIK _DRIVER_ 1.01.mq4	/^extern bool    showStats = false;$/;"	v
+showStats	Q10NIK _TRENDLINER.mq4	/^extern bool    showStats = false;$/;"	v
+showStats	Q10NIK_GREEDER.mq4	/^extern bool    showStats = false;$/;"	v
+showStats	Q10NIK_TRIPPLER.mq4	/^extern bool    showStats = false;$/;"	v
+showStats	Q10NIK_WAVER.mq4	/^extern bool    showStats = false;$/;"	v
+signal_BUY	Q10NIK _DRIVER_ 1.01.mq4	/^bool     signal_BUY;$/;"	v
+signal_BUY	Q10NIK _TRENDLINER.mq4	/^bool     signal_BUY;$/;"	v
+signal_BUY	Q10NIK_GREEDER.mq4	/^bool     signal_BUY;$/;"	v
+signal_BUY	Q10NIK_TRIPPLER.mq4	/^bool     signal_BUY;$/;"	v
+signal_BUY	Q10NIK_WAVER.mq4	/^bool     signal_BUY;$/;"	v
+signal_BUY_ADD	Q10NIK _DRIVER_ 1.01.mq4	/^bool     signal_BUY_ADD;$/;"	v
+signal_BUY_ADD	Q10NIK _TRENDLINER.mq4	/^bool     signal_BUY_ADD;$/;"	v
+signal_BUY_ADD	Q10NIK_GREEDER.mq4	/^bool     signal_BUY_ADD;$/;"	v
+signal_BUY_ADD	Q10NIK_TRIPPLER.mq4	/^bool     signal_BUY_ADD;$/;"	v
+signal_BUY_ADD	Q10NIK_WAVER.mq4	/^bool     signal_BUY_ADD;$/;"	v
+signal_BUY_MAIN	Q10NIK _DRIVER_ 1.01.mq4	/^bool     signal_BUY_MAIN;$/;"	v
+signal_BUY_MAIN	Q10NIK _TRENDLINER.mq4	/^bool     signal_BUY_MAIN;$/;"	v
+signal_BUY_MAIN	Q10NIK_GREEDER.mq4	/^bool     signal_BUY_MAIN;$/;"	v
+signal_BUY_MAIN	Q10NIK_TRIPPLER.mq4	/^bool     signal_BUY_MAIN;$/;"	v
+signal_BUY_MAIN	Q10NIK_WAVER.mq4	/^bool     signal_BUY_MAIN;$/;"	v
+signal_SELL	Q10NIK _DRIVER_ 1.01.mq4	/^bool     signal_SELL;$/;"	v
+signal_SELL	Q10NIK _TRENDLINER.mq4	/^bool     signal_SELL;$/;"	v
+signal_SELL	Q10NIK_GREEDER.mq4	/^bool     signal_SELL;$/;"	v
+signal_SELL	Q10NIK_TRIPPLER.mq4	/^bool     signal_SELL;$/;"	v
+signal_SELL	Q10NIK_WAVER.mq4	/^bool     signal_SELL;$/;"	v
+signal_SELL_ADD	Q10NIK _DRIVER_ 1.01.mq4	/^bool     signal_SELL_ADD;$/;"	v
+signal_SELL_ADD	Q10NIK _TRENDLINER.mq4	/^bool     signal_SELL_ADD;$/;"	v
+signal_SELL_ADD	Q10NIK_GREEDER.mq4	/^bool     signal_SELL_ADD;$/;"	v
+signal_SELL_ADD	Q10NIK_TRIPPLER.mq4	/^bool     signal_SELL_ADD;$/;"	v
+signal_SELL_ADD	Q10NIK_WAVER.mq4	/^bool     signal_SELL_ADD;$/;"	v
+signal_SELL_MAIN	Q10NIK _DRIVER_ 1.01.mq4	/^bool     signal_SELL_MAIN;$/;"	v
+signal_SELL_MAIN	Q10NIK _TRENDLINER.mq4	/^bool     signal_SELL_MAIN;$/;"	v
+signal_SELL_MAIN	Q10NIK_GREEDER.mq4	/^bool     signal_SELL_MAIN;$/;"	v
+signal_SELL_MAIN	Q10NIK_TRIPPLER.mq4	/^bool     signal_SELL_MAIN;$/;"	v
+signal_SELL_MAIN	Q10NIK_WAVER.mq4	/^bool     signal_SELL_MAIN;$/;"	v
+skiphours	Q10NIK _DRIVER_ 1.01.mq4	/^extern int     skiphours = 0;$/;"	v
+skiphours	Q10NIK _TRENDLINER.mq4	/^extern int     skiphours = 0;$/;"	v
+skiphours	Q10NIK_GREEDER.mq4	/^extern int     skiphours = 0;$/;"	v
+skiphours	Q10NIK_TRIPPLER.mq4	/^extern int     skiphours = 0;$/;"	v
+skiphours	Q10NIK_WAVER.mq4	/^extern int     skiphours = 0;$/;"	v
+sms_alerts_on	TrendFinder.mq4	/^extern bool sms_alerts_on = false;$/;"	v
+sms_tel_number	TrendFinder.mq4	/^extern string sms_tel_number = "79516019037";$/;"	v
+sms_text	TrendFinder.mq4	/^extern string sms_text = "Alert";$/;"	v
+spread	Q10NIK _DRIVER_ 1.01.mq4	/^int      spread;$/;"	v
+spread	Q10NIK _TRENDLINER.mq4	/^int      spread;$/;"	v
+spread	Q10NIK_TRIPPLER.mq4	/^int      spread;$/;"	v
+spread	Q10NIK_WAVER.mq4	/^int      spread;$/;"	v
+spread	TrendFinder.mq4	/^int spread, spread_max;$/;"	v
+spreadArray	Q10NIK _DRIVER_ 1.01.mq4	/^int      spreadArray[10];$/;"	v
+spreadArray	Q10NIK _TRENDLINER.mq4	/^int      spreadArray[10];$/;"	v
+spreadArray	Q10NIK_TRIPPLER.mq4	/^int      spreadArray[10];$/;"	v
+spreadArray	Q10NIK_WAVER.mq4	/^int      spreadArray[10];$/;"	v
+spread_avg	Q10NIK _DRIVER_ 1.01.mq4	/^int      spread_avg;$/;"	v
+spread_avg	Q10NIK _TRENDLINER.mq4	/^int      spread_avg;$/;"	v
+spread_avg	Q10NIK_TRIPPLER.mq4	/^int      spread_avg;$/;"	v
+spread_avg	Q10NIK_WAVER.mq4	/^int      spread_avg;$/;"	v
+spread_default	Q10NIK _DRIVER_ 1.01.mq4	/^extern int     spread_default = 20;$/;"	v
+spread_default	Q10NIK _TRENDLINER.mq4	/^extern int     spread_default = 20;$/;"	v
+spread_default	Q10NIK_GREEDER.mq4	/^extern int     spread_default = 20;$/;"	v
+spread_default	Q10NIK_TRIPPLER.mq4	/^extern int     spread_default = 20;$/;"	v
+spread_default	Q10NIK_WAVER.mq4	/^extern int     spread_default = 20;$/;"	v
+spread_max	Q10NIK _DRIVER_ 1.01.mq4	/^int      spread_max;$/;"	v
+spread_max	Q10NIK _TRENDLINER.mq4	/^int      spread_max;$/;"	v
+spread_max	Q10NIK_TRIPPLER.mq4	/^int      spread_max;$/;"	v
+spread_max	Q10NIK_WAVER.mq4	/^int      spread_max;$/;"	v
+spread_max	TrendFinder.mq4	/^int spread, spread_max;$/;"	v
+spread_max_avg_koef	Q10NIK _DRIVER_ 1.01.mq4	/^extern double  spread_max_avg_koef = 2.0;$/;"	v
+spread_max_avg_koef	Q10NIK _TRENDLINER.mq4	/^extern double  spread_max_avg_koef = 2.0;$/;"	v
+spread_max_avg_koef	Q10NIK_GREEDER.mq4	/^extern double  spread_max_avg_koef = 2.0;$/;"	v
+spread_max_avg_koef	Q10NIK_TRIPPLER.mq4	/^extern double  spread_max_avg_koef = 2.0;$/;"	v
+spread_max_avg_koef	Q10NIK_WAVER.mq4	/^extern double  spread_max_avg_koef = 2.0;$/;"	v
+start	Q10NIK _DRIVER_ 1.01.mq4	/^int start()$/;"	f
+start	Q10NIK _TRENDLINER.mq4	/^int start()$/;"	f
+start	Q10NIK_GREEDER.mq4	/^int start()$/;"	f
+start	Q10NIK_TRIPPLER.mq4	/^int start()$/;"	f
+start	Q10NIK_WAVER.mq4	/^int start()$/;"	f
+start	TrendFinder.mq4	/^int start()$/;"	f
+stats	Q10NIK _DRIVER_ 1.01.mq4	/^StatsClass        stats;$/;"	v
+stats	Q10NIK _TRENDLINER.mq4	/^StatsClass        stats;$/;"	v
+stats	Q10NIK_GREEDER.mq4	/^StatsClass        stats;$/;"	v
+stats	Q10NIK_TRIPPLER.mq4	/^StatsClass        stats;$/;"	v
+stats	Q10NIK_WAVER.mq4	/^StatsClass        stats;$/;"	v
+stopoutLevel	Q10NIK _DRIVER_ 1.01.mq4	/^double   stopoutLevel;$/;"	v
+stopoutLevel	Q10NIK _TRENDLINER.mq4	/^double   stopoutLevel;$/;"	v
+stopoutLevel	Q10NIK_GREEDER.mq4	/^double   stopoutLevel;$/;"	v
+stopoutLevel	Q10NIK_TRIPPLER.mq4	/^double   stopoutLevel;$/;"	v
+stopoutLevel	Q10NIK_WAVER.mq4	/^double   stopoutLevel;$/;"	v
+stopoutLevel	TrendFinder.mq4	/^double tickValue, stopoutLevel;$/;"	v
+stopoutMode	TrendFinder.mq4	/^int stopoutMode;$/;"	v
+tf	Q10NIK _DRIVER_ 1.01.mq4	/^int      tf [10];$/;"	v
+tf	Q10NIK _TRENDLINER.mq4	/^int      tf [10];$/;"	v
+tf	Q10NIK_GREEDER.mq4	/^int      tf [10];$/;"	v
+tf	Q10NIK_TRIPPLER.mq4	/^int      tf [10];$/;"	v
+tf	Q10NIK_WAVER.mq4	/^int      tf [10];$/;"	v
+tickValue	Q10NIK _DRIVER_ 1.01.mq4	/^double   tickValue;$/;"	v
+tickValue	Q10NIK _TRENDLINER.mq4	/^double   tickValue;$/;"	v
+tickValue	Q10NIK_TRIPPLER.mq4	/^double   tickValue;$/;"	v
+tickValue	Q10NIK_WAVER.mq4	/^double   tickValue;$/;"	v
+tickValue	TrendFinder.mq4	/^double tickValue, stopoutLevel;$/;"	v
+tick_count	Q10NIK _DRIVER_ 1.01.mq4	/^int      tick_count;$/;"	v
+tick_count	Q10NIK _TRENDLINER.mq4	/^int      tick_count;$/;"	v
+tick_count	Q10NIK_GREEDER.mq4	/^int      tick_count;$/;"	v
+tick_count	Q10NIK_TRIPPLER.mq4	/^int      tick_count;$/;"	v
+tick_count	Q10NIK_WAVER.mq4	/^int      tick_count;$/;"	v
+tick_count	TrendFinder.mq4	/^int tick_count=0;$/;"	v
+time_start	Q10NIK _DRIVER_ 1.01.mq4	/^int      time_start;$/;"	v
+time_start	Q10NIK _TRENDLINER.mq4	/^int      time_start;$/;"	v
+time_start	Q10NIK_GREEDER.mq4	/^int      time_start;$/;"	v
+time_start	Q10NIK_TRIPPLER.mq4	/^int      time_start;$/;"	v
+time_start	Q10NIK_WAVER.mq4	/^int      time_start;$/;"	v
+timeframe	Q10NIK _DRIVER_ 1.01.mq4	/^TimeframesClass   timeframe;$/;"	v
+timeframe	Q10NIK _TRENDLINER.mq4	/^TimeframesClass   timeframe;$/;"	v
+timeframe	Q10NIK_GREEDER.mq4	/^TimeframesClass   timeframe;$/;"	v
+timeframe	Q10NIK_TRIPPLER.mq4	/^TimeframesClass   timeframe;$/;"	v
+timeframe	Q10NIK_WAVER.mq4	/^TimeframesClass   timeframe;$/;"	v
+timeframe_Lowest	Q10NIK _DRIVER_ 1.01.mq4	/^extern int     timeframe_Lowest = 1;$/;"	v
+timeframe_Lowest	Q10NIK _TRENDLINER.mq4	/^extern int     timeframe_Lowest = 1;$/;"	v
+timeframe_Lowest	Q10NIK_GREEDER.mq4	/^extern int     timeframe_Lowest = 1;$/;"	v
+timeframe_Lowest	Q10NIK_TRIPPLER.mq4	/^extern int     timeframe_Lowest = 1;$/;"	v
+timeframe_Lowest	Q10NIK_WAVER.mq4	/^extern int     timeframe_Lowest = 1;$/;"	v
+timeframe_Main	Q10NIK _DRIVER_ 1.01.mq4	/^int      timeframe_Main;$/;"	v
+timeframe_Main	Q10NIK _TRENDLINER.mq4	/^int      timeframe_Main;$/;"	v
+timeframe_Main	Q10NIK_GREEDER.mq4	/^int      timeframe_Main;$/;"	v
+timeframe_Main	Q10NIK_TRIPPLER.mq4	/^int      timeframe_Main;$/;"	v
+timeframe_Main	Q10NIK_WAVER.mq4	/^int      timeframe_Main;$/;"	v
+timeframe_koef	Q10NIK _DRIVER_ 1.01.mq4	/^extern int     timeframe_koef = 4;$/;"	v
+timeframe_koef	Q10NIK _TRENDLINER.mq4	/^extern int     timeframe_koef = 4;$/;"	v
+timeframe_koef	Q10NIK_GREEDER.mq4	/^extern int     timeframe_koef = 4;$/;"	v
+timeframe_koef	Q10NIK_TRIPPLER.mq4	/^extern int     timeframe_koef = 4;$/;"	v
+timeframe_max	TrendFinder.mq4	/^extern int timeframe_max = 60;$/;"	v
+timeframe_min	TrendFinder.mq4	/^extern int timeframe_min = 5;$/;"	v
+touch_distance_koef	Q10NIK _DRIVER_ 1.01.mq4	/^extern double  touch_distance_koef = 0.15;                        \/\/ Driver length koef for touch distance$/;"	v
+touch_distance_koef	Q10NIK _TRENDLINER.mq4	/^extern double  touch_distance_koef = 0.15;                        \/\/ Driver length koef for touch distance$/;"	v
+touch_distance_koef	Q10NIK_GREEDER.mq4	/^extern double  touch_distance_koef = 0.15;                        \/\/ Driver length koef for touch distance$/;"	v
+touch_distance_koef	Q10NIK_TRIPPLER.mq4	/^extern double  touch_distance_koef = 0.15;                        \/\/ Driver length koef for touch distance$/;"	v
+touch_distance_koef	Q10NIK_WAVER.mq4	/^extern double  touch_distance_koef = 0.15;                        \/\/ Driver length koef for touch distance$/;"	v
+tp_pips_min	TrendFinder.mq4	/^extern int tp_pips_min = 15;$/;"	v
+trendlines_OP_BUY	Q10NIK _DRIVER_ 1.01.mq4	/^TrendlinesClass   trendlines_OP_BUY;$/;"	v
+trendlines_OP_BUY	Q10NIK _TRENDLINER.mq4	/^TrendlinesClass   trendlines_OP_BUY;$/;"	v
+trendlines_OP_BUY	Q10NIK_TRIPPLER.mq4	/^TrendlinesClass   trendlines_OP_BUY;$/;"	v
+trendlines_OP_BUY	Q10NIK_WAVER.mq4	/^TrendlinesClass   trendlines_OP_BUY;$/;"	v
+trendlines_OP_SELL	Q10NIK _DRIVER_ 1.01.mq4	/^TrendlinesClass   trendlines_OP_SELL;$/;"	v
+trendlines_OP_SELL	Q10NIK _TRENDLINER.mq4	/^TrendlinesClass   trendlines_OP_SELL;$/;"	v
+trendlines_OP_SELL	Q10NIK_TRIPPLER.mq4	/^TrendlinesClass   trendlines_OP_SELL;$/;"	v
+trendlines_OP_SELL	Q10NIK_WAVER.mq4	/^TrendlinesClass   trendlines_OP_SELL;$/;"	v
+version	Q10NIK _DRIVER_ 1.01.mq4	/^string version="DRIVER 1.01";$/;"	v
+version	Q10NIK _TRENDLINER.mq4	/^string version="DRIVER 1.01";$/;"	v
+version	Q10NIK_GREEDER.mq4	/^string version="DRIVER 1.01";$/;"	v
+version	Q10NIK_TRIPPLER.mq4	/^string version="DRIVER 1.01";$/;"	v
+version	Q10NIK_WAVER.mq4	/^string version="DRIVER 1.01";$/;"	v
+wave	Q10NIK _DRIVER_ 1.01.mq4	/^WavesClass        wave;$/;"	v
+wave	Q10NIK _TRENDLINER.mq4	/^WavesClass        wave;$/;"	v
+wave	Q10NIK_GREEDER.mq4	/^WavesClass        wave;$/;"	v
+wave	Q10NIK_TRIPPLER.mq4	/^WavesClass        wave;$/;"	v
+wave	Q10NIK_WAVER.mq4	/^WavesClass        wave;$/;"	v
+wavesLineColor	TrendFinder.mq4	/^extern color wavesLineColor = Gray;$/;"	v
+wavesLineType	TrendFinder.mq4	/^extern int wavesLineType = STYLE_DASH;$/;"	v
+wavesLineWidth	TrendFinder.mq4	/^extern int wavesLineWidth = 1;$/;"	v

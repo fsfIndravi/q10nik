@@ -417,7 +417,7 @@ double CandlesClass::AverageRange_Shift (int a_timeframe, int a_shiftEarlier, in
    {
    double lengthTotal = 0;
    double lengthAvg = 0;
-   Print ("a_timeframe="+a_timeframe+"   a_shiftEarlier="+a_shiftEarlier+"   a_shiftLater="+a_shiftLater,Red);
+   //Print ("a_timeframe="+a_timeframe+"   a_shiftEarlier="+a_shiftEarlier+"   a_shiftLater="+a_shiftLater,Red);
    for (int shiftLocal = a_shiftLater; shiftLocal <= a_shiftEarlier; shiftLocal++){
       lengthTotal += iHigh (Symbol(), a_timeframe, shiftLocal) - iLow (Symbol(), a_timeframe, shiftLocal);
       }
@@ -537,7 +537,7 @@ int CandlesClass::TF_Max(int x_timeEarlier,int x_timeLater){
 //|                                                                  |
 //+------------------------------------------------------------------+
 
-double CandlesClass::FindCoreWaveDriver (int timeframeLowest, int waveDirection, int waveTimeStart, int waveTimeEnd, double wavePriceHigh, double wavePriceLow, double coreDriverWaveRangeKoef){
+double CandlesClass::FindCoreWaveDriver (int timeframeLowestLocal, int waveDirection, int waveTimeStart, int waveTimeEnd, double wavePriceHigh, double wavePriceLow, double coreDriverWaveRangeKoef){
    int shiftEarlier;
    int shiftLater;
    double rangeLocal;
