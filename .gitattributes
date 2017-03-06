@@ -1,4 +1,5 @@
 *.mq4 filter=git-crypt diff=git-crypt
+*.mqh filter=git-crypt diff=git-crypt
 *.ex4 filter=git-crypt diff=git-crypt
 *.key filter=git-crypt diff=git-crypt
 notes filter=git-crypt diff=git-crypt
