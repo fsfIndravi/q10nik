@@ -1,0 +1,3 @@
+- script Set_TP_BE          - TPs of all or number of last orders are set to BE 
+- script Close_Orders       - close all or a number of last orders
+- indicator 1.5/2.0wave         - show 1.5 reach of wave BO
