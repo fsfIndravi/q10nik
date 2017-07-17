@@ -1,5 +1,5 @@
 - script Set_TP_BE          - TPs of all or number of last orders are set to BE 
 - script Close_Orders       - close all or a number of last orders
 - indicator 1.5/2.0wave     - show 1.5 reach of wave BO
-- script_Show_Last_Deal     - correct points calculation, unite partial closing points
+- script_Show_Last_Deal     - correct points calculation, unite partial closing points, display symbol name, show for the current symbol only
 - script_Show_All_Deals     - correct points calculation, unite partial closing points
